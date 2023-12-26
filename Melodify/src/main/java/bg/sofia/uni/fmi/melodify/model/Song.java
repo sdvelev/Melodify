@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,9 @@ public class Song {
 
     @Column(name = "duration")
     private int duration;
+
+    @Column(name = "release_date")
+    private LocalDateTime releaseDate;
 
     @Column(name = "number_of_plays")
     private long numberOfPlays;
