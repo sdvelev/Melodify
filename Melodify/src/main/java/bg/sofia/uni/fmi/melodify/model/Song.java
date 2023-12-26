@@ -1,18 +1,13 @@
 package bg.sofia.uni.fmi.melodify.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "song")
@@ -23,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class Song {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -42,7 +37,13 @@ public class Song {
     private Genre genre;
 
     @Column(name = "album")
+    @ManyToOne
+    @JoinColumn(name = "id")
     private Album album;
+
+    @ManyToMany
+    @JoinColumn(name = "id")
+    private List<Artist> artists;
 
     @Column(name = "uri")
     private String uri;

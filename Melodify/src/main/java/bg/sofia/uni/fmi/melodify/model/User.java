@@ -6,40 +6,46 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "album")
+@Table(name = "user")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Album {
-
+public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "release_date")
-    private LocalDateTime releaseDate;
+    @Column(name = "email")
+    private String email;
 
-    @Column(name = "genre")
-    @ManyToOne
-    @JoinColumn(name = "id")
-    private Genre genre;
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "image")
     private String image;
 
+    @Column(name = "current_song")
+    private Integer currentSong;
+
+    @Column(name="is_playing")
+    private Boolean isPlaying;
+
     @OneToMany
     @JoinColumn(name = "id")
-    private List<Song> songs;
+    private List<Playlist> playlists;
 
-    @Column(name = "uri")
+    @ManyToMany
+    @JoinColumn(name = "id")
+    private List<Playlist> albums;
+
+    @Column(name="uri")
     private String uri;
 }

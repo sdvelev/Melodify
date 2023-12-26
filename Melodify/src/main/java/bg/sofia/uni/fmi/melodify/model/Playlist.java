@@ -6,17 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "album")
+@Table(name = "playlist")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Album {
-
+public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -25,18 +23,15 @@ public class Album {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "release_date")
-    private LocalDateTime releaseDate;
-
-    @Column(name = "genre")
+    @Column(name = "user")
     @ManyToOne
     @JoinColumn(name = "id")
-    private Genre genre;
+    private User user;
 
     @Column(name = "image")
     private String image;
 
-    @OneToMany
+    @ManyToMany
     @JoinColumn(name = "id")
     private List<Song> songs;
 
