@@ -31,19 +31,23 @@ public class Song {
     @Column(name = "number_of_plays")
     private long numberOfPlays;
 
-    @Column(name = "genre")
-    @ManyToOne
-    @JoinColumn(name = "id")
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "genre_id")
     private Genre genre;
 
-    @Column(name = "album")
-    @ManyToOne
-    @JoinColumn(name = "id")
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "album_id")
     private Album album;
 
     @ManyToMany
-    @JoinColumn(name = "id")
+    @JoinTable(
+        name = "song_artists",
+        joinColumns = @JoinColumn(name = "song_id"),
+        inverseJoinColumns = @JoinColumn(name = "artist_id"))
     private List<Artist> artists;
+
+    @ManyToMany(mappedBy = "songs")
+    private List<Playlist> playlists;
 
     @Column(name = "uri")
     private String uri;

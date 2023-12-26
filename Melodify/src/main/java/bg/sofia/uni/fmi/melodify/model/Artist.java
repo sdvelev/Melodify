@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "artist")
 @Data
@@ -28,4 +30,9 @@ public class Artist {
     @Column(name = "uri")
     private String uri;
 
+    @ManyToMany(mappedBy = "artists")
+    private List<Song> songs;
+
+    @ManyToMany(mappedBy = "artists")
+    private List<Album> albums;
 }

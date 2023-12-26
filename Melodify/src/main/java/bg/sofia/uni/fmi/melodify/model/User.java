@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
+@Table(name = "registered_user")
 @Data
 @Builder
 @AllArgsConstructor
@@ -38,13 +38,15 @@ public class User {
     @Column(name="is_playing")
     private Boolean isPlaying;
 
-    @OneToMany
-    @JoinColumn(name = "id")
+    @OneToMany(mappedBy = "user")
     private List<Playlist> playlists;
 
     @ManyToMany
-    @JoinColumn(name = "id")
-    private List<Playlist> albums;
+    @JoinTable(
+        name = "user_albums",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "album_id"))
+    private List<Album> albums;
 
     @Column(name="uri")
     private String uri;

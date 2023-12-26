@@ -23,16 +23,18 @@ public class Playlist {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "user")
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "image")
     private String image;
 
     @ManyToMany
-    @JoinColumn(name = "id")
+    @JoinTable(
+        name = "playlist_songs",
+        joinColumns = @JoinColumn(name = "playlist_id"),
+        inverseJoinColumns = @JoinColumn(name = "song_id"))
     private List<Song> songs;
 
     @Column(name = "uri")

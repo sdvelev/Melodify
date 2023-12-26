@@ -28,17 +28,26 @@ public class Album {
     @Column(name = "release_date")
     private LocalDateTime releaseDate;
 
-    @Column(name = "genre")
-    @ManyToOne
-    @JoinColumn(name = "id")
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "genre_id")
     private Genre genre;
 
     @Column(name = "image")
     private String image;
 
-    @OneToMany
-    @JoinColumn(name = "id")
+    @OneToMany(mappedBy = "album")
     private List<Song> songs;
+
+    @ManyToMany(mappedBy = "albums")
+    private List<User> users;
+
+    @ManyToMany
+    @JoinTable(
+        name = "album_artists",
+        joinColumns = @JoinColumn(name = "album_id"),
+        inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
+    private List<Artist> artists;
 
     @Column(name = "uri")
     private String uri;
