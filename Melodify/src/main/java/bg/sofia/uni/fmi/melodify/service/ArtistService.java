@@ -1,14 +1,11 @@
 package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.dto.ArtistDto;
-import bg.sofia.uni.fmi.melodify.mapper.AlbumMapper;
-import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
 import bg.sofia.uni.fmi.melodify.model.Artist;
 import bg.sofia.uni.fmi.melodify.repository.ArtistRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
