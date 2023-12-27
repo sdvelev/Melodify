@@ -42,7 +42,7 @@ public class GenreService {
             return potentialGenre;
         }
 
-        throw new ResourceNotFoundException("There is not a genre with such an id");
+        throw new ResourceNotFoundException("There is not a genre with such id");
     }
 
     public boolean setGenreById(
