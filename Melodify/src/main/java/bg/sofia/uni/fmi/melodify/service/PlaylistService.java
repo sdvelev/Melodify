@@ -60,8 +60,8 @@ public class PlaylistService {
             // pointless
 //            playlistToUpdate.setUser(playlistDtoToChange.getUser());
 //            playlistToUpdate.setCreationDate(playlistDtoToChange.getCreationDate());
-            SongMapper songMapper = SongMapper.INSTANCE;
-            playlistToUpdate.setSongs(songMapper.toEntityCollection(playlistDtoToChange.getSongDtos()));
+//            SongMapper songMapper = SongMapper.INSTANCE;
+//            playlistToUpdate.setSongs(songMapper.toEntityCollection(playlistDtoToChange.getSongDtos()));
             this.playlistRepository.save(playlistToUpdate);
             return true;
         }

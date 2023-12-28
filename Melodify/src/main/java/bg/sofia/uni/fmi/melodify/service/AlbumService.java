@@ -55,10 +55,10 @@ public class AlbumService {
         Optional<Album> optionalAlbumToUpdate = albumRepository.findById(albumId);
         if(optionalAlbumToUpdate.isPresent()){
             Album albumToUpdate = optionalAlbumToUpdate.get();
-            ArtistMapper artistMapper = ArtistMapper.INSTANCE;
-            albumToUpdate.setArtists(artistMapper.toEntityCollection(albumDtoToChange.getArtistDtos()));
-            GenreMapper genreMapper = GenreMapper.INSTANCE;
-            albumToUpdate.setGenre(genreMapper.toEntity(albumDtoToChange.getGenre()));
+//            ArtistMapper artistMapper = ArtistMapper.INSTANCE;
+//            albumToUpdate.setArtists(artistMapper.toEntityCollection(albumDtoToChange.getArtistDtos()));
+//            GenreMapper genreMapper = GenreMapper.INSTANCE;
+//            albumToUpdate.setGenre(genreMapper.toEntity(albumDtoToChange.getGenre()));
             albumToUpdate.setName(albumDtoToChange.getName());
             albumToUpdate.setImage(albumDtoToChange.getImage());
 //            SongMapper songMapper = SongMapper.INSTANCE;

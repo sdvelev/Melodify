@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "api/genres")
+@RequestMapping(path = "api/artists")
 @Validated
 public class ArtistController {
     private final ArtistService artistService;
