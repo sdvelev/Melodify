@@ -26,21 +26,18 @@ public class UserDto {
     @JsonProperty("email")
     private String email;
 
+    @JsonProperty("password")
+    private String password;
+
     @JsonProperty("image")
     private String image;
-
-    @JsonProperty("current_song")
-    private Integer currentSong;
-
-    @JsonProperty("is_playing")
-    private Boolean isPlaying;
-
-    @JsonProperty("uri")
-    private String uri;
 
     @JsonProperty("playlists")
     private List<PlaylistDto> playlistDtos;
 
-    @JsonProperty("albums")
-    private List<AlbumDto> albumDtos;
+    @JsonProperty("queue")
+    private QueueDto queueDto;
+
+    @JsonProperty("uri")
+    private String uri;
 }

@@ -28,18 +28,14 @@ public class SongDto {
     @JsonProperty("duration")
     private int duration;
 
-    @JsonProperty("release_date")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime releaseDate;
-
     @JsonProperty("number_of_plays")
     private long numberOfPlays;
 
     @JsonProperty("genre")
-    private Genre genre;
+    private GenreDto genreDto;
 
     @JsonProperty("album")
-    private Album album;
+    private AlbumDto albumDto;
 
     @JsonProperty("artists")
     private List<ArtistDto> artistDtos;

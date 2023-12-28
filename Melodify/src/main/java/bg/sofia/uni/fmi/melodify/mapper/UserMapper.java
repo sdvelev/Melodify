@@ -1,8 +1,6 @@
 package bg.sofia.uni.fmi.melodify.mapper;
 
-import bg.sofia.uni.fmi.melodify.dto.SongDto;
 import bg.sofia.uni.fmi.melodify.dto.UserDto;
-import bg.sofia.uni.fmi.melodify.model.Song;
 import bg.sofia.uni.fmi.melodify.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,11 +14,11 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Mapping(source = "playlists", target = "playlistDtos")
-    @Mapping(source = "albums", target = "albumDtos")
+    @Mapping(source = "queue", target = "queueDto")
     UserDto toDto(User userEntity);
 
     @Mapping(source = "playlistDtos", target = "playlists")
-    @Mapping(source = "albumDtos", target = "albums")
+    @Mapping(source = "queueDto", target = "queue")
     User toEntity(UserDto userDto);
 
     List<UserDto> toDtoCollection(Collection<User> userEntities);

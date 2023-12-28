@@ -12,23 +12,16 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArtistDto {
-
+public class QueueDto {
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("owner")
+    private UserDto ownerDto;
 
-    @JsonProperty("image")
-    private String image;
-
-    @JsonProperty("uri")
-    private String uri;
+    @JsonProperty("currentSongIndex")
+    private Long currentSongIndex;
 
     @JsonProperty("songs")
     private List<SongDto> songDtos;
-
-    @JsonProperty("albums")
-    private List<AlbumDto> albumDtos;
 }

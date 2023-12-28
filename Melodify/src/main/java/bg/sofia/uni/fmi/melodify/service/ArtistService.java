@@ -55,7 +55,7 @@ public class ArtistService {
         if(optionalArtistToUpdate.isPresent()){
             Artist artistToUpdate = optionalArtistToUpdate.get();
             artistToUpdate.setName(artistToChange.getName());
-            artistToUpdate.setImage(artistToChange.getPicture());
+            artistToUpdate.setImage(artistToChange.getImage());
             artistToUpdate.setUri(artistToChange.getUri());
 //            SongMapper songMapper = SongMapper.INSTANCE;
 //            artistToUpdate.setSongs(songMapper.toEntityCollection(artistToChange.getSongs()));

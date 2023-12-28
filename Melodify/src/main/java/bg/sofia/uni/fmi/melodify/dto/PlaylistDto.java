@@ -22,6 +22,9 @@ public class PlaylistDto {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("owner")
+    private UserDto ownerDto;
+
     @JsonProperty("creation_date")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationDate;

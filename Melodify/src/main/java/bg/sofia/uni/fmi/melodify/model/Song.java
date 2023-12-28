@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.melodify.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,9 +27,6 @@ public class Song {
 
     @Column(name = "duration")
     private int duration;
-
-    @Column(name = "release_date")
-    private LocalDateTime releaseDate;
 
     @Column(name = "number_of_plays")
     private long numberOfPlays;
