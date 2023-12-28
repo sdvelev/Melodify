@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "api/albums")
+@RequestMapping(path = "api/queues")
 @Validated
 public class QueueController {
     private final QueueService queueService;
