@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -40,9 +41,8 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-
-        return userMapper.toDtoCollection(userService.getUsers());
+    public List<UserDto> getUsers(@RequestParam Map<String, String> filters) {
+        return userMapper.toDtoCollection(userService.getUsers(filters));
     }
 
     @PostMapping

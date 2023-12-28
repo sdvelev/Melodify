@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -27,8 +28,8 @@ public class AlbumController {
     }
 
     @GetMapping
-    public List<AlbumDto> getAllAlbums() {
-        return albumMapper.toDtoCollection(albumService.getAllAlbums());
+    public List<AlbumDto> getAlbums(@RequestParam Map<String, String> filters) {
+        return albumMapper.toDtoCollection(albumService.getAlbums(filters));
     }
 
     @GetMapping(value = "/{id}")

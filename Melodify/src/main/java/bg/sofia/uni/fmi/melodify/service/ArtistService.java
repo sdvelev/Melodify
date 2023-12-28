@@ -1,34 +1,55 @@
 package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.dto.ArtistDto;
+import bg.sofia.uni.fmi.melodify.mapper.AlbumMapper;
+import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
+import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Artist;
+import bg.sofia.uni.fmi.melodify.model.Song;
 import bg.sofia.uni.fmi.melodify.repository.ArtistRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Validated
 public class ArtistService {
     private final ArtistRepository artistRepository;
-
     @Autowired
     public ArtistService(ArtistRepository artistRepository){
         this.artistRepository = artistRepository;
     }
+    public List<Artist> getArtists(Map<String, String> filters) {
+        String name = filters.get("name");
+        String image = filters.get("image");
+        String uri = filters.get("uri");
 
-    public Artist createArtist(@NotNull(message = "The provided artist cannot be null") Artist artistToSave){
-        return artistRepository.save(artistToSave);
-    }
+        Specification<Artist> spec = Specification.where(null);
 
-    public List<Artist> getAllArtists(){
-        return this.artistRepository.findAll();
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+        }
+
+        if (image != null && !image.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("image")), "%" + image.toLowerCase() + "%"));
+        }
+
+        if (uri != null && !uri.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("uri")), "%" + uri.toLowerCase() + "%"));
+        }
+
+        return artistRepository.findAll(spec);
     }
 
     public Optional<Artist> getArtistById(
@@ -43,10 +64,13 @@ public class ArtistService {
 
         throw new ResourceNotFoundException("There is no artist with such id");
     }
+    public Artist createArtist(@NotNull(message = "The provided artist cannot be null") Artist artistToSave){
+        return artistRepository.save(artistToSave);
+    }
 
     public boolean setArtistById(
             @NotNull(message = "The provided artist description cannot be null")
-            ArtistDto artistToChange,
+            ArtistDto artistDto,
             @NotNull(message = "The provided artist id cannot be null")
             @Positive(message = "The provided artist id must be positive")
             Long artistId){
@@ -54,13 +78,21 @@ public class ArtistService {
 
         if(optionalArtistToUpdate.isPresent()){
             Artist artistToUpdate = optionalArtistToUpdate.get();
-            artistToUpdate.setName(artistToChange.getName());
-            artistToUpdate.setImage(artistToChange.getImage());
-            artistToUpdate.setUri(artistToChange.getUri());
-//            SongMapper songMapper = SongMapper.INSTANCE;
-//            artistToUpdate.setSongs(songMapper.toEntityCollection(artistToChange.getSongs()));
-//            AlbumMapper albumMapper = AlbumMapper.INSTANCE;
-//            artistToUpdate.setAlbums(albumMapper.toEntityCollection(artistToChange.getAlbums()));
+            artistToUpdate.setName(artistDto.getName());
+            artistToUpdate.setImage(artistDto.getImage());
+            artistToUpdate.setUri(artistDto.getUri());
+            if (artistDto.getAlbumDtos() != null && !artistDto.getAlbumDtos().isEmpty()) {
+                artistToUpdate.getAlbums().clear(); // Remove existing albums
+                AlbumMapper albumMapper = AlbumMapper.INSTANCE;
+                List<Album> albums =  albumMapper.toEntityCollection(artistDto.getAlbumDtos());
+                artistToUpdate.getAlbums().addAll(albums);
+            }
+            if (artistDto.getSongDtos() != null && !artistDto.getSongDtos().isEmpty()) {
+                artistToUpdate.getSongs().clear();
+                SongMapper songMapper = SongMapper.INSTANCE;
+                List<Song> songs = songMapper.toEntityCollection(artistDto.getSongDtos());
+                artistToUpdate.getSongs().addAll(songs);
+            }
         }
 
         throw new ResourceNotFoundException("There is no artist with such id");

@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -29,9 +30,10 @@ public class ArtistController {
     }
 
     @GetMapping
-    public List<ArtistDto> getAllArtists() {
-        return this.artistMapper.toDtoCollection(this.artistService.getAllArtists());
+    public List<ArtistDto> getAllArtists(@RequestParam Map<String, String> filters) {
+        return this.artistMapper.toDtoCollection(this.artistService.getArtists(filters));
     }
+
 
     @GetMapping(value = "/{id}")
     public ArtistDto getArtistById(@PathVariable
@@ -58,15 +60,6 @@ public class ArtistController {
 
         return potentialArtistToCreate.getId();
     }
-
-    @DeleteMapping(params ={"artist_id"})
-    public ArtistDto deleteArtistById(@RequestParam("artist_id")
-                                      @NotNull(message = "The provided artist id cannot be null")
-                                      @Positive(message = "THe provided artist id must be positive")
-                                      Long id) {
-        return this.artistMapper.toDto(this.artistService.deleteArtist(id));
-    }
-
     @PutMapping(value = "/{id}")
     public boolean setArtistById(@PathVariable
                                  @NotNull(message = "The provided artist id cannot be null")
@@ -76,5 +69,13 @@ public class ArtistController {
                                  @NotNull(message = "The provided artist dto in the body cannot be null")
                                  ArtistDto artistToUpdate) {
         return this.artistService.setArtistById(artistToUpdate, id);
+    }
+
+    @DeleteMapping(params ={"artist_id"})
+    public ArtistDto deleteArtistById(@RequestParam("artist_id")
+                                      @NotNull(message = "The provided artist id cannot be null")
+                                      @Positive(message = "THe provided artist id must be positive")
+                                      Long id) {
+        return this.artistMapper.toDto(this.artistService.deleteArtist(id));
     }
 }

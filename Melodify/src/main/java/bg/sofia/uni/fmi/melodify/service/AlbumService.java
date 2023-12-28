@@ -1,23 +1,30 @@
 package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.dto.AlbumDto;
+import bg.sofia.uni.fmi.melodify.mapper.ArtistMapper;
+import bg.sofia.uni.fmi.melodify.mapper.GenreMapper;
+import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
 import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.repository.AlbumRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Validated
 public class AlbumService {
     private final AlbumRepository albumRepository;
-
+    ArtistMapper artistMapper = ArtistMapper.INSTANCE;
+    GenreMapper genreMapper = GenreMapper.INSTANCE;
+    SongMapper songMapper = SongMapper.INSTANCE;
     @Autowired
     public AlbumService(AlbumRepository albumRepository){
         this.albumRepository = albumRepository;
@@ -27,8 +34,35 @@ public class AlbumService {
         return albumRepository.save(albumToSave);
     }
 
-    public List<Album> getAllAlbums(){
-        return albumRepository.findAll();
+    public List<Album> getAlbums(Map<String, String> filters){
+        String name = filters.get("name");
+        String releaseDate = filters.get("releaseDate");
+        String image = filters.get("image");
+        String uri = filters.get("uri");
+
+        Specification<Album> spec = Specification.where(null);
+
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+        }
+
+        if (releaseDate != null && !releaseDate.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("releaseDate")), "%" + releaseDate.toLowerCase() + "%"));
+        }
+
+        if (image != null && !image.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("image")), "%" + image.toLowerCase() + "%"));
+        }
+
+        if (uri != null && !uri.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("uri")), "%" + uri.toLowerCase() + "%"));
+        }
+
+        return albumRepository.findAll(spec);
     }
 
     public Optional<Album> getAlbumById(
@@ -51,20 +85,17 @@ public class AlbumService {
             @Positive(message = "The provided album id must be positive")
             Long albumId) {
         Optional<Album> optionalAlbumToUpdate = albumRepository.findById(albumId);
+
         if(optionalAlbumToUpdate.isPresent()){
             Album albumToUpdate = optionalAlbumToUpdate.get();
-//            ArtistMapper artistMapper = ArtistMapper.INSTANCE;
-//            albumToUpdate.setArtists(artistMapper.toEntityCollection(albumDtoToChange.getArtistDtos()));
-//            GenreMapper genreMapper = GenreMapper.INSTANCE;
-//            albumToUpdate.setGenre(genreMapper.toEntity(albumDtoToChange.getGenre()));
             albumToUpdate.setName(albumDtoToChange.getName());
-            albumToUpdate.setImage(albumDtoToChange.getImage());
-//            SongMapper songMapper = SongMapper.INSTANCE;
-//            albumToUpdate.setSongs(songMapper.toEntityCollection(albumDtoToChange.getSongs()));
-            albumToUpdate.setUri(albumDtoToChange.getUri());
-//            UserMapper userMapper = UserMapper.INSTANCE;
-//            albumToUpdate.setUsers(userMapper.toEntityCollection(albumDtoToChange.getUsers()));
             albumToUpdate.setReleaseDate(albumDtoToChange.getReleaseDate());
+            albumToUpdate.setGenre(genreMapper.toEntity(albumDtoToChange.getGenreDto()));
+            albumToUpdate.setImage(albumDtoToChange.getImage());
+            albumToUpdate.setSongs(songMapper.toEntityCollection(albumDtoToChange.getSongDtos()));
+            albumToUpdate.setArtists(artistMapper.toEntityCollection(albumDtoToChange.getArtistDtos()));
+            albumToUpdate.setUri(albumDtoToChange.getUri());
+
             albumRepository.save(albumToUpdate);
             return true;
         }

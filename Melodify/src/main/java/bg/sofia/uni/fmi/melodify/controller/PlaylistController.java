@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -29,8 +30,8 @@ public class PlaylistController {
     }
 
     @GetMapping
-    public List<PlaylistDto> getAllPlaylists(){
-        return this.playlistMapper.toDtoCollection(this.playlistService.getAllPlaylists());
+    public List<PlaylistDto> getPlaylists(@RequestParam Map<String, String> filters){
+        return this.playlistMapper.toDtoCollection(this.playlistService.getPlaylists(filters));
     }
 
     @GetMapping(value = "/{id}")

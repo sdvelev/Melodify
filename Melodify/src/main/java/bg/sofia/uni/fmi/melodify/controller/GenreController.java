@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -37,9 +38,9 @@ public class GenreController {
         this.genreMapper = genreMapper;
     }
 
-    @GetMapping
-    public List<GenreDto> getAllGenres() {
-        return genreMapper.toDtoCollection(genreService.getAllGenres());
+    @GetMapping()
+    public List<GenreDto> getGenres(@RequestParam Map<String, String> filters){
+        return this.genreMapper.toDtoCollection(this.genreService.getAllGenres(filters));
     }
 
     @GetMapping(value = "/{id}")
@@ -67,6 +68,16 @@ public class GenreController {
 
         return potentialGenreToCreate.getId();
     }
+    @PutMapping(value = "/{id}")
+    public boolean setGenreById(@PathVariable
+                                @NotNull(message = "The provided genre id cannot be null")
+                                @Positive(message = "The provided genre id must be positive")
+                                Long id,
+                                @RequestBody
+                                @NotNull(message = "The provided genre dto in the body of the query cannot be null")
+                                GenreDto genreToUpdate) {
+        return genreService.setGenreById(genreToUpdate, id);
+    }
 
     @DeleteMapping(params = {"genre_id"})
     public GenreDto deleteGenreById(@RequestParam("genre_id")
@@ -74,16 +85,5 @@ public class GenreController {
                                @Positive(message = "The provided genre id must be positive")
                                Long genreId) {
         return genreMapper.toDto(genreService.deleteGenre(genreId));
-    }
-
-    @PutMapping(value = "/{id}")
-    public boolean setGenreById(@PathVariable
-                                    @NotNull(message = "The provided genre id cannot be null")
-                                    @Positive(message = "The provided genre id must be positive")
-                                    Long id,
-                                @RequestBody
-                                @NotNull(message = "The provided genre dto in the body of the query cannot be null")
-                                GenreDto genreToUpdate) {
-        return genreService.setGenreById(genreToUpdate, id);
     }
 }

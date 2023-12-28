@@ -8,14 +8,14 @@ import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForYear;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -45,6 +45,47 @@ public class UserService {
 
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    public List<User> getUsers(Map<String, String> filters) {
+        String name = filters.get("name");
+        String surname = filters.get("surname");
+        String email = filters.get("email");
+        // no password for you :-D
+        String image = filters.get("image");
+        // playlists
+        // queue
+        String uri = filters.get("uri");
+
+        Specification<User> spec = Specification.where(null);
+
+
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+        }
+
+        if (surname != null && !surname.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("surname")), "%" + surname.toLowerCase() + "%"));
+        }
+
+        if (email != null && !email.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+        }
+
+        if (image != null && !image.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("image")), "%" + image.toLowerCase() + "%"));
+        }
+
+        if (uri != null && !uri.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("uri")), "%" + uri.toLowerCase() + "%"));
+        }
+
+        return userRepository.findAll(spec);
     }
 
     public Optional<User> getUserById(@NotNull(message = "The provided user id cannot be null")
@@ -143,7 +184,7 @@ public class UserService {
 
         Optional<User> optionalUserToUpdate = userRepository.findById(userId);
         if (optionalUserToUpdate.isPresent()) {
-            User userToUpdate = setUserNonNullFields(userFieldsToChange, optionalUserToUpdate.get());;
+            User userToUpdate = setUserNonNullFields(userFieldsToChange, optionalUserToUpdate.get());
             userRepository.save(userToUpdate);
             return true;
         }

@@ -1,22 +1,30 @@
 package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.dto.PlaylistDto;
+import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
+import bg.sofia.uni.fmi.melodify.mapper.UserMapper;
 import bg.sofia.uni.fmi.melodify.model.Playlist;
 import bg.sofia.uni.fmi.melodify.repository.PlaylistRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Validated
 public class PlaylistService {
     private final PlaylistRepository playlistRepository;
+    private final UserMapper userMapper = UserMapper.INSTANCE;
+    private final SongMapper songMapper = SongMapper.INSTANCE;
+
+
 
     @Autowired
     public PlaylistService(PlaylistRepository playlistRepository){
@@ -26,8 +34,37 @@ public class PlaylistService {
     public Playlist createPlaylist(@NotNull(message = "The provided playlist cannot be null") Playlist playlistToSave){
         return this.playlistRepository.save(playlistToSave);
     }
-    public List<Playlist> getAllPlaylists(){
-        return  this.playlistRepository.findAll();
+    public List<Playlist> getPlaylists(Map<String, String> filters){
+        String name = filters.get("name");
+        // owner
+        String creationDate = filters.get("creationDate");
+        String image = filters.get("image");
+        // songs
+        String uri = filters.get("uri");
+
+        Specification<Playlist> spec = Specification.where(null);
+
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+        }
+
+        if (creationDate != null && !creationDate.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("creationDate")), "%" + creationDate.toLowerCase() + "%"));
+        }
+
+        if (image != null && !image.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("image")), "%" + image.toLowerCase() + "%"));
+        }
+
+        if (uri != null && !uri.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("uri")), "%" + uri.toLowerCase() + "%"));
+        }
+
+        return  this.playlistRepository.findAll(spec);
     }
 
     public Optional<Playlist> getPlaylistById(
@@ -54,13 +91,12 @@ public class PlaylistService {
         if(optionalPlaylistToUpdate.isPresent()){
             Playlist playlistToUpdate = optionalPlaylistToUpdate.get();
             playlistToUpdate.setName(playlistDtoToChange.getName());
-            playlistToUpdate.setUri(playlistDtoToChange.getUri());
+            playlistToUpdate.setOwner(userMapper.toEntity(playlistDtoToChange.getOwnerDto()));
+            playlistToUpdate.setCreationDate(playlistDtoToChange.getCreationDate());
             playlistToUpdate.setImage(playlistDtoToChange.getImage());
-            // pointless
-//            playlistToUpdate.setUser(playlistDtoToChange.getUser());
-//            playlistToUpdate.setCreationDate(playlistDtoToChange.getCreationDate());
-//            SongMapper songMapper = SongMapper.INSTANCE;
-//            playlistToUpdate.setSongs(songMapper.toEntityCollection(playlistDtoToChange.getSongDtos()));
+            playlistToUpdate.setSongs(songMapper.toEntityCollection(playlistDtoToChange.getSongDtos()));
+            playlistToUpdate.setUri(playlistDtoToChange.getUri());
+
             this.playlistRepository.save(playlistToUpdate);
             return true;
         }
