@@ -1,8 +1,6 @@
 package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.dto.AlbumDto;
-import bg.sofia.uni.fmi.melodify.mapper.ArtistMapper;
-import bg.sofia.uni.fmi.melodify.mapper.GenreMapper;
 import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.repository.AlbumRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
