@@ -38,9 +38,6 @@ public class Album {
     @OneToMany(mappedBy = "album")
     private List<Song> songs;
 
-    @ManyToMany(mappedBy = "albums")
-    private List<User> users;
-
     @ManyToMany
     @JoinTable(
         name = "album_artists",

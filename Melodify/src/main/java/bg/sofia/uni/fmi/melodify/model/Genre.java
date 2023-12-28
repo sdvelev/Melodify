@@ -29,11 +29,5 @@ public class Genre {
 
     @Column(name = "genre")
     private String genre;
-
-    @OneToMany(mappedBy = "genre")
-    private List<Song> songList;
-
-    @OneToMany(mappedBy = "genre")
-    private List<Album> albumList;
 }
 

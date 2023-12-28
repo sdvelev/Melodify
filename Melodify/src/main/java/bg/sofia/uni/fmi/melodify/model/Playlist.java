@@ -25,8 +25,8 @@ public class Playlist {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;

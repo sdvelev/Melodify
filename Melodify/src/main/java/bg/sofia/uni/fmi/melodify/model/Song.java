@@ -50,9 +50,6 @@ public class Song {
         inverseJoinColumns = @JoinColumn(name = "artist_id"))
     private List<Artist> artists;
 
-    @ManyToMany(mappedBy = "songs")
-    private List<Playlist> playlists;
-
     @Column(name = "uri")
     private String uri;
 }
