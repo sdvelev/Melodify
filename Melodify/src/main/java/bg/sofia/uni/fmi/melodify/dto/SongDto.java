@@ -1,16 +1,11 @@
 package bg.sofia.uni.fmi.melodify.dto;
 
-import bg.sofia.uni.fmi.melodify.model.Album;
-import bg.sofia.uni.fmi.melodify.model.Artist;
-import bg.sofia.uni.fmi.melodify.model.Genre;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
