@@ -9,18 +9,18 @@ import org.mapstruct.factory.Mappers;
 import java.util.Collection;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ArtistMapper.class})
+@Mapper(componentModel = "spring", uses = {ArtistMapper.class, GenreMapper.class})
 public interface SongMapper {
     SongMapper INSTANCE = Mappers.getMapper(SongMapper.class);
 
-    @Mapping(source = "genre", target = "genreDto")
-    @Mapping(source = "album", target = "albumDto")
-    @Mapping(source = "artists", target = "artistDtos")
-    SongDto toDto(Song songEntity);
+   @Mapping(source = "genre", target = "genreDto")
+//    @Mapping(source = "album", target = "albumDto")
+   @Mapping(source = "artists", target = "artistDtos")
+     SongDto toDto(Song songEntity);
 
-    @Mapping(source = "genreDto", target = "genre")
-    @Mapping(source = "albumDto", target = "album")
-    @Mapping(source = "artistDtos", target = "artists")
+     @Mapping(source = "genreDto", target = "genre")
+//    @Mapping(source = "albumDto", target = "album")
+       @Mapping(source = "artistDtos", target = "artists")
     Song toEntity(SongDto songDto);
 
     List<SongDto> toDtoCollection(Collection<Song> songEntities);

@@ -9,15 +9,15 @@ import org.mapstruct.factory.Mappers;
 import java.util.Collection;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, SongMapper.class})
+@Mapper(componentModel = "spring", uses = {/*UserMapper.class,*/ SongMapper.class})
 public interface QueueMapper {
     QueueMapper INSTANCE = Mappers.getMapper(QueueMapper.class);
 
-    @Mapping(source = "owner", target = "ownerDto")
+//    @Mapping(source = "owner", target = "ownerDto")
     @Mapping(source = "songs", target = "songDtos")
     QueueDto toDto(Queue queueEntity);
 
-    @Mapping(source = "ownerDto", target = "owner")
+//    @Mapping(source = "ownerDto", target = "owner")
     @Mapping(source = "songDtos", target = "songs")
     Queue toEntity(QueueDto queueDto);
 

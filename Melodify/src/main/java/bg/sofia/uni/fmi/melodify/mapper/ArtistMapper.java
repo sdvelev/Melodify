@@ -13,12 +13,12 @@ import java.util.List;
 public interface ArtistMapper {
     ArtistMapper INSTANCE = Mappers.getMapper(ArtistMapper.class);
 
-    @Mapping(source = "songs", target = "songDtos")
-    @Mapping(source = "albums", target = "albumDtos")
+//    @Mapping(source = "songs", target = "songDtos")
+//    @Mapping(source = "albums", target = "albumDtos")
     ArtistDto toDto(Artist artistEntity);
 
-    @Mapping(source = "songDtos", target = "songs")
-    @Mapping(source = "albumDtos", target = "albums")
+//    @Mapping(source = "songDtos", target = "songs")
+//    @Mapping(source = "albumDtos", target = "albums")
     Artist toEntity(ArtistDto albumDto);
 
     List<ArtistDto> toDtoCollection(Collection<Artist> albumEntities);

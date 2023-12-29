@@ -13,11 +13,11 @@ import java.util.List;
 public interface PlaylistMapper {
     PlaylistMapper INSTANCE = Mappers.getMapper(PlaylistMapper.class);
 
-    @Mapping(source = "owner", target = "ownerDto")
+//    @Mapping(source = "owner", target = "ownerDto")
     @Mapping(source = "songs", target = "songDtos")
     PlaylistDto toDto(Playlist playlistEntity);
 
-    @Mapping(source = "ownerDto", target = "owner")
+//    @Mapping(source = "ownerDto", target = "owner")
     @Mapping(source = "songDtos", target = "songs")
     Playlist toEntity(PlaylistDto playlistDto);
 
