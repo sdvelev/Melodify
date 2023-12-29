@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.melodify.service;
 import bg.sofia.uni.fmi.melodify.dto.PlaylistDto;
 import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
 import bg.sofia.uni.fmi.melodify.mapper.UserMapper;
+import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Playlist;
 import bg.sofia.uni.fmi.melodify.repository.PlaylistRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,10 +23,6 @@ import java.util.Optional;
 @Validated
 public class PlaylistService {
     private final PlaylistRepository playlistRepository;
-    private final UserMapper userMapper = UserMapper.INSTANCE;
-    private final SongMapper songMapper = SongMapper.INSTANCE;
-
-
 
     @Autowired
     public PlaylistService(PlaylistRepository playlistRepository){
@@ -32,6 +30,7 @@ public class PlaylistService {
     }
 
     public Playlist createPlaylist(@NotNull(message = "The provided playlist cannot be null") Playlist playlistToSave){
+        playlistToSave.setCreationDate(LocalDateTime.now());
         return this.playlistRepository.save(playlistToSave);
     }
     public List<Playlist> getPlaylists(Map<String, String> filters){
@@ -80,27 +79,65 @@ public class PlaylistService {
         throw new ResourceNotFoundException("There is no playlist with such id");
     }
 
-    public boolean SetPlaylistById(
-            @NotNull(message = "The provided playlist description cannot be null")
-            PlaylistDto playlistDtoToChange,
-            @NotNull(message = "The provided playlist id cannot be null")
-            @Positive(message = "The provided playlist id must be positive")
-            Long id){
-        Optional<Playlist> optionalPlaylistToUpdate = this.playlistRepository.findById(id);
+//    public boolean setPlaylistById(
+//            @NotNull(message = "The provided playlist description cannot be null")
+//            PlaylistDto playlistDtoToChange,
+//            @NotNull(message = "The provided playlist id cannot be null")
+//            @Positive(message = "The provided playlist id must be positive")
+//            Long id){
+//        Optional<Playlist> optionalPlaylistToUpdate = this.playlistRepository.findById(id);
+//
+//        if(optionalPlaylistToUpdate.isPresent()){
+//            Playlist playlistToUpdate = optionalPlaylistToUpdate.get();
+//            playlistToUpdate.setName(playlistDtoToChange.getName());
+////            playlistToUpdate.setOwner(userMapper.toEntity(playlistDtoToChange.getOwnerDto()));
+//            playlistToUpdate.setCreationDate(playlistDtoToChange.getCreationDate());
+//            playlistToUpdate.setImage(playlistDtoToChange.getImage());
+////            playlistToUpdate.setSongs(songMapper.toEntityCollection(playlistDtoToChange.getSongDtos()));
+//            playlistToUpdate.setUri(playlistDtoToChange.getUri());
+//
+//            this.playlistRepository.save(playlistToUpdate);
+//            return true;
+//        }
+//        throw new ResourceNotFoundException("There is no a playlist with such id");
+//    }
 
-        if(optionalPlaylistToUpdate.isPresent()){
-            Playlist playlistToUpdate = optionalPlaylistToUpdate.get();
-            playlistToUpdate.setName(playlistDtoToChange.getName());
-            playlistToUpdate.setOwner(userMapper.toEntity(playlistDtoToChange.getOwnerDto()));
-            playlistToUpdate.setCreationDate(playlistDtoToChange.getCreationDate());
-            playlistToUpdate.setImage(playlistDtoToChange.getImage());
-            playlistToUpdate.setSongs(songMapper.toEntityCollection(playlistDtoToChange.getSongDtos()));
-            playlistToUpdate.setUri(playlistDtoToChange.getUri());
+    public boolean setPlaylistById(
+        @NotNull(message = "The provided playlist dto cannot be null")
+        Playlist playlistFieldsToChange,
+        @NotNull(message = "The provided playlist id cannot be null")
+        @Positive(message = "The provided playlist id must be positive")
+        Long playlistId) {
 
-            this.playlistRepository.save(playlistToUpdate);
+        Optional<Playlist> optionalPlaylistToUpdate = playlistRepository.findById(playlistId);
+        if (optionalPlaylistToUpdate.isPresent()) {
+            Playlist playlistToUpdate = setPlaylistNonNullFields(playlistFieldsToChange, optionalPlaylistToUpdate.get());
+            playlistRepository.save(playlistToUpdate);
             return true;
         }
-        throw new ResourceNotFoundException("There is no a playlist with such id");
+
+        throw new ResourceNotFoundException("There is not a playlist with such an id");
+    }
+
+    private Playlist setPlaylistNonNullFields(
+        @NotNull(message = "The provided playlist dto cannot be null")
+        Playlist playlistFieldsToChange,
+        @NotNull(message = "The provided playlist cannot be null")
+        Playlist playlistToUpdate) {
+
+        if (playlistFieldsToChange.getName() != null) {
+            playlistToUpdate.setName(playlistFieldsToChange.getName());
+        }
+
+        if (playlistFieldsToChange.getImage() != null) {
+            playlistToUpdate.setImage(playlistFieldsToChange.getImage());
+        }
+
+        if (playlistFieldsToChange.getUri() != null) {
+            playlistToUpdate.setUri(playlistFieldsToChange.getUri());
+        }
+
+        return playlistToUpdate;
     }
 
     public Playlist deletePlaylist(
@@ -110,7 +147,7 @@ public class PlaylistService {
 
         Optional<Playlist> optionalPlaylistToDelete = this.playlistRepository.findById(id);
 
-        if(optionalPlaylistToDelete.isPresent()){
+        if (optionalPlaylistToDelete.isPresent()){
             Playlist playlistToDelete = optionalPlaylistToDelete.get();
             this.playlistRepository.delete(playlistToDelete);
             return playlistToDelete;

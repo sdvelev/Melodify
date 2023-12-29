@@ -3,6 +3,8 @@ package bg.sofia.uni.fmi.melodify.controller;
 import bg.sofia.uni.fmi.melodify.dto.PlaylistDto;
 import bg.sofia.uni.fmi.melodify.mapper.PlaylistMapper;
 import bg.sofia.uni.fmi.melodify.model.Playlist;
+import bg.sofia.uni.fmi.melodify.service.PlaylistModifySongsFacadeService;
+import bg.sofia.uni.fmi.melodify.service.PlaylistCreateFacadeService;
 import bg.sofia.uni.fmi.melodify.service.PlaylistService;
 import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
@@ -17,15 +19,21 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "api/playlist")
+@RequestMapping(path = "api/playlists")
 @Validated
 public class PlaylistController {
     private final PlaylistService playlistService;
+    private final PlaylistCreateFacadeService playlistCreateFacadeService;
+    private final PlaylistModifySongsFacadeService playlistModifySongsFacadeService;
     private final PlaylistMapper playlistMapper;
 
     @Autowired
-    public PlaylistController(PlaylistService playlistService, PlaylistMapper playlistMapper){
+    public PlaylistController(PlaylistService playlistService, PlaylistCreateFacadeService playlistCreateFacadeService,
+                              PlaylistModifySongsFacadeService playlistModifySongsFacadeService,
+                              PlaylistMapper playlistMapper) {
         this.playlistService = playlistService;
+        this.playlistCreateFacadeService = playlistCreateFacadeService;
+        this.playlistModifySongsFacadeService = playlistModifySongsFacadeService;
         this.playlistMapper = playlistMapper;
     }
 
@@ -49,10 +57,15 @@ public class PlaylistController {
 
     @PostMapping
     public Long addPlaylist(@NotNull(message = "The provided playlist description in the body cannot be null")
-                            @RequestBody PlaylistDto playlistDto){
-        Playlist potentialPlaylistToCreate=  this.playlistService.createPlaylist(this.playlistMapper.toEntity(playlistDto));
+                            @RequestBody PlaylistDto playlistDto,
+                            @RequestParam("owner_id")
+                            @NotNull(message = "The provided owner id cannot be null")
+                            @Positive(message = "The provided owner id must be positive")
+                            Long userId){
+        Playlist potentialPlaylistToCreate=  this.playlistCreateFacadeService
+            .createPlaylistWithOwner(this.playlistMapper.toEntity(playlistDto), userId);
 
-        if(potentialPlaylistToCreate == null){
+        if (potentialPlaylistToCreate == null){
             throw new ApiBadRequest("The was a problem in creating a playlist");
         }
 
@@ -75,6 +88,30 @@ public class PlaylistController {
                                    @RequestBody
                                    @NotNull(message = "The provided playlist dto in the body cannot be null")
                                    PlaylistDto playlistToUpdate){
-        return this.playlistService.SetPlaylistById(playlistToUpdate, id);
+        return this.playlistService.setPlaylistById(playlistMapper.toEntity(playlistToUpdate), id);
+    }
+
+    @PatchMapping(value = "/{id}/add")
+    public boolean addSongToPlaylist(@PathVariable
+                                         @NotNull(message = "The provided playlist id cannot be null")
+                                         @Positive(message = "The provided playlist id must be positive")
+                                         Long id,
+                                     @RequestParam("song_id")
+                                     @NotNull(message = "The provided song id cannot be null")
+                                     @Positive(message = "The provided song id must be positive")
+                                     Long songId) {
+        return playlistModifySongsFacadeService.addSongToPlaylist(id, songId);
+    }
+
+    @PatchMapping(value = "/{id}/remove")
+    public boolean removeSongFromPlaylist(@PathVariable
+                                     @NotNull(message = "The provided playlist id cannot be null")
+                                     @Positive(message = "The provided playlist id must be positive")
+                                     Long id,
+                                     @RequestParam("song_id")
+                                     @NotNull(message = "The provided song id cannot be null")
+                                     @Positive(message = "The provided song id must be positive")
+                                     Long songId) {
+        return playlistModifySongsFacadeService.removeSongFromPlaylist(id, songId);
     }
 }
