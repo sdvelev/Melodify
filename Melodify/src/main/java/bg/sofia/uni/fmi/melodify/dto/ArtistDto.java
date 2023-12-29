@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Data
 @Builder
@@ -26,9 +25,9 @@ public class ArtistDto {
     @JsonProperty("uri")
     private String uri;
 
-    @JsonProperty("songs")
-    private List<SongDto> songDtos;
+//    @JsonProperty("songs")
+//    private List<SongDto> songDtos;
 
-    @JsonProperty("albums")
-    private List<AlbumDto> albumDtos;
+//    @JsonProperty("albums")
+//    private List<AlbumDto> albumDtos;
 }

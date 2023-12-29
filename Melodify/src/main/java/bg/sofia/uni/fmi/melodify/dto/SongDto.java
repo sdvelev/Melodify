@@ -21,7 +21,7 @@ public class SongDto {
     private String name;
 
     @JsonProperty("duration")
-    private int duration;
+    private Integer duration;
 
     @JsonProperty("number_of_plays")
     private long numberOfPlays;
@@ -29,8 +29,8 @@ public class SongDto {
     @JsonProperty("genre")
     private GenreDto genreDto;
 
-    @JsonProperty("album")
-    private AlbumDto albumDto;
+//    @JsonProperty("album")
+//    private AlbumDto albumDto;
 
     @JsonProperty("artists")
     private List<ArtistDto> artistDtos;
