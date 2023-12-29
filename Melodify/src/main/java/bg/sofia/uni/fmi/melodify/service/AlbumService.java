@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.melodify.service;
 
-import bg.sofia.uni.fmi.melodify.dto.AlbumDto;
 import bg.sofia.uni.fmi.melodify.mapper.ArtistMapper;
 import bg.sofia.uni.fmi.melodify.mapper.GenreMapper;
 import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
@@ -22,9 +21,7 @@ import java.util.Optional;
 @Validated
 public class AlbumService {
     private final AlbumRepository albumRepository;
-    ArtistMapper artistMapper = ArtistMapper.INSTANCE;
-    GenreMapper genreMapper = GenreMapper.INSTANCE;
-    SongMapper songMapper = SongMapper.INSTANCE;
+
     @Autowired
     public AlbumService(AlbumRepository albumRepository){
         this.albumRepository = albumRepository;
@@ -78,29 +75,80 @@ public class AlbumService {
         throw new ResourceNotFoundException("There is no album with such id");
     }
 
+//    public boolean setAlbumById(
+//            @NotNull(message = "The provided album description cannot be null")
+//            AlbumDto albumDtoToChange,
+//            @NotNull(message = "The provided album id cannot be null")
+//            @Positive(message = "The provided album id must be positive")
+//            Long albumId) {
+//        Optional<Album> optionalAlbumToUpdate = albumRepository.findById(albumId);
+//
+//        if(optionalAlbumToUpdate.isPresent()){
+//            Album albumToUpdate = optionalAlbumToUpdate.get();
+//            albumToUpdate.setName(albumDtoToChange.getName());
+//            albumToUpdate.setReleaseDate(albumDtoToChange.getReleaseDate());
+////            albumToUpdate.setGenre(genreMapper.toEntity(albumDtoToChange.getGenreDto()));
+//            albumToUpdate.setImage(albumDtoToChange.getImage());
+////            albumToUpdate.setSongs(songMapper.toEntityCollection(albumDtoToChange.getSongDtos()));
+////            albumToUpdate.setArtists(artistMapper.toEntityCollection(albumDtoToChange.getArtistDtos()));
+//            albumToUpdate.setUri(albumDtoToChange.getUri());
+//
+//            albumRepository.save(albumToUpdate);
+//            return true;
+//        }
+//        throw new ResourceNotFoundException("There is no album with such id");
+//    }
+
     public boolean setAlbumById(
-            @NotNull(message = "The provided album description cannot be null")
-            AlbumDto albumDtoToChange,
-            @NotNull(message = "The provided album id cannot be null")
-            @Positive(message = "The provided album id must be positive")
-            Long albumId) {
+        @NotNull(message = "The provided album dto cannot be null")
+        Album albumFieldsToChange,
+        @NotNull(message = "The provided album id cannot be null")
+        @Positive(message = "The provided album id must be positive")
+        Long albumId) {
+
         Optional<Album> optionalAlbumToUpdate = albumRepository.findById(albumId);
-
-        if(optionalAlbumToUpdate.isPresent()){
-            Album albumToUpdate = optionalAlbumToUpdate.get();
-            albumToUpdate.setName(albumDtoToChange.getName());
-            albumToUpdate.setReleaseDate(albumDtoToChange.getReleaseDate());
-            albumToUpdate.setGenre(genreMapper.toEntity(albumDtoToChange.getGenreDto()));
-            albumToUpdate.setImage(albumDtoToChange.getImage());
-            albumToUpdate.setSongs(songMapper.toEntityCollection(albumDtoToChange.getSongDtos()));
-            albumToUpdate.setArtists(artistMapper.toEntityCollection(albumDtoToChange.getArtistDtos()));
-            albumToUpdate.setUri(albumDtoToChange.getUri());
-
+        if (optionalAlbumToUpdate.isPresent()) {
+            Album albumToUpdate = setAlbumNonNullFields(albumFieldsToChange, optionalAlbumToUpdate.get());
             albumRepository.save(albumToUpdate);
             return true;
         }
-        throw new ResourceNotFoundException("There is no album with such id");
+
+        throw new ResourceNotFoundException("There is not an album with such an id");
     }
+
+    private Album setAlbumNonNullFields(
+        @NotNull(message = "The provided album dto cannot be null")
+        Album albumFieldsToChange,
+        @NotNull(message = "The provided album cannot be null")
+        Album albumToUpdate) {
+
+        if (albumFieldsToChange.getName() != null) {
+            albumToUpdate.setName(albumFieldsToChange.getName());
+        }
+
+        if (albumFieldsToChange.getReleaseDate() != null) {
+            albumToUpdate.setReleaseDate(albumFieldsToChange.getReleaseDate());
+        }
+
+        if (albumFieldsToChange.getImage() != null) {
+            albumToUpdate.setImage(albumFieldsToChange.getImage());
+        }
+
+        if (albumFieldsToChange.getGenre() != null) {
+            albumToUpdate.setGenre(albumFieldsToChange.getGenre());
+        }
+
+        if (albumFieldsToChange.getArtists() != null) {
+            albumToUpdate.setArtists(albumFieldsToChange.getArtists());
+        }
+
+        if (albumFieldsToChange.getUri() != null) {
+            albumToUpdate.setUri(albumFieldsToChange.getUri());
+        }
+
+        return albumToUpdate;
+    }
+
 
     public Album deleteAlbum(
             @NotNull(message = "The provided album id cannot be null")

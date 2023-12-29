@@ -3,11 +3,14 @@ package bg.sofia.uni.fmi.melodify.controller;
 import bg.sofia.uni.fmi.melodify.dto.AlbumDto;
 import bg.sofia.uni.fmi.melodify.mapper.AlbumMapper;
 import bg.sofia.uni.fmi.melodify.model.Album;
+import bg.sofia.uni.fmi.melodify.service.AlbumCreateFacadeService;
 import bg.sofia.uni.fmi.melodify.service.AlbumService;
+import bg.sofia.uni.fmi.melodify.service.AlbumSetFacadeService;
 import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +23,16 @@ import java.util.Optional;
 @Validated
 public class AlbumController {
     private final AlbumService albumService;
+    private final AlbumCreateFacadeService albumCreateFacadeService;
+    private final AlbumSetFacadeService albumSetFacadeService;
     private final AlbumMapper albumMapper;
 
-    public AlbumController(AlbumService albumService, AlbumMapper albumMapper) {
+    @Autowired
+    public AlbumController(AlbumService albumService, AlbumCreateFacadeService albumCreateFacadeService,
+                           AlbumSetFacadeService albumSetFacadeService, AlbumMapper albumMapper) {
         this.albumService = albumService;
+        this.albumCreateFacadeService = albumCreateFacadeService;
+        this.albumSetFacadeService = albumSetFacadeService;
         this.albumMapper = albumMapper;
     }
 
@@ -48,8 +57,16 @@ public class AlbumController {
     @PostMapping
     public Long addAlbum(@NotNull(message = "The provided album description in the body cannot be null")
                          @RequestBody
-                         AlbumDto albumDto) {
-        Album potentialAlbumToCreate = albumService.createAlbum(albumMapper.toEntity(albumDto));
+                         AlbumDto albumDto,
+                         @RequestParam("genre_id")
+                         @NotNull(message = "The provided genre id cannot be null")
+                         @Positive(message = "The provided genre id must be positive")
+                         Long genreId,
+                         @RequestParam("artist_ids")
+                         @NotNull(message = "The provided artist ids cannot be null")
+                         List<Long> artistIdsList) {
+        Album potentialAlbumToCreate = albumCreateFacadeService
+            .createAlbumWithGenreAndArtists(albumMapper.toEntity(albumDto), genreId, artistIdsList);
 
         if (potentialAlbumToCreate == null) {
             throw new ApiBadRequest("There was a problem in creating the album");
@@ -73,7 +90,12 @@ public class AlbumController {
                                 Long id,
                                 @RequestBody
                                 @NotNull(message = "The provided album dto in the body cannot be null")
-                                AlbumDto albumToUpdate) {
-        return albumService.setAlbumById(albumToUpdate, id);
+                                AlbumDto albumToUpdate,
+                                @RequestParam(name = "genre_id", required = false)
+                                Long genreId,
+                                @RequestParam(name = "artist_ids", required = false)
+                                List<Long> artistIdsList) {
+        return albumSetFacadeService.setAlbumWithGenreAndArtistsIfProvided(id, albumMapper.toEntity(albumToUpdate),
+            genreId, artistIdsList);
     }
 }
