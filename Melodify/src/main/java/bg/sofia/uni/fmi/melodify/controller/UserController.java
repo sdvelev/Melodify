@@ -3,6 +3,8 @@ package bg.sofia.uni.fmi.melodify.controller;
 import bg.sofia.uni.fmi.melodify.dto.UserDto;
 import bg.sofia.uni.fmi.melodify.mapper.UserMapper;
 import bg.sofia.uni.fmi.melodify.model.User;
+import bg.sofia.uni.fmi.melodify.service.UserCreateWithPlaylistAndQueueFacadeService;
+import bg.sofia.uni.fmi.melodify.service.UserDeleteFacadeService;
 import bg.sofia.uni.fmi.melodify.service.UserService;
 import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
@@ -30,13 +32,18 @@ import java.util.Optional;
 @RequestMapping(path = "api/users")
 @Validated
 public class UserController {
-
     private final UserService userService;
+    private final UserDeleteFacadeService userDeleteFacadeService;
+    private final UserCreateWithPlaylistAndQueueFacadeService userCreateWithPlaylistAndQueueFacadeService;
     private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userService, UserMapper userMapper) {
+    public UserController(UserService userService, UserDeleteFacadeService userDeleteFacadeService,
+                          UserCreateWithPlaylistAndQueueFacadeService userCreateWithPlaylistAndQueueFacadeService,
+                          UserMapper userMapper) {
         this.userService = userService;
+        this.userDeleteFacadeService = userDeleteFacadeService;
+        this.userCreateWithPlaylistAndQueueFacadeService = userCreateWithPlaylistAndQueueFacadeService;
         this.userMapper = userMapper;
     }
 
@@ -48,7 +55,8 @@ public class UserController {
     @PostMapping
     public Long addUser(@NotNull(message = "The provided user dto as body of the query cannot be null")
                         @RequestBody UserDto userDto) {
-        User potentialUserToCreate = userService.createUser(userMapper.toEntity(userDto));
+        User potentialUserToCreate = userCreateWithPlaylistAndQueueFacadeService
+            .createUserWithPlaylistAndQueue(userMapper.toEntity(userDto));
 
         if (potentialUserToCreate != null) {
             return potentialUserToCreate.getId();
@@ -61,14 +69,14 @@ public class UserController {
     public boolean removeUser(
         @NotNull(message = "The provided email cannot be null")
         @NotBlank(message = "The provided email cannot be blank")
-        @RequestParam("email") String email,
+        @RequestParam("email")
+        String email,
         @NotNull(message = "The provided password cannot be null")
         @NotBlank(message = "The provided password cannot be blank")
-        @RequestParam("password") String password) {
+        @RequestParam("password")
+        String password) {
 
-        //TODO Autowire another service which will delete not only the user, but also their playlist
-        // For that purpose, PlaylistRepository will be used
-        return false;
+        return userDeleteFacadeService.deleteUserWithPlaylistsAssociatedToIt(email, password);
     }
 
     @GetMapping(params = {"email", "password"})
@@ -104,9 +112,13 @@ public class UserController {
         @NotBlank(message = "The provided email cannot be blank")
         @RequestParam("email") String email) {
 
-        User potentialUserToReturn = userService.getUserByEmail(email);
+        Optional<User> potentialUserToReturn = userService.getUserByEmail(email);
 
-        return ResponseEntity.ok(userMapper.toDto(potentialUserToReturn));
+        if (potentialUserToReturn.isPresent()) {
+            return ResponseEntity.ok(userMapper.toDto(potentialUserToReturn.get()));
+        }
+
+        throw new ResourceNotFoundException("User with such an email cannot be found");
     }
 
     @PutMapping(value = "/set", params = {"user_id"})

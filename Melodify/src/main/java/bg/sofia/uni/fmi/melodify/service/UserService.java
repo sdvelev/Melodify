@@ -3,7 +3,6 @@ package bg.sofia.uni.fmi.melodify.service;
 import bg.sofia.uni.fmi.melodify.dto.UserDto;
 import bg.sofia.uni.fmi.melodify.model.User;
 import bg.sofia.uni.fmi.melodify.repository.UserRepository;
-import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -34,10 +33,10 @@ public class UserService {
     public User createUser(@NotNull(message = "The provided user cannot be null")
                            User userToSave) {
 
-        Optional<User> usersWithThatEmailList = userRepository.findByEmail(userToSave.getEmail());
-        if (usersWithThatEmailList.isPresent()) {
-            throw new ApiBadRequest("There is already a user associated with that credentials");
-        }
+//        Optional<User> usersWithThatEmailList = userRepository.findByEmail(userToSave.getEmail());
+//        if (usersWithThatEmailList.isPresent()) {
+//            throw new ApiBadRequest("There is already a user associated with that credentials");
+//        }
 
         userToSave.setPassword(passwordEncoder.encode(userToSave.getPassword()));
         return userRepository.save(userToSave);
@@ -100,16 +99,10 @@ public class UserService {
         throw new ResourceNotFoundException("User with such an id cannot be found");
     }
 
-    public User getUserByEmail(@NotNull(message = "THe provided email cannot be null")
+    public Optional<User> getUserByEmail(@NotNull(message = "THe provided email cannot be null")
                                @NotBlank(message = "The provided email cannot be empty or blank")
                                String email) {
-        Optional<User> potentialUserToReturn = userRepository.findByEmail(email);
-
-        if (potentialUserToReturn.isPresent()) {
-            return potentialUserToReturn.get();
-        }
-
-        throw new ResourceNotFoundException("User with such an email cannot be found");
+        return userRepository.findByEmail(email);
     }
 
     public User getUserByEmailAndPassword(@NotNull(message = "The provided email cannot be null")
