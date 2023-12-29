@@ -1,11 +1,7 @@
 package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.dto.ArtistDto;
-import bg.sofia.uni.fmi.melodify.mapper.AlbumMapper;
-import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
-import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Artist;
-import bg.sofia.uni.fmi.melodify.model.Song;
 import bg.sofia.uni.fmi.melodify.repository.ArtistRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
@@ -68,7 +64,7 @@ public class ArtistService {
         return artistRepository.save(artistToSave);
     }
 
-    public boolean setArtistById(
+  /*  public boolean setArtistById(
             @NotNull(message = "The provided artist description cannot be null")
             ArtistDto artistDto,
             @NotNull(message = "The provided artist id cannot be null")
@@ -76,26 +72,60 @@ public class ArtistService {
             Long artistId){
         Optional<Artist> optionalArtistToUpdate = artistRepository.findById(artistId);
 
-        if(optionalArtistToUpdate.isPresent()){
+        if (optionalArtistToUpdate.isPresent()){
             Artist artistToUpdate = optionalArtistToUpdate.get();
             artistToUpdate.setName(artistDto.getName());
             artistToUpdate.setImage(artistDto.getImage());
             artistToUpdate.setUri(artistDto.getUri());
-            if (artistDto.getAlbumDtos() != null && !artistDto.getAlbumDtos().isEmpty()) {
-                artistToUpdate.getAlbums().clear(); // Remove existing albums
-                AlbumMapper albumMapper = AlbumMapper.INSTANCE;
-                List<Album> albums =  albumMapper.toEntityCollection(artistDto.getAlbumDtos());
-                artistToUpdate.getAlbums().addAll(albums);
-            }
-            if (artistDto.getSongDtos() != null && !artistDto.getSongDtos().isEmpty()) {
-                artistToUpdate.getSongs().clear();
-                SongMapper songMapper = SongMapper.INSTANCE;
-                List<Song> songs = songMapper.toEntityCollection(artistDto.getSongDtos());
-                artistToUpdate.getSongs().addAll(songs);
-            }
+//            if (artistDto.getAlbumDtos() != null && !artistDto.getAlbumDtos().isEmpty()) {
+//                artistToUpdate.getAlbums().clear(); // Remove existing albums
+//                AlbumMapper albumMapper = AlbumMapper.INSTANCE;
+//                List<Album> albums =  albumMapper.toEntityCollection(artistDto.getAlbumDtos());
+//                artistToUpdate.getAlbums().addAll(albums);
+//            }
+//            if (artistDto.getSongDtos() != null && !artistDto.getSongDtos().isEmpty()) {
+//                artistToUpdate.getSongs().clear();
+//                SongMapper songMapper = SongMapper.INSTANCE;
+//                List<Song> songs = songMapper.toEntityCollection(artistDto.getSongDtos());
+//                artistToUpdate.getSongs().addAll(songs);
+//            }
         }
 
         throw new ResourceNotFoundException("There is no artist with such id");
+    }*/
+
+    public boolean setArtistById(
+        @NotNull(message = "The provided artist dto cannot be null")
+        ArtistDto artistFieldsToChange,
+        @NotNull(message = "The provided artist id cannot be null")
+        @Positive(message = "The provided artist id must be positive")
+        Long artistId) {
+
+        Optional<Artist> optionalArtistToUpdate = artistRepository.findById(artistId);
+        if (optionalArtistToUpdate.isPresent()) {
+            Artist artistToUpdate = setArtistNonNullFields(artistFieldsToChange, optionalArtistToUpdate.get());
+            artistRepository.save(artistToUpdate);
+            return true;
+        }
+
+        throw new ResourceNotFoundException("There is not an artist with such an id");
+    }
+
+    private Artist setArtistNonNullFields(
+        @NotNull(message = "The provided artist dto cannot be null")
+        ArtistDto artistFieldsToChange,
+        @NotNull(message = "The provided artist cannot be null")
+        Artist artistToUpdate) {
+
+        if (artistFieldsToChange.getName() != null) {
+            artistToUpdate.setName(artistFieldsToChange.getName());
+        }
+
+        if (artistFieldsToChange.getImage() != null) {
+            artistToUpdate.setImage(artistFieldsToChange.getImage());
+        }
+
+        return artistToUpdate;
     }
 
     public Artist deleteArtist(
@@ -104,7 +134,7 @@ public class ArtistService {
             Long id){
         Optional<Artist> optionalArtistToDelete = artistRepository.findById(id);
 
-        if(optionalArtistToDelete.isPresent()){
+        if (optionalArtistToDelete.isPresent()){
             Artist artistToDelete = optionalArtistToDelete.get();
             artistRepository.delete(artistToDelete);
             return artistToDelete;
