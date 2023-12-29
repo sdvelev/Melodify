@@ -1,8 +1,5 @@
 package bg.sofia.uni.fmi.melodify.service;
 
-import bg.sofia.uni.fmi.melodify.dto.QueueDto;
-import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
-import bg.sofia.uni.fmi.melodify.mapper.UserMapper;
 import bg.sofia.uni.fmi.melodify.model.Queue;
 import bg.sofia.uni.fmi.melodify.repository.QueueRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
@@ -33,7 +30,7 @@ public class QueueService {
                                         Long id) {
         Optional<Queue> potentialQueueToReturn = this.queueRepository.findById(id);
 
-        if(potentialQueueToReturn.isPresent()){
+        if (potentialQueueToReturn.isPresent()){
             return potentialQueueToReturn;
         }
 
@@ -45,28 +42,28 @@ public class QueueService {
         return this.queueRepository.save(queueToCreate);
     }
 
-    public boolean setQueueById(
-            @NotNull(message = "The provided album description cannot be null")
-            QueueDto queueDto,
-            @NotNull(message = "The provided album id cannot be null")
-            @Positive(message = "The provided album id must be positive")
-            Long id) {
-
-        Optional<Queue> optionalAlbumToUpdate = queueRepository.findById(id);
-
-        if(optionalAlbumToUpdate.isPresent()){
-            Queue queueToUpdate = optionalAlbumToUpdate.get();
-            UserMapper userMapper = UserMapper.INSTANCE;
-            queueToUpdate.setOwner(userMapper.toEntity(queueDto.getOwnerDto()));
-            SongMapper songMapper = SongMapper.INSTANCE;
-            queueToUpdate.setSongs(songMapper.toEntityCollection(queueDto.getSongDtos()));
-            queueToUpdate.setCurrentSongIndex(queueDto.getCurrentSongIndex());
-
-            queueRepository.save(queueToUpdate);
-            return true;
-        }
-        throw new ResourceNotFoundException("There is no album with such id");
-    }
+//    public boolean setQueueById(
+//            @NotNull(message = "The provided album description cannot be null")
+//            QueueDto queueDto,
+//            @NotNull(message = "The provided album id cannot be null")
+//            @Positive(message = "The provided album id must be positive")
+//            Long id) {
+//
+//        Optional<Queue> optionalAlbumToUpdate = queueRepository.findById(id);
+//
+//        if (optionalAlbumToUpdate.isPresent()){
+//            Queue queueToUpdate = optionalAlbumToUpdate.get();
+//            UserMapper userMapper = UserMapper.INSTANCE;
+////            queueToUpdate.setOwner(userMapper.toEntity(queueDto.getOwnerDto()));
+////            SongMapper songMapper = SongMapper.INSTANCE;
+////            queueToUpdate.setSongs(songMapper.toEntityCollection(queueDto.getSongDtos()));
+//            queueToUpdate.setCurrentSongIndex(queueDto.getCurrentSongIndex());
+//
+//            queueRepository.save(queueToUpdate);
+//            return true;
+//        }
+//        throw new ResourceNotFoundException("There is no album with such id");
+//    }
 
     public Queue deleteQueue(
             @NotNull(message = "The provided queue id cannot be null")
@@ -82,7 +79,5 @@ public class QueueService {
         }
 
         throw new ResourceNotFoundException("There is not a queue with such an id");
-
     }
-
 }
