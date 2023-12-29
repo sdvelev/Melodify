@@ -1,10 +1,5 @@
 package bg.sofia.uni.fmi.melodify.service;
 
-import bg.sofia.uni.fmi.melodify.dto.SongDto;
-import bg.sofia.uni.fmi.melodify.mapper.AlbumMapper;
-import bg.sofia.uni.fmi.melodify.mapper.ArtistMapper;
-import bg.sofia.uni.fmi.melodify.mapper.GenreMapper;
-import bg.sofia.uni.fmi.melodify.model.Artist;
 import bg.sofia.uni.fmi.melodify.model.Song;
 import bg.sofia.uni.fmi.melodify.repository.SongRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
@@ -23,12 +18,6 @@ import java.util.Optional;
 @Validated
 public class SongService {
     private final SongRepository songRepository;
-    GenreMapper genreMapper = GenreMapper.INSTANCE;
-    AlbumMapper albumMapper = AlbumMapper.INSTANCE;
-    ArtistMapper artistMapper = ArtistMapper.INSTANCE;
-
-
-
 
     @Autowired
     public SongService(SongRepository songRepository){
@@ -85,30 +74,80 @@ public class SongService {
         return songRepository.save(songToSave);
     }
 
-    public boolean setSongById(
-            @NotNull(message = "The provided song description cannot be null")
-            SongDto songDto,
-            @NotNull(message = "The provided song id cannot be null")
-            @Positive(message = "The provided song id must be positive")
-            Long songId){
-        Optional<Song> optionalSongToUpdate = songRepository.findById(songId);
+//    public boolean setSongById(
+//            @NotNull(message = "The provided song description cannot be null")
+//            SongDto songDto,
+//            @NotNull(message = "The provided song id cannot be null")
+//            @Positive(message = "The provided song id must be positive")
+//            Long songId){
+//        Optional<Song> optionalSongToUpdate = songRepository.findById(songId);
+//
+//        if(optionalSongToUpdate.isPresent()){
+//            Song songToUpdate = optionalSongToUpdate.get();
+//            songToUpdate.setName(songDto.getName());
+//            songToUpdate.setDuration(songDto.getDuration());
+//            songToUpdate.setNumberOfPlays(songDto.getNumberOfPlays());
+////            songToUpdate.setGenre(genreMapper.toEntity(songDto.getGenreDto()));
+////            songToUpdate.setAlbum(albumMapper.toEntity(songDto.getAlbumDto()));
+////            if (songDto.getArtistDtos() != null && !songDto.getArtistDtos().isEmpty()) {
+////            songToUpdate.getArtists().clear();
+////                List<Artist> artists =  artistMapper.toEntityCollection(songDto.getArtistDtos());
+////                songToUpdate.getArtists().addAll(artists);
+////            }
+//            songToUpdate.setUri(songDto.getUri());
+//        }
+//
+//        throw new ResourceNotFoundException("There is no song with such id");
+//    }
 
-        if(optionalSongToUpdate.isPresent()){
-            Song songToUpdate = optionalSongToUpdate.get();
-            songToUpdate.setName(songDto.getName());
-            songToUpdate.setDuration(songDto.getDuration());
-            songToUpdate.setNumberOfPlays(songDto.getNumberOfPlays());
-            songToUpdate.setGenre(genreMapper.toEntity(songDto.getGenreDto()));
-            songToUpdate.setAlbum(albumMapper.toEntity(songDto.getAlbumDto()));
-            if (songDto.getArtistDtos() != null && !songDto.getArtistDtos().isEmpty()) {
-            songToUpdate.getArtists().clear();
-                List<Artist> artists =  artistMapper.toEntityCollection(songDto.getArtistDtos());
-                songToUpdate.getArtists().addAll(artists);
-            }
-            songToUpdate.setUri(songDto.getUri());
+    public boolean setSongById(
+        @NotNull(message = "The provided song dto cannot be null")
+        Song songFieldsToChange,
+        @NotNull(message = "The provided song id cannot be null")
+        @Positive(message = "The provided song id must be positive")
+        Long songId) {
+
+        Optional<Song> optionalSongToUpdate = songRepository.findById(songId);
+        if (optionalSongToUpdate.isPresent()) {
+            Song songToUpdate = setSongNonNullFields(songFieldsToChange, optionalSongToUpdate.get());
+            songRepository.save(songToUpdate);
+            return true;
         }
 
-        throw new ResourceNotFoundException("There is no song with such id");
+        throw new ResourceNotFoundException("There is not a song with such an id");
+    }
+
+    private Song setSongNonNullFields(
+        @NotNull(message = "The provided song dto cannot be null")
+        Song songFieldsToChange,
+        @NotNull(message = "The provided song cannot be null")
+        Song songToUpdate) {
+
+        if (songFieldsToChange.getName() != null) {
+            songToUpdate.setName(songFieldsToChange.getName());
+        }
+
+        if (songFieldsToChange.getDuration() != null) {
+            songToUpdate.setDuration(songFieldsToChange.getDuration());
+        }
+
+        if (songFieldsToChange.getGenre() != null) {
+            songToUpdate.setGenre(songFieldsToChange.getGenre());
+        }
+
+        if (songFieldsToChange.getArtists() != null) {
+            songToUpdate.setArtists(songFieldsToChange.getArtists());
+        }
+
+        if (songFieldsToChange.getAlbum() != null) {
+            songToUpdate.setAlbum(songFieldsToChange.getAlbum());
+        }
+
+        if (songFieldsToChange.getUri() != null) {
+            songToUpdate.setUri(songFieldsToChange.getUri());
+        }
+
+        return songToUpdate;
     }
 
     public Song deleteSong(
@@ -117,7 +156,7 @@ public class SongService {
             Long id){
         Optional<Song> optionalSongToDelete = songRepository.findById(id);
 
-        if(optionalSongToDelete.isPresent()){
+        if (optionalSongToDelete.isPresent()){
             Song songToDelete = optionalSongToDelete.get();
             songRepository.delete(songToDelete);
             return songToDelete;
@@ -125,5 +164,4 @@ public class SongService {
 
         throw new ResourceNotFoundException("There is no song with such id");
     }
-
 }
