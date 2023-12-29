@@ -25,20 +25,20 @@ public class Song {
     private String name;
 
     @Column(name = "duration")
-    private int duration;
+    private Integer duration;
 
     @Column(name = "number_of_plays")
     private long numberOfPlays;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "album_id")
     private Album album;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "song_artists",
         joinColumns = @JoinColumn(name = "song_id"),

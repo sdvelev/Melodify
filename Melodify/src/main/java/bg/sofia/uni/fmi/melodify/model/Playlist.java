@@ -34,7 +34,7 @@ public class Playlist {
     @Column(name = "image")
     private String image;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "playlist_songs",
         joinColumns = @JoinColumn(name = "playlist_id"),

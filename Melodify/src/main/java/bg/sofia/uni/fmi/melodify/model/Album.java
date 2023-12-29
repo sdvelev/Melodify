@@ -28,7 +28,7 @@ public class Album {
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
@@ -38,7 +38,7 @@ public class Album {
     @OneToMany(mappedBy = "album")
     private List<Song> songs;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "album_artists",
         joinColumns = @JoinColumn(name = "album_id"),

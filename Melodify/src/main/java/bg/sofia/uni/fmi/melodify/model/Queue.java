@@ -26,7 +26,7 @@ public class Queue {
     @Column(name = "current_song_index")
     private Long currentSongIndex;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "queue_song",
             joinColumns = @JoinColumn(name = "queue_id"),
