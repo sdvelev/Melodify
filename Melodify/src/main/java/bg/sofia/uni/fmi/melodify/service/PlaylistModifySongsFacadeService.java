@@ -2,6 +2,8 @@ package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.model.Playlist;
 import bg.sofia.uni.fmi.melodify.model.Song;
+import bg.sofia.uni.fmi.melodify.model.User;
+import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -28,7 +30,9 @@ public class PlaylistModifySongsFacadeService {
                                      Long playlistId,
                                      @NotNull(message = "The provided song id cannot be null")
                                      @Positive(message = "The provided song id must be positive")
-                                     Long songId) {
+                                     Long songId,
+                                     User userToAddSong,
+                                     boolean isAdmin) {
 
         Optional<Playlist> potentialPlaylist = playlistService.getPlaylistById(playlistId);
 
@@ -40,6 +44,10 @@ public class PlaylistModifySongsFacadeService {
 
         if (potentialSongToAdd.isEmpty()) {
             throw new ResourceNotFoundException("There is not a song with such an id");
+        }
+
+        if (!potentialPlaylist.get().getOwner().getId().equals(userToAddSong.getId()) && !isAdmin) {
+            throw new MethodNotAllowed("There is a problem in authorization");
         }
 
         potentialPlaylist.get().getSongs().add(potentialSongToAdd.get());
@@ -54,7 +62,9 @@ public class PlaylistModifySongsFacadeService {
                                      Long playlistId,
                                      @NotNull(message = "The provided song id cannot be null")
                                      @Positive(message = "The provided song id must be positive")
-                                     Long songId) {
+                                     Long songId,
+                                     User userToRemoveSong,
+                                     boolean isAdmin) {
 
         Optional<Playlist> potentialPlaylist = playlistService.getPlaylistById(playlistId);
 
@@ -70,6 +80,10 @@ public class PlaylistModifySongsFacadeService {
 
         if (!potentialPlaylist.get().getSongs().contains(potentialSongToAdd.get())) {
             throw new ResourceNotFoundException("There is not such a song in the provided playlist");
+        }
+
+        if (!potentialPlaylist.get().getOwner().getId().equals(userToRemoveSong.getId()) && !isAdmin) {
+            throw new MethodNotAllowed("There is a problem in authorization");
         }
 
         potentialPlaylist.get().getSongs().remove(potentialSongToAdd.get());

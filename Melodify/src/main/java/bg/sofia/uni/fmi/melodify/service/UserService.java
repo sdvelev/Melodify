@@ -38,7 +38,6 @@ public class UserService {
 //            throw new ApiBadRequest("There is already a user associated with that credentials");
 //        }
 
-        userToSave.setPassword(passwordEncoder.encode(userToSave.getPassword()));
         return userRepository.save(userToSave);
     }
 
@@ -105,19 +104,16 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public User getUserByEmailAndPassword(@NotNull(message = "The provided email cannot be null")
-                                             @NotBlank(message = "The provided email cannot be empty or blank")
-                                             String email,
-                                             @NotNull(message = "The provided password cannot be null")
-                                             @NotBlank(message = "The provided password cannot be empty or blank")
-                                             String password) {
+    public User getUserByEmailAndPassword(String email, String password) {
 
-        Optional<User> potentialUserToReturn = userRepository.findByEmail(email);
-        if (potentialUserToReturn.isPresent() && passwordEncoder.matches(password, potentialUserToReturn.get().getPassword())) {
-            return potentialUserToReturn.get();
+        if (email != null && password != null) {
+            Optional<User> potentialUserToReturn = userRepository.findByEmail(email);
+            if (potentialUserToReturn.isPresent() && passwordEncoder.matches(password, potentialUserToReturn.get().getPassword())) {
+                return potentialUserToReturn.get();
+            }
         }
 
-        throw new ResourceNotFoundException("User with such a username and password cannot be found");
+        throw new ResourceNotFoundException("User with such an email and password cannot be found");
     }
 
     public boolean setPasswordByProvidingEmailAndOldPassword(@NotNull(message = "The provided new password cannot be null")
