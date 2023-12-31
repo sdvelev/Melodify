@@ -7,6 +7,7 @@ import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,13 +25,15 @@ public class UserCreateWithPlaylistAndQueueFacadeService {
     private final UserService userService;
     private final PlaylistService playlistService;
     private final QueueService queueService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserCreateWithPlaylistAndQueueFacadeService(UserService userService, PlaylistService playlistService,
-                                                       QueueService queueService) {
+                                                       QueueService queueService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.playlistService = playlistService;
         this.queueService = queueService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -60,6 +63,8 @@ public class UserCreateWithPlaylistAndQueueFacadeService {
 
         userToSave.setPlaylists(playListListToAdd);
         userToSave.setQueue(queueToCreate);
+
+        userToSave.setPassword(passwordEncoder.encode(userToSave.getPassword()));
 
         return userService.createUser(userToSave);
     }

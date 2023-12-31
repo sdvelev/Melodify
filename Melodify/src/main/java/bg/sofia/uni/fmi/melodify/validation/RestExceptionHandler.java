@@ -17,4 +17,9 @@ public class RestExceptionHandler {
     public ResponseEntity<?> handleBadRequest(ApiBadRequest exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
+
+    @ExceptionHandler({ MethodNotAllowed.class })
+    public ResponseEntity<?> handleMethodNotAllowed(MethodNotAllowed exception) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(exception.getMessage());
+    }
 }

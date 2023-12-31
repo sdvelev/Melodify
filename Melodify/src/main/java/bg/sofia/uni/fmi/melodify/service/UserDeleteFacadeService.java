@@ -37,7 +37,7 @@ public class UserDeleteFacadeService {
         List<Playlist> associatedUserPlaylistsList = userToDelete.getPlaylists();
 
         for (Playlist currentPlaylist : associatedUserPlaylistsList) {
-            playlistService.deletePlaylist(currentPlaylist.getId());
+            playlistService.deletePlaylist(currentPlaylist.getId(), userToDelete, false);
         }
 
         queueService.deleteQueue(userToDelete.getQueue().getId());

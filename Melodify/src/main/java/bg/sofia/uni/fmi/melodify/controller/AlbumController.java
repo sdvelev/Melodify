@@ -6,8 +6,11 @@ import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.service.AlbumCreateFacadeService;
 import bg.sofia.uni.fmi.melodify.service.AlbumService;
 import bg.sofia.uni.fmi.melodify.service.AlbumSetFacadeService;
+import bg.sofia.uni.fmi.melodify.service.TokenManagerService;
 import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
+import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static bg.sofia.uni.fmi.melodify.security.RequestManager.isAdminByRequest;
+
 @RestController
 @RequestMapping(path = "api/albums")
 @Validated
@@ -25,14 +30,17 @@ public class AlbumController {
     private final AlbumService albumService;
     private final AlbumCreateFacadeService albumCreateFacadeService;
     private final AlbumSetFacadeService albumSetFacadeService;
+    private final TokenManagerService tokenManagerService;
     private final AlbumMapper albumMapper;
 
     @Autowired
     public AlbumController(AlbumService albumService, AlbumCreateFacadeService albumCreateFacadeService,
-                           AlbumSetFacadeService albumSetFacadeService, AlbumMapper albumMapper) {
+                           AlbumSetFacadeService albumSetFacadeService, TokenManagerService tokenManagerService,
+                           AlbumMapper albumMapper) {
         this.albumService = albumService;
         this.albumCreateFacadeService = albumCreateFacadeService;
         this.albumSetFacadeService = albumSetFacadeService;
+        this.tokenManagerService = tokenManagerService;
         this.albumMapper = albumMapper;
     }
 
@@ -64,7 +72,12 @@ public class AlbumController {
                          Long genreId,
                          @RequestParam("artist_ids")
                          @NotNull(message = "The provided artist ids cannot be null")
-                         List<Long> artistIdsList) {
+                         List<Long> artistIdsList,
+                         HttpServletRequest request) {
+        if (!isAdminByRequest(request, tokenManagerService)) {
+            throw new MethodNotAllowed("There was a problem in authorization");
+        }
+
         Album potentialAlbumToCreate = albumCreateFacadeService
             .createAlbumWithGenreAndArtists(albumMapper.toEntity(albumDto), genreId, artistIdsList);
 
@@ -79,7 +92,12 @@ public class AlbumController {
     public AlbumDto deleteAlbumById(@RequestParam("album_id")
                                     @NotNull(message = "The provided album id cannot be null")
                                     @Positive(message = "The provided album id must be positive")
-                                    Long albumId) {
+                                    Long albumId,
+                                    HttpServletRequest request) {
+        if (!isAdminByRequest(request, tokenManagerService)) {
+            throw new MethodNotAllowed("There was a problem in authorization");
+        }
+
         return albumMapper.toDto(albumService.deleteAlbum(albumId));
     }
 
@@ -94,7 +112,12 @@ public class AlbumController {
                                 @RequestParam(name = "genre_id", required = false)
                                 Long genreId,
                                 @RequestParam(name = "artist_ids", required = false)
-                                List<Long> artistIdsList) {
+                                List<Long> artistIdsList,
+                                HttpServletRequest request) {
+        if (!isAdminByRequest(request, tokenManagerService)) {
+            throw new MethodNotAllowed("There was a problem in authorization");
+        }
+
         return albumSetFacadeService.setAlbumWithGenreAndArtistsIfProvided(id, albumMapper.toEntity(albumToUpdate),
             genreId, artistIdsList);
     }

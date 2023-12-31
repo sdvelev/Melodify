@@ -5,7 +5,9 @@ import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
 import bg.sofia.uni.fmi.melodify.mapper.UserMapper;
 import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Playlist;
+import bg.sofia.uni.fmi.melodify.model.User;
 import bg.sofia.uni.fmi.melodify.repository.PlaylistRepository;
+import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -107,10 +109,16 @@ public class PlaylistService {
         Playlist playlistFieldsToChange,
         @NotNull(message = "The provided playlist id cannot be null")
         @Positive(message = "The provided playlist id must be positive")
-        Long playlistId) {
+        Long playlistId,
+        User userToSet,
+        boolean isAdmin) {
 
         Optional<Playlist> optionalPlaylistToUpdate = playlistRepository.findById(playlistId);
         if (optionalPlaylistToUpdate.isPresent()) {
+            if (!optionalPlaylistToUpdate.get().getOwner().getId().equals(userToSet.getId()) || !isAdmin) {
+                throw new MethodNotAllowed("There is a problem in authorization");
+            }
+
             Playlist playlistToUpdate = setPlaylistNonNullFields(playlistFieldsToChange, optionalPlaylistToUpdate.get());
             playlistRepository.save(playlistToUpdate);
             return true;
@@ -143,12 +151,19 @@ public class PlaylistService {
     public Playlist deletePlaylist(
             @NotNull(message = "The provided playlist id cannot be null")
             @Positive(message = "The provided playlist id must be positive")
-            Long id){
+            Long id,
+            User userToDelete,
+            boolean isAdmin){
 
         Optional<Playlist> optionalPlaylistToDelete = this.playlistRepository.findById(id);
 
         if (optionalPlaylistToDelete.isPresent()){
             Playlist playlistToDelete = optionalPlaylistToDelete.get();
+
+            if (!playlistToDelete.getOwner().getId().equals(userToDelete.getId()) && !isAdmin) {
+                throw new MethodNotAllowed("There is a problem in authorization");
+            }
+
             this.playlistRepository.delete(playlistToDelete);
             return playlistToDelete;
         }
