@@ -1,0 +1,174 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100vh;
+}
+
+body{
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--primary-color);
+    color: var(--on--primary);
+}
+
+#main {
+    background-color: var(--primary-color);
+    color: var(--on--primary);
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 10px;
+    padding: 10px;
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+#main>div {
+    color: var(--on-surface)
+}
+
+#player {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 10px;
+    padding: 10px;
+}
+
+#sidebar {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 10px;
+    overflow-y: hidden;
+    background-color: var(--primary-color);
+    color: var(--on--primary);
+    box-shadow: var(--box-shadow);
+    padding: 0;
+}
+
+#logo {
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+    font-family: "Pacifico", serif;
+    /*transform: rotate(-5deg);*/
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#quick_actions{
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-content: center;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+}
+
+#quick_actions button {
+    font-size: large;
+    text-align: left;
+    padding: 5px;
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+    border: none;
+}
+
+#library {
+    display: grid;
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+    padding: 10px;
+    border-radius: 10px;
+    gap: 10px;
+    overflow-y: hidden;
+}
+
+#library_actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+}
+
+
+#content {
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+    border-radius: 10px;
+}
+
+#queue{
+    display: grid;
+    gap: 10px;
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+    border-radius: 10px;
+    padding: 10px;
+    overflow-y: hidden;
+}
+
+#track_info {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-content: center;
+}
+
+#player_controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+}
+
+.items {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.item{
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    align-content: center;
+    gap: 10px;
+}
+
+.item img{
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+}
+
+.item .info .author {
+    font-size: smaller;
+}
+
+
+#account {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-content: center;
+    align-items: center;
+    gap: 20px;
+
+}
+
+#account img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}
