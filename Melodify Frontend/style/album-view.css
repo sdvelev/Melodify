@@ -1,0 +1,106 @@
+#album {
+    display: grid;
+    grid-template-rows: minmax(150px, 10%) auto;
+    padding: 10px;
+    gap: 10px;
+}
+
+.media-banner {
+    display: flex;
+    flex-direction: row;
+    /*flex-wrap: wrap;*/
+    justify-content: left;
+    align-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.media-banner > img {
+    border-radius: 10px;
+    max-height: 150px;
+}
+
+.media-metadata {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.additional_info {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    gap: 10px;
+}
+
+.artist-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    gap: 5px;
+}
+
+.song_list {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    overflow-y: auto;
+}
+
+.artist-info img {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+}
+
+.song_list table {
+    width: 100%;
+    position: relative;
+    border-collapse: collapse;
+}
+
+.song_list thead tr {
+    border-collapse: collapse;
+    border-bottom: 5px solid var(--strong-border);
+}
+
+.song_list table thead{
+    background-color: var(--surface-color);
+    height: 40px;
+}
+
+.song_list th {
+    position: sticky;
+    top: 0;
+    background-color: var(--surface-color);
+}
+
+.song_list table tbody{
+    max-height: calc(500px);
+}
+
+.song_list table td, .song_list th {
+    text-align: left;
+}
+
+.song_list table thead td{
+    border-bottom: 1px solid var(--strong-border);
+}
+
+.song_list thead tr {
+    font-size: large;
+}
+
+.song_list tr td {
+    padding: 5px 0;
+}
+
+.song_list .table-song {
+    font-size: large;
+}
+.song_list .table-artist{
+    font-size: small;
+}

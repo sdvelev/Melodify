@@ -1,0 +1,71 @@
+dialog {
+    border: none;
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 400px;
+    margin: auto;
+    outline: none;
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+    gap: 10px;
+}
+
+input[type="search"], input[type="email"], input[type="password"], input[type="text"], input[type="number"] {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px var(--box-shadow);
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+}
+
+input:focus {
+    outline: 1px solid var(--accent-color);
+}
+
+input[type="number"], input[type="search"] {
+    max-width: 200px;
+}
+
+input[type="checkbox"], input[type="range"] {
+    background-color: var(--accent-color);
+    color: var(--on-accent);
+}
+
+textarea {
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+    border: var(--box-shadow);
+}
+
+select {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px var(--box-shadow);
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+}
+
+select option {
+    padding: 8px;
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+}
+
+button, input[type="button"]{
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+    border: none;
+}
+
+button:hover, input[type="button"]{
+    color: var(--accent-color);
+}

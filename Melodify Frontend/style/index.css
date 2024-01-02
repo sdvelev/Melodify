@@ -21,7 +21,7 @@ body{
     background-color: var(--primary-color);
     color: var(--on--primary);
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 1fr minmax(40%, 3fr) 1fr;
     gap: 10px;
     padding: 10px;
     height: 100%;
@@ -53,11 +53,12 @@ body{
 
 #logo {
     background-color: var(--surface-color);
-    color: var(--on-surface);
+    /*color: var(--on-surface);*/
     font-family: "Pacifico", serif;
     /*transform: rotate(-5deg);*/
     padding: 10px;
     border-radius: 10px;
+    color: var(--accent-color);
 }
 
 #quick_actions{
@@ -75,13 +76,12 @@ body{
     font-size: large;
     text-align: left;
     padding: 5px;
-    background-color: var(--surface-color);
-    color: var(--on-surface);
     border: none;
 }
 
 #library {
     display: grid;
+    grid-template-rows: auto 1fr;
     background-color: var(--surface-color);
     color: var(--on-surface);
     padding: 10px;
@@ -100,13 +100,25 @@ body{
 
 
 #content {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-content: stretch;
+    align-items: stretch;
+    overflow: hidden;
     background-color: var(--surface-color);
     color: var(--on-surface);
     border-radius: 10px;
+    padding: 10px;
+}
+
+#content > div {
+    overflow: hidden;
 }
 
 #queue{
     display: grid;
+    grid-template-rows: auto 1fr;
     gap: 10px;
     background-color: var(--surface-color);
     color: var(--on-surface);
@@ -172,3 +184,4 @@ body{
     width: 40px;
     border-radius: 50%;
 }
+

@@ -5,10 +5,15 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/album-view.css">
+    <link rel="stylesheet" href="../style/search_view.css">
+    <link rel="stylesheet" href="../style/controls.css">
+
+    <script src="../js/theme.js"></script>
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 </head>
-<body class="theme-dark">
+<body>
 <div id="main">
     <div id="sidebar">
         <div id="logo">
@@ -98,8 +103,218 @@
             </div>
         </div>
     </div>
-    <div id="content">
-<!--        this div will be filled dynamically-->
+    <div id="content" >
+        <div id="search">
+            <div id="search_criteria">
+                <h1>Search</h1>
+                <div>
+                    <input type="search" placeholder="Search here">
+                    <button type="submit"><span class="fa fa-search"></span></button>
+                    <div id="search_filters">
+                        <button>Artists</button>
+                        <button>Albums</button>
+                        <button>Songs</button>
+                    </div>
+                </div>
+            </div>
+            <div id="search_results">
+                <div id="artist_search_results">
+                    <h2>Artists</h2>
+                    <div class="items">
+                        <div class="item artist">
+                            <img src="./../prince%20michael.jpg">
+                            <p>Elton John</p>
+                        </div>
+                        <div class="item artist">
+                            <img src="./../prince%20michael.jpg">
+                            <p>Elton John</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="album_search_results">
+                    <h2>Albums</h2>
+                    <div class="items">
+                        <div class="item">
+                            <img src="./../album.jpg">
+                            <div class="info">
+                                <p class="name">Album</p>
+                                <p class="author">Artists</p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="./../album.jpg">
+                            <div class="info">
+                                <p class="name">Album</p>
+                                <p class="author">Artists</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="song_search_results">
+                    <h2>Songs</h2>
+                    <div class="items">
+                        <div class="item">
+                            <img src="./../album.jpg">
+                            <div class="info">
+                                <p class="name">Song name</p>
+                                <p class="author">Album name, Artist name</p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="./../album.jpg">
+                            <div class="info">
+                                <p class="name">Song name</p>
+                                <p class="author">Album name, Artist name</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="home" style="display: none">
+            <h2>Welcome</h2>
+        </div>
+        <div id="album" style="display: none">
+            <div class="media-banner">
+                <img src="./../album.jpg">
+                <div class="media-metadata">
+                    <h1>AlbumName</h1>
+                    <div class="additional_info">
+                        <div class="artist-info">
+                            <img src="../prince%20michael.jpg">
+                            <p>Artist Name</p>
+                        </div>
+                        <p></p>
+                        <p>01.01.1991</p>
+                    </div>
+                </div>
+            </div>
+            <div class="song_list">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Duration</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    <tr>
+                        <td><button>1</button></td>
+                        <td>
+                            <p class="table-song" >Song one</p>
+                            <p class="table-artist">Artist name</p>
+                        </td>
+                        <td>3:14</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <div id="queue">
         <h2><span class="fa fa-list"></span>Queue</h2>
@@ -217,13 +432,13 @@
         </div>
     </div>
     <div id="player_controls">
-        <audio controls></audio>
+        <audio controls src="./../windows-xp-startup.mp3"></audio>
     </div>
     <div id="account">
         <img src="./../prince%20michael.jpg">
-        <span class="fa fa-bookmark"></span>
-        <span class="fa fa-list"></span>
-        <span class="fa fa-circle-half-stroke"></span>
+        <button><span class="fa fa-bookmark"></span></button>
+        <button><span class="fa fa-list"></span></button>
+        <button onclick="toggleTheme()"><span class="fa fa-circle-half-stroke"></span></button>
     </div>
 </div>
 </body>
