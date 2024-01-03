@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="../style/controls.css">
 
     <script src="../js/theme.js"></script>
+    <script src="../js/toggleSidebar.js"></script>
+    <script src="../js/toggleQueue.js"></script>
+    <script src="../js/player.js" defer></script>
+
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 </head>
@@ -432,13 +436,27 @@
         </div>
     </div>
     <div id="player_controls">
-        <audio controls src="./../windows-xp-startup.mp3"></audio>
+        <div class="controls">
+            <button><span class="fa fa-backward"></span></button>
+            <button><span class="fa fa-circle-play"></span></button>
+            <button><span class="fa fa-forward"></span></button>
+        </div>
+        <div class="track_slider">
+            <p id="current_time">0:00</p>
+            <input type="range"/>
+            <p id="duration">3:18</p>
+        </div>
+        <audio src="./../windows-xp-startup.mp3"></audio>
     </div>
     <div id="account">
-        <img src="./../prince%20michael.jpg">
-        <button><span class="fa fa-bookmark"></span></button>
-        <button><span class="fa fa-list"></span></button>
+        <button onclick="toggleSidebar()"><span class="fa fa-bookmark active"></span></button>
+        <button onclick="toggleQueue()"><span class="fa fa-list active"></span></button>
         <button onclick="toggleTheme()"><span class="fa fa-circle-half-stroke"></span></button>
+        <div>
+            <span class="fa fa-volume-low"></span>
+            <input type="range" min="0" max="1" step="0.1">
+        </div>
+        <img src="./../prince%20michael.jpg">
     </div>
 </div>
 </body>

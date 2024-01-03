@@ -16,6 +16,8 @@
     --subtable-color: rgba(0, 0, 0, 0.05); /* Adjusted subtable color */
     --strong-border: rgba(0, 0, 0, 0.2); /* Adjusted stronger border color */
     --weak-border: rgba(0, 0, 0, 0.1); /* Adjusted weaker border color */
+
+    --button-color: #dddddd;
 }
 
 .theme-dark {
@@ -47,3 +49,6 @@ body{
     margin: auto 10px;
 }
 
+span.active {
+    color: var(--accent-color);
+}

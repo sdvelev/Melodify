@@ -20,8 +20,9 @@ body{
 #main {
     background-color: var(--primary-color);
     color: var(--on--primary);
-    display: grid;
-    grid-template-columns: 1fr minmax(40%, 3fr) 1fr;
+    display: flex;
+    /*grid-template-columns: 1fr minmax(40%, 3fr) 1fr;*/
+    /*min-width: 40%;*/
     gap: 10px;
     padding: 10px;
     height: 100%;
@@ -37,10 +38,13 @@ body{
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     gap: 10px;
-    padding: 10px;
+    padding: 5px;
+    background-color: var(--surface-color);
+    color: var(--on-surface);
 }
 
 #sidebar {
+    flex: 1 1 15%;
     display: grid;
     grid-template-rows: auto auto 1fr;
     gap: 10px;
@@ -100,6 +104,7 @@ body{
 
 
 #content {
+    flex: 5 1 20%;
     display: flex;
     flex-direction: column;
     justify-content: stretch;
@@ -117,6 +122,7 @@ body{
 }
 
 #queue{
+    flex: 1 1 15%;
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 10px;
@@ -136,10 +142,68 @@ body{
 
 #player_controls {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+#player_controls .controls{
+    display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-content: center;
+    align-items: center;
 }
+
+#player_controls .controls button{
+    font-size: x-large;
+}
+
+#player_controls .track_slider {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: stretch;
+    align-items: center;
+    gap: 5px;
+    font-size: small;
+    min-width: 50%;
+}
+
+#player input[type="range"] {
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    margin: auto;
+    width: 100%;
+}
+
+input[type="range"]::-webkit-slider-runnable-track, input[type="range"]::-moz-range-track{
+    width: 100%;
+    background: var(--button-color);
+    overflow: hidden;
+}
+
+input[type="range"]::-webkit-slider-thumb, input[type="range"]::-moz-range-thumb {
+    visibility: hidden;
+}
+
+input[type="range"]:hover::-webkit-slider-thumb, input[type="range"]:hover::-moz-range-thumb {
+    visibility: visible;
+    height: 10px;
+    width: 10px;
+    cursor: pointer;
+    background: var(--accent-color);
+}
+
+input[type="range"]::-webkit-progress-value, input[type="range"]::-moz-range-progress {
+    background: var(--on-surface);
+}
+
 
 .items {
     display: flex;
@@ -172,10 +236,11 @@ body{
 #account {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: right;
     align-content: center;
     align-items: center;
-    gap: 20px;
+    gap: 8px;
 
 }
 
@@ -185,3 +250,12 @@ body{
     border-radius: 50%;
 }
 
+#account > div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+#account input[type="range"]{
+    width: 80px;
+}
