@@ -7,10 +7,12 @@ import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,12 +26,15 @@ public class GenreService {
         this.genreRepository = genreRepository;
     }
 
-    public Genre createGenre(@NotNull(message = "The provided genre cannot be null") Genre genreToSave) {
-        return genreRepository.save(genreToSave);
-    }
+    public List<Genre> getAllGenres(Map<String, String> filters) {
+        String name = filters.get("name");
+        Specification<Genre> spec = Specification.where(null);
 
-    public List<Genre> getAllGenres() {
-        return genreRepository.findAll();
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+        }
+        return genreRepository.findAll(spec);
     }
 
     public Optional<Genre> getGenreById(
@@ -44,10 +49,12 @@ public class GenreService {
 
         throw new ResourceNotFoundException("There is not a genre with such id");
     }
-
+    public Genre createGenre(@NotNull(message = "The provided genre cannot be null") Genre genreToSave) {
+        return genreRepository.save(genreToSave);
+    }
     public boolean setGenreById(
         @NotNull(message = "The provided genre description cannot be null")
-        GenreDto genreDtoToChange,
+        GenreDto genreDto,
         @NotNull(message = "The provided genre id cannot be null")
         @Positive(message = "The provided genre id must be positive")
         Long genreId) {
@@ -56,7 +63,7 @@ public class GenreService {
 
         if (optionalGenreToUpdate.isPresent()) {
             Genre genreToUpdate = optionalGenreToUpdate.get();
-            genreToUpdate.setGenre(genreDtoToChange.getGenre());
+            genreToUpdate.setGenre(genreDto.getGenre());
             genreRepository.save(genreToUpdate);
             return true;
         }

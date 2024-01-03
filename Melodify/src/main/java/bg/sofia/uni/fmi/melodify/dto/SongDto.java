@@ -1,16 +1,11 @@
 package bg.sofia.uni.fmi.melodify.dto;
 
-import bg.sofia.uni.fmi.melodify.model.Album;
-import bg.sofia.uni.fmi.melodify.model.Artist;
-import bg.sofia.uni.fmi.melodify.model.Genre;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -26,20 +21,16 @@ public class SongDto {
     private String name;
 
     @JsonProperty("duration")
-    private int duration;
-
-    @JsonProperty("release_date")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime releaseDate;
+    private Integer duration;
 
     @JsonProperty("number_of_plays")
     private long numberOfPlays;
 
     @JsonProperty("genre")
-    private Genre genre;
+    private GenreDto genreDto;
 
-    @JsonProperty("album")
-    private Album album;
+//    @JsonProperty("album")
+//    private AlbumDto albumDto;
 
     @JsonProperty("artists")
     private List<ArtistDto> artistDtos;

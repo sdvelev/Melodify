@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+.theme-light {
+    --primary-color: #ffffff; /* Lighter background color */
+    --on--primary: #000000; /* Darker text color for contrast */
+
+    --accent-color: #ff0000; /* Same accent color */
+
+    --surface-color: #f5f5f5; /* Lighter surface color */
+    --on-surface: #000000; /* Darker text color for contrast */
+
+    --box-shadow: rgba(0, 0, 0, 0.1); /* Adjusted box shadow for lighter background */
+    --strong-box-shadow: rgba(0, 0, 0, 0.7); /* Adjusted strong box shadow */
+
+    --table-th: rgba(0, 0, 0, 0.1); /* Adjusted table header color */
+    --on-table-th: #000000; /* Darker text color for contrast */
+    --subtable-color: rgba(0, 0, 0, 0.05); /* Adjusted subtable color */
+    --strong-border: rgba(0, 0, 0, 0.2); /* Adjusted stronger border color */
+    --weak-border: rgba(0, 0, 0, 0.1); /* Adjusted weaker border color */
+
+    --button-color: #dddddd;
+}
+
+.theme-dark {
+    --primary-color: rgba(0, 0, 0, 0.9);
+    --on--primary: #ffffff;
+
+    --accent-color: red;
+
+    --surface-color: #222222;
+    --on-surface: #ffffff;
+
+    --box-shadow: rgba(255, 255, 255, 0.1);
+    --strong-box-shadow: rgba(255, 255, 255, 0.7);
+
+    --table-th: rgba(255, 255, 255, 0.1);
+    --on-table-th: #ffffff;
+    --subtable-color: rgba(255, 255, 255, 0.05);
+    --strong-border: rgba(255, 255, 255, 0.2);
+    --weak-border: rgba(255, 255, 255, 0.1);
+
+    --button-color: #333333
+}
+
+body{
+    font-family: "Roboto", sans-serif;
+}
+
+.fa {
+    margin: auto 10px;
+}
+
+span.active {
+    color: var(--accent-color);
+}

@@ -4,8 +4,11 @@ import bg.sofia.uni.fmi.melodify.dto.GenreDto;
 import bg.sofia.uni.fmi.melodify.mapper.GenreMapper;
 import bg.sofia.uni.fmi.melodify.model.Genre;
 import bg.sofia.uni.fmi.melodify.service.GenreService;
+import bg.sofia.uni.fmi.melodify.service.TokenManagerService;
 import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
+import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static bg.sofia.uni.fmi.melodify.security.RequestManager.isAdminByRequest;
 
 @RestController
 @RequestMapping(path = "api/genres")
@@ -29,17 +35,20 @@ import java.util.Optional;
 public class GenreController {
 
     private final GenreService genreService;
+    private final TokenManagerService tokenManagerService;
     private final GenreMapper genreMapper;
 
     @Autowired
-    public GenreController(GenreService genreService, GenreMapper genreMapper) {
+    public GenreController(GenreService genreService, TokenManagerService tokenManagerService,
+                           GenreMapper genreMapper) {
         this.genreService = genreService;
+        this.tokenManagerService = tokenManagerService;
         this.genreMapper = genreMapper;
     }
 
-    @GetMapping
-    public List<GenreDto> getAllGenres() {
-        return genreMapper.toDtoCollection(genreService.getAllGenres());
+    @GetMapping()
+    public List<GenreDto> getGenres(@RequestParam Map<String, String> filters){
+        return this.genreMapper.toDtoCollection(this.genreService.getAllGenres(filters));
     }
 
     @GetMapping(value = "/{id}")
@@ -58,7 +67,12 @@ public class GenreController {
     @PostMapping
     public Long addGenre(@NotNull(message = "The provided genre description in the body cannot be null")
                          @RequestBody
-                             GenreDto genreDto) {
+                             GenreDto genreDto,
+                         HttpServletRequest request) {
+        if (!isAdminByRequest(request, tokenManagerService)) {
+            throw new MethodNotAllowed("There was a problem in authorization");
+        }
+
         Genre potentialGenreToCreate = genreService.createGenre(genreMapper.toEntity(genreDto));
 
         if (potentialGenreToCreate == null) {
@@ -67,23 +81,32 @@ public class GenreController {
 
         return potentialGenreToCreate.getId();
     }
+    @PutMapping(value = "/{id}")
+    public boolean setGenreById(@PathVariable
+                                @NotNull(message = "The provided genre id cannot be null")
+                                @Positive(message = "The provided genre id must be positive")
+                                Long id,
+                                @RequestBody
+                                @NotNull(message = "The provided genre dto in the body of the query cannot be null")
+                                GenreDto genreToUpdate,
+                                HttpServletRequest request) {
+        if (!isAdminByRequest(request, tokenManagerService)) {
+            throw new MethodNotAllowed("There was a problem in authorization");
+        }
+
+        return genreService.setGenreById(genreToUpdate, id);
+    }
 
     @DeleteMapping(params = {"genre_id"})
     public GenreDto deleteGenreById(@RequestParam("genre_id")
                                @NotNull(message = "The provided genre id cannot be null")
                                @Positive(message = "The provided genre id must be positive")
-                               Long genreId) {
-        return genreMapper.toDto(genreService.deleteGenre(genreId));
-    }
+                               Long genreId,
+                                    HttpServletRequest request) {
+        if (!isAdminByRequest(request, tokenManagerService)) {
+            throw new MethodNotAllowed("There was a problem in authorization");
+        }
 
-    @PutMapping(value = "/{id}")
-    public boolean setGenreById(@PathVariable
-                                    @NotNull(message = "The provided genre id cannot be null")
-                                    @Positive(message = "The provided genre id must be positive")
-                                    Long id,
-                                @RequestBody
-                                @NotNull(message = "The provided genre dto in the body of the query cannot be null")
-                                GenreDto genreToUpdate) {
-        return genreService.setGenreById(genreToUpdate, id);
+        return genreMapper.toDto(genreService.deleteGenre(genreId));
     }
 }

@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.melodify.model;
 
 import jakarta.persistence.*;
-import jdk.jfr.Enabled;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,8 +23,8 @@ public class Artist {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "picture")
-    private String picture;
+    @Column(name = "image")
+    private String image;
 
     @Column(name = "uri")
     private String uri;

@@ -3,19 +3,19 @@ package bg.sofia.uni.fmi.melodify.service;
 import bg.sofia.uni.fmi.melodify.dto.UserDto;
 import bg.sofia.uni.fmi.melodify.model.User;
 import bg.sofia.uni.fmi.melodify.repository.UserRepository;
-import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
+import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForYear;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -34,17 +34,66 @@ public class UserService {
     public User createUser(@NotNull(message = "The provided user cannot be null")
                            User userToSave) {
 
-        Optional<User> usersWithThatEmailList = userRepository.findByEmail(userToSave.getEmail());
-        if (usersWithThatEmailList.isPresent()) {
-            throw new ApiBadRequest("There is already a user associated with that credentials");
-        }
+//        Optional<User> usersWithThatEmailList = userRepository.findByEmail(userToSave.getEmail());
+//        if (usersWithThatEmailList.isPresent()) {
+//            throw new ApiBadRequest("There is already a user associated with that credentials");
+//        }
 
-        userToSave.setPassword(passwordEncoder.encode(userToSave.getPassword()));
         return userRepository.save(userToSave);
     }
 
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    public List<User> getUsers(Map<String, String> filters,  User userToGet, boolean isAdmin) {
+        if (!isAdmin) {
+            Optional<User> potentialUserToReturn = this.getUserById(userToGet.getId());
+            if (potentialUserToReturn.isPresent()) {
+                return List.of(potentialUserToReturn.get());
+            } else {
+                throw new MethodNotAllowed("There is a problem in authorization");
+            }
+        }
+
+        String name = filters.get("name");
+        String surname = filters.get("surname");
+        String email = filters.get("email");
+        // no password for you :-D
+        String image = filters.get("image");
+        // playlists
+        // queue
+        String uri = filters.get("uri");
+
+        Specification<User> spec = Specification.where(null);
+
+
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+        }
+
+        if (surname != null && !surname.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("surname")), "%" + surname.toLowerCase() + "%"));
+        }
+
+        if (email != null && !email.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+        }
+
+        if (image != null && !image.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("image")), "%" + image.toLowerCase() + "%"));
+        }
+
+        if (uri != null && !uri.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("uri")), "%" + uri.toLowerCase() + "%"));
+        }
+
+        return userRepository.findAll(spec);
     }
 
     public Optional<User> getUserById(@NotNull(message = "The provided user id cannot be null")
@@ -59,31 +108,22 @@ public class UserService {
         throw new ResourceNotFoundException("User with such an id cannot be found");
     }
 
-    public User getUserByEmail(@NotNull(message = "THe provided email cannot be null")
+    public Optional<User> getUserByEmail(@NotNull(message = "THe provided email cannot be null")
                                @NotBlank(message = "The provided email cannot be empty or blank")
                                String email) {
-        Optional<User> potentialUserToReturn = userRepository.findByEmail(email);
-
-        if (potentialUserToReturn.isPresent()) {
-            return potentialUserToReturn.get();
-        }
-
-        throw new ResourceNotFoundException("User with such an email cannot be found");
+        return userRepository.findByEmail(email);
     }
 
-    public User getUserByEmailAndPassword(@NotNull(message = "The provided email cannot be null")
-                                             @NotBlank(message = "The provided email cannot be empty or blank")
-                                             String email,
-                                             @NotNull(message = "The provided password cannot be null")
-                                             @NotBlank(message = "The provided password cannot be empty or blank")
-                                             String password) {
+    public User getUserByEmailAndPassword(String email, String password) {
 
-        Optional<User> potentialUserToReturn = userRepository.findByEmail(email);
-        if (potentialUserToReturn.isPresent() && passwordEncoder.matches(password, potentialUserToReturn.get().getPassword())) {
-            return potentialUserToReturn.get();
+        if (email != null && password != null) {
+            Optional<User> potentialUserToReturn = userRepository.findByEmail(email);
+            if (potentialUserToReturn.isPresent() && passwordEncoder.matches(password, potentialUserToReturn.get().getPassword())) {
+                return potentialUserToReturn.get();
+            }
         }
 
-        throw new ResourceNotFoundException("User with such a username and password cannot be found");
+        throw new ResourceNotFoundException("User with such an email and password cannot be found");
     }
 
     public boolean setPasswordByProvidingEmailAndOldPassword(@NotNull(message = "The provided new password cannot be null")
@@ -139,11 +179,17 @@ public class UserService {
         UserDto userFieldsToChange,
         @NotNull(message = "The provided user id cannot be null")
         @Positive(message = "The provided user id must be positive")
-        Long userId) {
+        Long userId,
+        boolean isAdmin) {
 
         Optional<User> optionalUserToUpdate = userRepository.findById(userId);
         if (optionalUserToUpdate.isPresent()) {
-            User userToUpdate = setUserNonNullFields(userFieldsToChange, optionalUserToUpdate.get());;
+
+            if (optionalUserToUpdate.get().getId().equals(userId) && !isAdmin) {
+                throw new MethodNotAllowed("There is a problem in authorization");
+            }
+
+            User userToUpdate = setUserNonNullFields(userFieldsToChange, optionalUserToUpdate.get());
             userRepository.save(userToUpdate);
             return true;
         }

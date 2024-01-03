@@ -1,10 +1,7 @@
 package bg.sofia.uni.fmi.melodify.mapper;
 
-import bg.sofia.uni.fmi.melodify.dto.AlbumDto;
 import bg.sofia.uni.fmi.melodify.dto.PlaylistDto;
-import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Playlist;
-import org.hibernate.boot.model.source.internal.hbm.PluralAttributeSourceListImpl;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -16,9 +13,11 @@ import java.util.List;
 public interface PlaylistMapper {
     PlaylistMapper INSTANCE = Mappers.getMapper(PlaylistMapper.class);
 
+//    @Mapping(source = "owner", target = "ownerDto")
     @Mapping(source = "songs", target = "songDtos")
     PlaylistDto toDto(Playlist playlistEntity);
 
+//    @Mapping(source = "ownerDto", target = "owner")
     @Mapping(source = "songDtos", target = "songs")
     Playlist toEntity(PlaylistDto playlistDto);
 

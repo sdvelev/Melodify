@@ -1,0 +1,53 @@
+#search_filters{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#search input{
+    background-color: var(--button-color);
+    border-radius: 15px;
+}
+
+#search input[type="search"] {
+    min-width: 250px;
+}
+
+#search button {
+    padding: 8px;
+    border-radius: 15px;
+    background-color: var(--button-color);
+}
+
+#search {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: 10px;
+    gap: 35px;
+}
+
+#search_criteria {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#search_criteria > div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#search_results {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    overflow-y: auto;
+}
+
+#search_results .item.artist img{
+    border-radius: 50%;
+}

@@ -1,11 +1,17 @@
 package bg.sofia.uni.fmi.melodify.controller;
 
+import bg.sofia.uni.fmi.melodify.dto.AuthenticationDto;
+import bg.sofia.uni.fmi.melodify.dto.ChangePasswordDto;
 import bg.sofia.uni.fmi.melodify.dto.UserDto;
 import bg.sofia.uni.fmi.melodify.mapper.UserMapper;
 import bg.sofia.uni.fmi.melodify.model.User;
+import bg.sofia.uni.fmi.melodify.service.TokenManagerService;
+import bg.sofia.uni.fmi.melodify.service.UserCreateWithPlaylistAndQueueFacadeService;
+import bg.sofia.uni.fmi.melodify.service.UserDeleteFacadeService;
 import bg.sofia.uni.fmi.melodify.service.UserService;
 import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -15,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,32 +30,45 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static bg.sofia.uni.fmi.melodify.security.RequestManager.getUserByRequest;
+import static bg.sofia.uni.fmi.melodify.security.RequestManager.isAdminByRequest;
 
 @RestController
 @RequestMapping(path = "api/users")
 @Validated
 public class UserController {
-
     private final UserService userService;
+    private final UserDeleteFacadeService userDeleteFacadeService;
+    private final UserCreateWithPlaylistAndQueueFacadeService userCreateWithPlaylistAndQueueFacadeService;
     private final UserMapper userMapper;
+    private final TokenManagerService tokenManagerService;
 
     @Autowired
-    public UserController(UserService userService, UserMapper userMapper) {
+    public UserController(UserService userService, UserDeleteFacadeService userDeleteFacadeService,
+                          UserCreateWithPlaylistAndQueueFacadeService userCreateWithPlaylistAndQueueFacadeService,
+                          UserMapper userMapper, TokenManagerService tokenManagerService) {
         this.userService = userService;
+        this.userDeleteFacadeService = userDeleteFacadeService;
+        this.userCreateWithPlaylistAndQueueFacadeService = userCreateWithPlaylistAndQueueFacadeService;
         this.userMapper = userMapper;
+        this.tokenManagerService = tokenManagerService;
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-
-        return userMapper.toDtoCollection(userService.getUsers());
+    public List<UserDto> getUsers(@RequestParam Map<String, String> filters, HttpServletRequest request) {
+        return userMapper.toDtoCollection(userService.getUsers(filters,
+            getUserByRequest(request, tokenManagerService, userService),
+            isAdminByRequest(request, tokenManagerService)));
     }
 
     @PostMapping
     public Long addUser(@NotNull(message = "The provided user dto as body of the query cannot be null")
                         @RequestBody UserDto userDto) {
-        User potentialUserToCreate = userService.createUser(userMapper.toEntity(userDto));
+        User potentialUserToCreate = userCreateWithPlaylistAndQueueFacadeService
+            .createUserWithPlaylistAndQueue(userMapper.toEntity(userDto));
 
         if (potentialUserToCreate != null) {
             return potentialUserToCreate.getId();
@@ -57,45 +77,39 @@ public class UserController {
         throw new ApiBadRequest("There was a problem in creating a user");
     }
 
-    @DeleteMapping(params = {"email", "password"})
+    @DeleteMapping
     public boolean removeUser(
-        @NotNull(message = "The provided email cannot be null")
-        @NotBlank(message = "The provided email cannot be blank")
-        @RequestParam("email") String email,
-        @NotNull(message = "The provided password cannot be null")
-        @NotBlank(message = "The provided password cannot be blank")
-        @RequestParam("password") String password) {
+        @NotNull(message = "The provided authentication details cannot be null")
+        @RequestBody
+        AuthenticationDto authenticationDto) {
 
-        //TODO Autowire another service which will delete not only the user, but also their playlist
-        // For that purpose, PlaylistRepository will be used
-        return false;
+        return userDeleteFacadeService.deleteUserWithPlaylistsAssociatedToIt(authenticationDto.getEmail(),
+            authenticationDto.getPassword());
     }
 
-    @GetMapping(params = {"email", "password"})
-    public ResponseEntity<UserDto> searchUserByUsernameAndPassword(
-        @NotNull(message = "The provided email cannot be null")
-        @NotBlank(message = "The provided email cannot be blank")
-        @RequestParam("email") String email,
-        @NotNull(message = "The provided password cannot be null")
-        @NotBlank(message = "The provided password cannot be blank")
-        @RequestParam("password") String password) {
-        User userToReturn = userService.getUserByEmailAndPassword(email, password);
+    @GetMapping(value = "/search")
+    public ResponseEntity<UserDto> searchUserByEmailAndPassword(
+        @NotNull(message = "The provided authentication details cannot be null")
+        @RequestBody
+        AuthenticationDto authenticationDto) {
+        User userToReturn = userService.getUserByEmailAndPassword(authenticationDto.getEmail(),
+            authenticationDto.getPassword());
 
         return ResponseEntity.ok(userMapper.toDto(userToReturn));
     }
 
-    @GetMapping(value = "/{id}", params = {"id"})
+    @GetMapping(value = "/{id}")
     public ResponseEntity<UserDto> searchUserById(
         @NotNull(message = "The provided user id cannot be null")
         @Positive(message = "The provided user id must be positive")
-        @RequestParam("id") Long id) {
+        @PathVariable Long id) {
         Optional<User> optionalUserToReturn = userService.getUserById(id);
 
         if (optionalUserToReturn.isPresent()) {
             return ResponseEntity.ok(userMapper.toDto(optionalUserToReturn.get()));
         }
 
-        throw new ResourceNotFoundException("User with such an email and password cannot be found");
+        throw new ResourceNotFoundException("User with such an id cannot be found");
     }
 
     @GetMapping(params = {"email"})
@@ -104,36 +118,31 @@ public class UserController {
         @NotBlank(message = "The provided email cannot be blank")
         @RequestParam("email") String email) {
 
-        User potentialUserToReturn = userService.getUserByEmail(email);
+        Optional<User> potentialUserToReturn = userService.getUserByEmail(email);
 
-        return ResponseEntity.ok(userMapper.toDto(potentialUserToReturn));
+        if (potentialUserToReturn.isPresent()) {
+            return ResponseEntity.ok(userMapper.toDto(potentialUserToReturn.get()));
+        }
+
+        throw new ResourceNotFoundException("User with such an email cannot be found");
     }
 
-    @PutMapping(value = "/set", params = {"user_id"})
-    public boolean setUserByUserId(@RequestParam("user_id")
-                                   @NotNull(message = "The provided user id cannot be null")
-                                   @Positive(message = "The provided user id must be positive")
-                                   Long userId,
-                                   @RequestBody
+    @PutMapping(value = "/settings")
+    public boolean setUserByUserId(@RequestBody
                                    @NotNull(message = "The provided user dto as body of the query cannot be null")
-                                   UserDto userToUpdate) {
-        return userService.setUserById(userToUpdate, userId);
+                                   UserDto userToUpdate,
+                                   HttpServletRequest request) {
+        return userService.setUserById(userToUpdate,
+            getUserByRequest(request, tokenManagerService, userService).getId(),
+            isAdminByRequest(request, tokenManagerService));
     }
 
-    @PatchMapping(value = "/settings", params = {"new_password", "username", "old_password"})
-    public boolean setPasswordByProvidingUsernameAndOldPassword(
-        @NotNull(message = "The provided new password cannot be null")
-        @NotBlank(message = "The provided new password cannot be empty or blank")
-        @RequestParam("new_password")
-        String newPassword,
-        @NotNull(message = "The provided email cannot be null")
-        @NotBlank(message = "The provided email cannot be empty or blank")
-        @RequestParam("email")
-        String email,
-        @NotNull(message = "The provided old password cannot be null")
-        @NotBlank(message = "The provided old password cannot be empty or blank")
-        @RequestParam("old_password")
-        String oldPassword) {
-        return userService.setPasswordByProvidingEmailAndOldPassword(newPassword, email, oldPassword);
+    @PatchMapping(value = "/password")
+    public boolean setPasswordByProvidingEmailAndOldPassword(
+        @NotNull(message = "The provided change password details cannot be null")
+        @RequestBody
+        ChangePasswordDto changePasswordDto) {
+        return userService.setPasswordByProvidingEmailAndOldPassword(changePasswordDto.getNewPassword(),
+            changePasswordDto.getEmail(), changePasswordDto.getOldPassword());
     }
 }
