@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.melodify.service;
 import bg.sofia.uni.fmi.melodify.dto.UserDto;
 import bg.sofia.uni.fmi.melodify.model.User;
 import bg.sofia.uni.fmi.melodify.repository.UserRepository;
+import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -45,7 +46,16 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public List<User> getUsers(Map<String, String> filters) {
+    public List<User> getUsers(Map<String, String> filters,  User userToGet, boolean isAdmin) {
+        if (!isAdmin) {
+            Optional<User> potentialUserToReturn = this.getUserById(userToGet.getId());
+            if (potentialUserToReturn.isPresent()) {
+                return List.of(potentialUserToReturn.get());
+            } else {
+                throw new MethodNotAllowed("There is a problem in authorization");
+            }
+        }
+
         String name = filters.get("name");
         String surname = filters.get("surname");
         String email = filters.get("email");
@@ -169,10 +179,16 @@ public class UserService {
         UserDto userFieldsToChange,
         @NotNull(message = "The provided user id cannot be null")
         @Positive(message = "The provided user id must be positive")
-        Long userId) {
+        Long userId,
+        boolean isAdmin) {
 
         Optional<User> optionalUserToUpdate = userRepository.findById(userId);
         if (optionalUserToUpdate.isPresent()) {
+
+            if (optionalUserToUpdate.get().getId().equals(userId) && !isAdmin) {
+                throw new MethodNotAllowed("There is a problem in authorization");
+            }
+
             User userToUpdate = setUserNonNullFields(userFieldsToChange, optionalUserToUpdate.get());
             userRepository.save(userToUpdate);
             return true;

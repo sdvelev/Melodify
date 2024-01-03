@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static bg.sofia.uni.fmi.melodify.security.RequestManager.getUserByRequest;
+import static bg.sofia.uni.fmi.melodify.security.RequestManager.isAdminByRequest;
 
 @RestController
 @RequestMapping(path = "api/users")
@@ -57,8 +58,10 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> getUsers(@RequestParam Map<String, String> filters) {
-        return userMapper.toDtoCollection(userService.getUsers(filters));
+    public List<UserDto> getUsers(@RequestParam Map<String, String> filters, HttpServletRequest request) {
+        return userMapper.toDtoCollection(userService.getUsers(filters,
+            getUserByRequest(request, tokenManagerService, userService),
+            isAdminByRequest(request, tokenManagerService)));
     }
 
     @PostMapping
@@ -129,7 +132,9 @@ public class UserController {
                                    @NotNull(message = "The provided user dto as body of the query cannot be null")
                                    UserDto userToUpdate,
                                    HttpServletRequest request) {
-        return userService.setUserById(userToUpdate, getUserByRequest(request, tokenManagerService, userService).getId());
+        return userService.setUserById(userToUpdate,
+            getUserByRequest(request, tokenManagerService, userService).getId(),
+            isAdminByRequest(request, tokenManagerService));
     }
 
     @PatchMapping(value = "/password")
