@@ -30,7 +30,7 @@ backwardButton.addEventListener('click', () => {
 
 // Track range
 trackRange.addEventListener('input', () => {
-    audio.currentTime = trackRange.value / 100.0;
+    audio.currentTime = trackRange.value;
 });
 
 volumeRange.addEventListener('input', () => {
