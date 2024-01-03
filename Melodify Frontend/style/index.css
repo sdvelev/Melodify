@@ -17,7 +17,7 @@ body{
     color: var(--on--primary);
 }
 
-#main {
+main {
     background-color: var(--primary-color);
     color: var(--on--primary);
     display: flex;
@@ -30,7 +30,7 @@ body{
     overflow: hidden;
 }
 
-#main>div {
+main>div {
     color: var(--on-surface)
 }
 

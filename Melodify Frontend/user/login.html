@@ -2,9 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Melodify - Login</title>
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/controls.css">
+    <link rel="stylesheet" href="../style/login.css">
+
+    <script src="../js/theme.js"></script>
+    <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
+    <script src="../js/login.js"></script>
 </head>
 <body>
-
+<main>
+    <div class="fancy">
+        <h1>Melodify</h1>
+        <span class="fa fa-compact-disc"></span>
+    </div>
+    <div>
+        <form onsubmit="handleLogin(event)">
+            <h2>Login</h2>
+            <input type="email" placeholder="Enter email"/>
+            <input type="password" placeholder="Enter password">
+            <button type="submit">Login</button>
+            <div id="error-box"></div>
+        </form>
+    </div>
+</main>
+<footer>
+    <button onclick="toggleTheme()"><span class="fa fa-circle-half-stroke"></span></button>
+    <p>Melodify, 2023</p>
+    <p><a href="">Login</a></p>
+    <p><a href="">Register</a></p>
+    <p><a href="">Terms of Service</a></p>
+</footer>
 </body>
 </html>

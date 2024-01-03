@@ -2,9 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Melofidy - Register</title>
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/controls.css">
+    <link rel="stylesheet" href="../style/login.css">
+
+    <script src="../js/theme.js"></script>
+    <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
+    <script src="../js/register.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
-
+<main>
+    <!-- Your existing HTML code -->
+    <div class="fancy">
+        <h1>Melodify</h1>
+        <span class="fa fa-compact-disc"></span>
+    </div>
+    <div>
+        <form onsubmit="handleRegister(event)">
+            <h2>Register</h2>
+            <input type="text" placeholder="Enter name"/>
+            <input type="text" placeholder="Enter surname"/>
+            <input type="email" placeholder="Enter email"/>
+            <input type="password" placeholder="Enter password">
+            <button type="submit">Register</button>
+            <div id="error-box"></div>
+        </form>
+    </div>
+</main>
+<footer>
+    <!-- Your existing footer content -->
+    <button onclick="toggleTheme()"><span class="fa fa-circle-half-stroke"></span></button>
+    <p>Melodify, 2023</p>
+    <p><a href="">Login</a></p>
+    <p><a href="">Register</a></p>
+    <p><a href="">Terms of Service</a></p>
+</footer>
 </body>
 </html>
