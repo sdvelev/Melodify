@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.model.Queue;
 import bg.sofia.uni.fmi.melodify.model.Song;
+import bg.sofia.uni.fmi.melodify.model.User;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -62,6 +63,65 @@ public class QueueModifySongsFacadeService {
 
         potentialQueueToAddTo.get().getSongs().remove(potentialSongToAdd.get());
         queueService.createQueue(potentialQueueToAddTo.get());
+        return true;
+    }
+
+    public boolean playFromSpecificSongInQueue(Long songId, User userToPlay) {
+        Optional<Song> potentialSongToPlay = songService.getSongById(songId);
+        if (potentialSongToPlay.isEmpty()) {
+            throw new ResourceNotFoundException("There is not a song with such an id");
+        }
+
+        Optional<Queue> potentialQueue = queueService.getQueueById(userToPlay.getQueue().getId());
+        if (potentialQueue.isEmpty()) {
+            throw new ResourceNotFoundException("There is not a queue associated");
+        }
+
+        Queue originalQueue = potentialQueue.get();
+        Song originalSong = potentialSongToPlay.get();
+
+        if (!originalQueue.getSongs().contains(originalSong)) {
+            throw new ResourceNotFoundException("There is not such song in the queue");
+        }
+
+        int currentSongIndex = originalQueue.getSongs().indexOf(originalSong);
+        if (currentSongIndex < originalQueue.getSongs().size() - 1) {
+            originalQueue.setCurrentSongIndex((long) currentSongIndex + 1);
+            queueService.createQueue(originalQueue);
+        } else if (currentSongIndex == originalQueue.getSongs().size() - 1) {
+            originalQueue.setCurrentSongIndex((long) currentSongIndex);
+            queueService.createQueue(originalQueue);
+        }
+
+        return true;
+    }
+
+    public boolean removeSpecificSongFromQueue(Long songId, User userToPlay) {
+        Optional<Song> potentialSongToRemove = songService.getSongById(songId);
+        if (potentialSongToRemove.isEmpty()) {
+            throw new ResourceNotFoundException("There is not a song with such an id");
+        }
+
+        Optional<Queue> potentialQueue = queueService.getQueueById(userToPlay.getQueue().getId());
+        if (potentialQueue.isEmpty()) {
+            throw new ResourceNotFoundException("There is not a queue associated");
+        }
+
+        Queue originalQueue = potentialQueue.get();
+        Song originalSong = potentialSongToRemove.get();
+
+        if (!originalQueue.getSongs().contains(originalSong)) {
+            throw new ResourceNotFoundException("There is not such song in the queue");
+        }
+
+        int currentSongIndex = originalQueue.getSongs().indexOf(originalSong);
+
+        if (currentSongIndex >= 1 && originalQueue.getCurrentSongIndex() >= currentSongIndex) {
+            originalQueue.setCurrentSongIndex((long) currentSongIndex - 1);
+        }
+
+        originalQueue.getSongs().remove(originalSong);
+        queueService.createQueue(originalQueue);
         return true;
     }
 }

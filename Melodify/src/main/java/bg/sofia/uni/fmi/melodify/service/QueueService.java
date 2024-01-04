@@ -1,7 +1,9 @@
 package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.model.Queue;
+import bg.sofia.uni.fmi.melodify.model.User;
 import bg.sofia.uni.fmi.melodify.repository.QueueRepository;
+import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -21,8 +23,16 @@ public class QueueService {
     public QueueService(QueueRepository queueRepository){
         this.queueRepository = queueRepository;
     }
-    public List<Queue> getQueues(Map<String, String> filters) {
-        // TODO - is anything more needed?
+    public List<Queue> getQueues(Map<String, String> filters, User userToGet, boolean isAdmin) {
+        if (!isAdmin) {
+            Optional<Queue> potentialQueueToReturn = this.getQueueById(userToGet.getQueue().getId());
+            if (potentialQueueToReturn.isPresent()) {
+                return List.of(potentialQueueToReturn.get());
+            } else {
+                throw new MethodNotAllowed("There is a problem in authorization");
+            }
+        }
+
         return this.queueRepository.findAll();
     }
 
@@ -88,7 +98,7 @@ public class QueueService {
         Long queueId) {
         Optional<Queue> potentialQueue = queueRepository.findById(queueId);
         if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
-            throw new ResourceNotFoundException("THere are not songs in queue");
+            throw new ResourceNotFoundException("There are not songs in queue");
         }
 
         Queue queue = potentialQueue.get();
@@ -101,5 +111,27 @@ public class QueueService {
 
         queueRepository.save(queue);
         return queue.getSongs().get(queue.getCurrentSongIndex().intValue() - 1).getId();
+    }
+
+    public boolean removeSongFromQueue(
+        @NotNull(message = "The provided queue id cannot be null")
+        @Positive(message = "The provided queue id must be positive")
+        Long queueId) {
+        Optional<Queue> potentialQueue = queueRepository.findById(queueId);
+        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
+            throw new ResourceNotFoundException("There are not songs in queue");
+        }
+
+        Queue queue = potentialQueue.get();
+
+        Long currentSongIndex = queue.getCurrentSongIndex();
+        if (currentSongIndex.equals((long) queue.getSongs().size())) {
+            throw new ResourceNotFoundException("There are not songs in queue");
+        }
+        queue.setCurrentSongIndex(--currentSongIndex);
+        queue.getSongs().remove(0);
+
+        queueRepository.save(queue);
+        return true;
     }
 }

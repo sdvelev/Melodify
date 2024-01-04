@@ -13,6 +13,7 @@ import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.aspectj.bridge.IMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -54,8 +55,10 @@ public class QueueController {
     }
 
     @GetMapping
-    public List<QueueDto> getQueues(@RequestParam Map<String, String> filters) {
-        return queueMapper.toDtoCollection(queueService.getQueues(filters));
+    public List<QueueDto> getQueues(@RequestParam Map<String, String> filters, HttpServletRequest request) {
+        return queueMapper.toDtoCollection(queueService.getQueues(filters,
+            getUserByRequest(request, tokenManagerService, userService),
+            isAdminByRequest(request, tokenManagerService)));
     }
 
     @GetMapping(value = "/{id}")
@@ -123,26 +126,36 @@ public class QueueController {
             .addSongToQueue(getUserByRequest(request, tokenManagerService, userService).getId(), songId);
     }
 
-    @PatchMapping("/remove")
-    public boolean removeSongFromQueue(@RequestParam("song_id")
-                                  @NotNull(message = "The provided song id cannot be null")
-                                  @Positive(message = "The provided song id must be positive")
-                                  Long songId,
-                                  HttpServletRequest request) {
-        return queueModifySongsFacadeService
-            .removeSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId(), songId);
-    }
+//    @PatchMapping("/remove")
+//    public boolean removeSongFromQueue(@RequestParam("song_id")
+//                                  @NotNull(message = "The provided song id cannot be null")
+//                                  @Positive(message = "The provided song id must be positive")
+//                                  Long songId,
+//                                  HttpServletRequest request) {
+//        return queueModifySongsFacadeService
+//            .removeSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId(), songId);
+//    }
 
     @GetMapping("/play")
-    public ResponseEntity<Resource> playSongFromQueue(HttpServletRequest request) {
+    public ResponseEntity<Resource> playSongFromQueue(
+        @RequestParam(name = "song_id", required = false)
+        @Positive(message = "") Long songId,
+        HttpServletRequest request) {
         try {
+            Long songToPlayId = (songId != null) ? songId :
+                queueService.playSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
 
-            Long songToPlayId = queueService
-                .playSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
+            boolean toPlay;
+            if (songId != null) {
+                toPlay = queueModifySongsFacadeService
+                    .playFromSpecificSongInQueue(songToPlayId, getUserByRequest(request, tokenManagerService, userService));
+            } else {
+                toPlay = true;
+            }
 
             Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");
 
-            if (resource.exists() && resource.isReadable()) {
+            if (toPlay && resource.exists() && resource.isReadable()) {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentDispositionFormData("inline", songToPlayId + ".mp3");
                 headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -157,5 +170,22 @@ public class QueueController {
             e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/remove")
+    public boolean removeSongFromQueue(
+        @RequestParam(name = "song_id", required = false)
+        @Positive(message = "") Long songId,
+        HttpServletRequest request) {
+
+        boolean toRemove;
+            if (songId != null) {
+                toRemove = queueModifySongsFacadeService
+                    .removeSpecificSongFromQueue(songId, getUserByRequest(request, tokenManagerService, userService));
+            } else {
+            toRemove = queueService.removeSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
+        }
+
+         return toRemove;
     }
 }
