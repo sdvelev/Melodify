@@ -32,6 +32,9 @@ public class SongDto {
 //    @JsonProperty("album")
 //    private AlbumDto albumDto;
 
+    @JsonProperty("album_image")
+    private String albumImage;
+
     @JsonProperty("artists")
     private List<ArtistDto> artistDtos;
 

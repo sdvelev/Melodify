@@ -16,7 +16,8 @@ public interface SongMapper {
    @Mapping(source = "genre", target = "genreDto")
 //    @Mapping(source = "album", target = "albumDto")
    @Mapping(source = "artists", target = "artistDtos")
-     SongDto toDto(Song songEntity);
+   @Mapping(target = "albumImage", source = "album.image") // Assuming Album has a getImage() method
+   SongDto toDto(Song songEntity);
 
      @Mapping(source = "genreDto", target = "genre")
 //    @Mapping(source = "albumDto", target = "album")

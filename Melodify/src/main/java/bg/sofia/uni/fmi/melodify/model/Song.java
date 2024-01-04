@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "song")
@@ -47,4 +48,17 @@ public class Song {
 
     @Column(name = "uri")
     private String uri;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Song song = (Song) o;
+        return Objects.equals(id, song.id) && Objects.equals(name, song.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }
