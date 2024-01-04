@@ -5,6 +5,7 @@ import bg.sofia.uni.fmi.melodify.repository.QueueRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -79,5 +80,26 @@ public class QueueService {
         }
 
         throw new ResourceNotFoundException("There is not a queue with such an id");
+    }
+
+    public Long playSongFromQueue(
+        @NotNull(message = "The provided queue id cannot be null")
+        @Positive(message = "The provided queue id must be positive")
+        Long queueId) {
+        Optional<Queue> potentialQueue = queueRepository.findById(queueId);
+        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
+            throw new ResourceNotFoundException("THere are not songs in queue");
+        }
+
+        Queue queue = potentialQueue.get();
+
+        Long currentSongIndex = queue.getCurrentSongIndex();
+        if (currentSongIndex.equals((long) queue.getSongs().size())) {
+            throw new ResourceNotFoundException("There are not songs in queue");
+        }
+        queue.setCurrentSongIndex(++currentSongIndex);
+
+        queueRepository.save(queue);
+        return queue.getSongs().get(queue.getCurrentSongIndex().intValue() - 1).getId();
     }
 }

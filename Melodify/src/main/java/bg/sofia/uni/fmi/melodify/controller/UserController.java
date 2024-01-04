@@ -60,8 +60,8 @@ public class UserController {
     @GetMapping
     public List<UserDto> getUsers(@RequestParam Map<String, String> filters, HttpServletRequest request) {
         return userMapper.toDtoCollection(userService.getUsers(filters,
-            getUserByRequest(request, tokenManagerService, userService),
-            isAdminByRequest(request, tokenManagerService)));
+                getUserByRequest(request, tokenManagerService, userService),
+                isAdminByRequest(request, tokenManagerService)));
     }
 
     @PostMapping

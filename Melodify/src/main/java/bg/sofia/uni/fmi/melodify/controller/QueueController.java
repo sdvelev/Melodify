@@ -14,9 +14,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,15 +39,18 @@ public class QueueController {
     private final TokenManagerService tokenManagerService;
     private final UserService userService;
     private final QueueMapper queueMapper;
+    private final ResourceLoader resourceLoader;
 
     @Autowired
     public QueueController(QueueService queueService, QueueModifySongsFacadeService queueModifySongsFacadeService,
-                           TokenManagerService tokenManagerService, UserService userService, QueueMapper queueMapper) {
+                           TokenManagerService tokenManagerService, UserService userService, QueueMapper queueMapper,
+                           ResourceLoader resourceLoader) {
         this.queueService = queueService;
         this.queueModifySongsFacadeService = queueModifySongsFacadeService;
         this.tokenManagerService = tokenManagerService;
         this.userService = userService;
         this.queueMapper = queueMapper;
+        this.resourceLoader = resourceLoader;
     }
 
     @GetMapping
@@ -122,5 +131,31 @@ public class QueueController {
                                   HttpServletRequest request) {
         return queueModifySongsFacadeService
             .removeSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId(), songId);
+    }
+
+    @GetMapping("/play")
+    public ResponseEntity<Resource> playSongFromQueue(HttpServletRequest request) {
+        try {
+
+            Long songToPlayId = queueService
+                .playSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
+
+            Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");
+
+            if (resource.exists() && resource.isReadable()) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentDispositionFormData("inline", songToPlayId + ".mp3");
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+                return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
     }
 }
