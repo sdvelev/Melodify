@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.melodify.controller;
 import bg.sofia.uni.fmi.melodify.dto.GenreDto;
 import bg.sofia.uni.fmi.melodify.mapper.GenreMapper;
 import bg.sofia.uni.fmi.melodify.model.Genre;
+import bg.sofia.uni.fmi.melodify.service.GenreDeleteFacadeService;
 import bg.sofia.uni.fmi.melodify.service.GenreService;
 import bg.sofia.uni.fmi.melodify.service.TokenManagerService;
 import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
@@ -35,13 +36,15 @@ import static bg.sofia.uni.fmi.melodify.security.RequestManager.isAdminByRequest
 public class GenreController {
 
     private final GenreService genreService;
+    private final GenreDeleteFacadeService genreDeleteFacadeService;
     private final TokenManagerService tokenManagerService;
     private final GenreMapper genreMapper;
 
     @Autowired
-    public GenreController(GenreService genreService, TokenManagerService tokenManagerService,
-                           GenreMapper genreMapper) {
+    public GenreController(GenreService genreService, GenreDeleteFacadeService genreDeleteFacadeService,
+                           TokenManagerService tokenManagerService, GenreMapper genreMapper) {
         this.genreService = genreService;
+        this.genreDeleteFacadeService = genreDeleteFacadeService;
         this.tokenManagerService = tokenManagerService;
         this.genreMapper = genreMapper;
     }
@@ -107,6 +110,6 @@ public class GenreController {
             throw new MethodNotAllowed("There was a problem in authorization");
         }
 
-        return genreMapper.toDto(genreService.deleteGenre(genreId));
+        return genreMapper.toDto(genreDeleteFacadeService.deleteGenreWithNullReferences(genreId));
     }
 }
