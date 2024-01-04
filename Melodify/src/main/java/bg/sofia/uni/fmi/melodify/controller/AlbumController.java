@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.melodify.dto.AlbumDto;
 import bg.sofia.uni.fmi.melodify.mapper.AlbumMapper;
 import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.service.AlbumCreateFacadeService;
+import bg.sofia.uni.fmi.melodify.service.AlbumDeleteFacadeService;
 import bg.sofia.uni.fmi.melodify.service.AlbumService;
 import bg.sofia.uni.fmi.melodify.service.AlbumSetFacadeService;
 import bg.sofia.uni.fmi.melodify.service.TokenManagerService;
@@ -30,16 +31,19 @@ public class AlbumController {
     private final AlbumService albumService;
     private final AlbumCreateFacadeService albumCreateFacadeService;
     private final AlbumSetFacadeService albumSetFacadeService;
+    private final AlbumDeleteFacadeService albumDeleteFacadeService;
     private final TokenManagerService tokenManagerService;
     private final AlbumMapper albumMapper;
 
     @Autowired
     public AlbumController(AlbumService albumService, AlbumCreateFacadeService albumCreateFacadeService,
-                           AlbumSetFacadeService albumSetFacadeService, TokenManagerService tokenManagerService,
-                           AlbumMapper albumMapper) {
+                           AlbumSetFacadeService albumSetFacadeService,
+                           AlbumDeleteFacadeService albumDeleteFacadeService,
+                           TokenManagerService tokenManagerService, AlbumMapper albumMapper) {
         this.albumService = albumService;
         this.albumCreateFacadeService = albumCreateFacadeService;
         this.albumSetFacadeService = albumSetFacadeService;
+        this.albumDeleteFacadeService = albumDeleteFacadeService;
         this.tokenManagerService = tokenManagerService;
         this.albumMapper = albumMapper;
     }
@@ -98,7 +102,7 @@ public class AlbumController {
             throw new MethodNotAllowed("There was a problem in authorization");
         }
 
-        return albumMapper.toDto(albumService.deleteAlbum(albumId));
+        return albumMapper.toDto(albumDeleteFacadeService.deleteAlbumWithSongs(albumId));
     }
 
     @PutMapping(value = "/{id}")
