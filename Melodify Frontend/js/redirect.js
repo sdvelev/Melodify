@@ -5,9 +5,17 @@ function loadContent(url) {
     })
         .then(response => response.text())
         .then(data => {
-            contentContainer.innerHTML = data;
+            if(!data){
+                console.error(`Data at ${url} is null`);
+            }
+            const parser = new DOMParser();
+            const htmlDocument = parser.parseFromString(data, 'text/html');
+            if(!htmlDocument){
+                console.error(`Html at ${url} is null`);
+            }
+            contentContainer.innerHTML = htmlDocument.querySelector('#content').innerHTML;
         })
-        .catch(error => console.error('Error fetching content:', error));
+        .catch(error => console.error(`Error fetching content from ${url}:`, error));
 }
 
 function navigate(url) {
@@ -15,18 +23,3 @@ function navigate(url) {
     loadContent(url);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadContent('../user/home.html');
-
-    const links = document.querySelectorAll('a');
-    links.forEach(link => {
-        link.addEventListener('click', event => {
-            event.preventDefault();
-            navigate(event.target.href);
-        });
-    });
-
-    window.onpopstate = () => {
-        loadContent(window.location.pathname);
-    };
-});

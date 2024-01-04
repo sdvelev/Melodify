@@ -35,7 +35,10 @@ function fetchPlaylists(){
                 const name = document.createElement('a');
                 name.classList.add('name');
                 name.textContent = playlist.name;
-                name.href = playlist.uri;
+                name.href = "#content";
+                name.onclick = function() {
+                    navigate(playlist.uri);
+                };
 
                 const author = document.createElement('p');
                 author.classList.add('author');

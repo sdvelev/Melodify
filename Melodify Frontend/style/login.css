@@ -5,6 +5,8 @@ body{
     overflow: hidden;
     background-color: var(--primary-color);
     color: var(--on--primary);
+    /*background-image: url("../music.jpg");*/
+    /*background-size: cover;*/
 }
 
 main {

@@ -51,3 +51,23 @@
 #search_results .item.artist img{
     border-radius: 50%;
 }
+
+#search_criteria button.album-filter span,
+#search_criteria button.artist-filter span,
+#search_criteria button.song-filter span{
+    display: none;
+}
+
+#search_criteria button.album-filter.active span,
+#search_criteria button.artist-filter.active span,
+#search_criteria button.song-filter.active span{
+    display: initial;
+}
+
+#search_results > div {
+    display: none;
+}
+
+#search_results > div.active {
+    display: block;
+}
