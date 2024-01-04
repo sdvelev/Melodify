@@ -18,8 +18,6 @@
     <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
 
-
-
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -29,8 +27,8 @@
             <h1><span class="fa fa-compact-disc"></span>Melodify</h1>
         </div>
         <div id="quick_actions">
-            <button onclick="navigate('./search')"><span class="fa fa-search"></span>Search</button>
-            <button onclick="navigate('./home')"><span class="fa fa-house"></span>Home</button>
+            <button><span class="fa fa-search"></span>Search</button>
+            <button><span class="fa fa-house"></span>Home</button>
         </div>
         <div id="library">
             <div id="library_actions">
@@ -44,77 +42,7 @@
         </div>
     </div>
     <div id="content">
-        <div id="search">
-            <div id="search_criteria">
-                <h1>Search</h1>
-                <div>
-                    <input type="search" placeholder="Search here">
-                    <button type="submit"><span class="fa fa-search"></span></button>
-                    <div id="search_filters">
-                        <button>Artists</button>
-                        <button>Albums</button>
-                        <button>Songs</button>
-                    </div>
-                </div>
-            </div>
-            <div id="search_results">
-                <div id="artist_search_results">
-                    <h2>Artists</h2>
-                    <div class="items">
-                        <div class="item artist">
-                            <img src="./../prince%20michael.jpg">
-                            <p>Elton John</p>
-                        </div>
-                        <div class="item artist">
-                            <img src="./../prince%20michael.jpg">
-                            <p>Elton John</p>
-                        </div>
-                    </div>
-                </div>
-                <div id="album_search_results">
-                    <h2>Albums</h2>
-                    <div class="items">
-                        <div class="item">
-                            <img src="./../album.jpg">
-                            <div class="info">
-                                <p class="name">Album</p>
-                                <p class="author">Artists</p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <img src="./../album.jpg">
-                            <div class="info">
-                                <p class="name">Album</p>
-                                <p class="author">Artists</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="song_search_results">
-                    <h2>Songs</h2>
-                    <div class="items">
-                        <div class="item">
-                            <img src="./../album.jpg">
-                            <div class="info">
-                                <p class="name">Song name</p>
-                                <p class="author">Album name, Artist name</p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <img src="./../album.jpg">
-                            <div class="info">
-                                <p class="name">Song name</p>
-                                <p class="author">Album name, Artist name</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="home" style="display: none">
-            <h2>Welcome</h2>
-        </div>
-        <div id="album" style="display: none">
+        <div id="playlist">
             <div class="media-banner">
                 <img src="./../album.jpg">
                 <div class="media-metadata">
@@ -286,9 +214,7 @@
     </div>
     <div id="queue">
         <h2><span class="fa fa-list"></span>Queue</h2>
-        <div class="items">
-        </div>
-
+        <div class="items"></div>
     </div>
 </main>
 <div id="player">

@@ -12,24 +12,21 @@ function handleLogin(event) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({email, password}),
     })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Invalid credentials. Please try again.');
             }
-            return response.json(); // Parse the JSON response
+            return response.json();
         })
         .then(data => {
-            localStorage.setItem('jwt', data.jwt);
-            localStorage.setItem('userId', data.userId);
-            // Redirect or perform actions upon successful login
-            // For example, redirect to a dashboard page:
-            window.location.href = '/index.html';
+            storeToken(data.token, data.user_id);
+            window.location.href = './../user/index.html';
         })
         .catch(error => {
             const errorBox = document.getElementById('error-box');
             errorBox.textContent = error.message;
-            errorBox.style.display = 'block'; // Show the error box
+            errorBox.style.display = 'block';
         });
 }
