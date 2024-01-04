@@ -1,27 +1,24 @@
-const artistButton = document.querySelector("#search_filters button.artist-filter");
-const artistSearchResults = document.querySelector("#artist_search_results");
-
-const albumButton = document.querySelector("#search_filters button.album-filter");
-const albumSearchResults = document.querySelector("#album_search_results");
-
-const songButton = document.querySelector("#search_filters button.song-filter");
-const songSearchResults = document.querySelector("#song_search_results");
-
-artistButton.addEventListener('click', event => {
+function clickArtistButton(){
+    const artistButton = document.querySelector("#search_filters button.artist-filter");
+    const artistSearchResults = document.querySelector("#artist_search_results");
     artistButton.classList.toggle("active");
     artistSearchResults.classList.toggle("active");
-});
+}
 
-albumButton.addEventListener('click', event => {
+function clickAlbumButton(){
+    const albumButton = document.querySelector("#search_filters button.album-filter");
+    const albumSearchResults = document.querySelector("#album_search_results");
+
     albumButton.classList.toggle("active");
     albumSearchResults.classList.toggle("active");
-});
+}
 
-songButton.addEventListener('click', event => {
+function clickSongButton(){
+    const songButton = document.querySelector("#search_filters button.song-filter");
+    const songSearchResults = document.querySelector("#song_search_results");
     songButton.classList.toggle("active");
     songSearchResults.classList.toggle("active");
-});
-
+}
 
 async function performSearch() {
     const searchBox = document.querySelector('#search input[type="search"]');
@@ -83,10 +80,10 @@ function updateSearchResults(category, results) {
                     break;
                 case 'song':
                     itemElement.innerHTML = `
-                        <img src="${result.album.image}">
+                        <img src="${result.album_image}">
                         <div class="info">
                             <p class="name">${result.name}</p>
-                            <p class="author">${result.album.name}, ${result.artists.map(artist => artist.name).join(", ")}</p>
+                            <p class="author">${result.album_name}, ${result.artists.map(artist => artist.name).join(", ")}</p>
                         </div>
                     `;
                     break;
