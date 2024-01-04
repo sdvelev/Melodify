@@ -115,7 +115,7 @@ public class PlaylistService {
 
         Optional<Playlist> optionalPlaylistToUpdate = playlistRepository.findById(playlistId);
         if (optionalPlaylistToUpdate.isPresent()) {
-            if (!optionalPlaylistToUpdate.get().getOwner().getId().equals(userToSet.getId()) || !isAdmin) {
+            if (!optionalPlaylistToUpdate.get().getOwner().getId().equals(userToSet.getId()) && !isAdmin) {
                 throw new MethodNotAllowed("There is a problem in authorization");
             }
 
