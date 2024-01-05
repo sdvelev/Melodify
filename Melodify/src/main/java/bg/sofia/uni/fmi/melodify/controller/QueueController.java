@@ -13,7 +13,6 @@ import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.aspectj.bridge.IMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -23,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -172,7 +170,7 @@ public class QueueController {
         }
     }
 
-    @GetMapping("/remove")
+    @DeleteMapping("/remove")
     public boolean removeSongFromQueue(
         @RequestParam(name = "song_id", required = false)
         @Positive(message = "") Long songId,

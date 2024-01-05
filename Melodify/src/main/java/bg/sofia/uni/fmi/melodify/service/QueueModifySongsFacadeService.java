@@ -85,13 +85,13 @@ public class QueueModifySongsFacadeService {
         }
 
         int currentSongIndex = originalQueue.getSongs().indexOf(originalSong);
-        if (currentSongIndex < originalQueue.getSongs().size() - 1) {
+        if (currentSongIndex <= originalQueue.getSongs().size() - 1) {
             originalQueue.setCurrentSongIndex((long) currentSongIndex + 1);
             queueService.createQueue(originalQueue);
-        } else if (currentSongIndex == originalQueue.getSongs().size() - 1) {
+        } /*else if (currentSongIndex == originalQueue.getSongs().size() - 1) {
             originalQueue.setCurrentSongIndex((long) currentSongIndex);
             queueService.createQueue(originalQueue);
-        }
+        }*/
 
         return true;
     }
