@@ -1,0 +1,10 @@
+#home {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    overflow-y: auto;
+}
+
+#home .item.artist img{
+    border-radius: 50%;
+}

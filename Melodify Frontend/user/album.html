@@ -5,7 +5,7 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album-view.css">
+    <link rel="stylesheet" href="../style/album.css">
     <link rel="stylesheet" href="../style/search.css">
     <link rel="stylesheet" href="../style/controls.css">
 
@@ -18,8 +18,51 @@
     <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
 
-
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const albumId = urlParams.get('id');
+
+        fetch(`/api/albums/${albumId}`)
+            .then(response => response.json())
+            .then(albumData => {
+                document.querySelector('#album h1').innerText = albumData.name;
+                document.querySelector('.artist-info p').innerText = albumData.artists[0].name;
+                document.querySelector('.additional_info > p').innerText = albumData.release_date;
+
+                const albumImage = document.querySelector('.media-banner img');
+                albumImage.src = albumData.image;
+
+                const songList = document.querySelector('.song_list tbody');
+                songList.innerHTML = '';
+                let songOrder = 1;
+                albumData.songs.forEach(song => {
+                    const newRow = document.createElement('tr');
+                    const artists = song.artists.map(artist => {
+                        return `<button class="a" onclick="navigate('./artist.html?id=${artist.id}')">${artist.name}</button>`;
+                    }).join(', ');
+                    newRow.innerHTML = `
+        <td>${songOrder}</td>
+        <td>
+          <p class="table-song">${song.name}</p>
+          <p class="table-artists">${artists}</p>
+        </td>
+        <td>${formatDuration(song.duration)}</td>
+      `;
+                    songList.appendChild(newRow);
+                    songOrder++;
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching album data:', error);
+            });
+
+        function formatDuration(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+    </script>
 </head>
 <body>
 <main>
@@ -43,7 +86,7 @@
         </div>
     </div>
     <div id="content">
-        <div id="album" style="display: none">
+        <div id="album">
             <div class="media-banner">
                 <img src="./../album.jpg">
                 <div class="media-metadata">
@@ -53,8 +96,7 @@
                             <img src="../prince%20michael.jpg">
                             <p>Artist Name</p>
                         </div>
-                        <p></p>
-                        <p>01.01.1991</p>
+                        <p>Date</p>
                     </div>
                 </div>
             </div>
@@ -68,146 +110,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
                     </tbody>
                 </table>
             </div>

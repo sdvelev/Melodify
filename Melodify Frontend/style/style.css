@@ -72,3 +72,29 @@ a:hover {
     color: var(--accent-color);
     text-decoration: underline;
 }
+
+button.a {
+    color: var(--on--primary);
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+}
+
+
+button.a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+button.a:focus {
+    outline: none;
+}
+
+
+.item .author {
+    font-size: smaller;
+}
+
+.item .name {
+    font-size: medium;
+}

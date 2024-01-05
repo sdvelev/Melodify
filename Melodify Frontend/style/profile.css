@@ -1,0 +1,40 @@
+#profile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+}
+
+#profile-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#profile-info img {
+    border-radius: 50%;
+    width: 40%;
+}
+
+#profile-info img:hover {
+    cursor: pointer;
+}
+
+#profile-info > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#profile-info > div > button {
+    background-color: var(--button-color);
+    padding: 8px;
+    border-radius: 5px;
+}
+
+#profile input[type="file"] {
+    display: none;
+}

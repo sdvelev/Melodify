@@ -5,7 +5,7 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album-view.css">
+    <link rel="stylesheet" href="../style/album.css">
     <link rel="stylesheet" href="../style/search.css">
     <link rel="stylesheet" href="../style/controls.css">
 
@@ -19,9 +19,21 @@
     <script src="../js/redirect.js" defer></script>
     <script src="../js/search.js"></script>
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener(`click`, handle);
+        function handle(evt) {
+            if (evt.target.closest(`a`) /* && possible other conditions */) {
+                console.clear();
+                console.log(`will not follow ${evt.target.href}`);
+                evt.preventDefault();
+                navigate(event.target.href);
+                return false
+            }
+        }
+    </script>
 
 </head>
-<body>
+<body onload="preventRedirect()">
 <main>
     <div id="sidebar">
         <div id="logo">
@@ -321,7 +333,7 @@
             <span class="fa fa-volume-low"></span>
             <input type="range" min="0" max="1" step="0.1">
         </div>
-        <img src="./../prince%20michael.jpg">
+        <img src="./../prince%20michael.jpg" onclick="navigate('./profile.html')">
     </div>
 </div>
 </body>

@@ -40,7 +40,6 @@ async function performSearch() {
 }
 
 async function search(endpoint, term) {
-    console.log(`searching at ${endpoint}?name=${term}`)
     const response = await fetch(`${endpoint}?name=${term}`);
     if (!response.ok) {
         throw new Error(`Failed to fetch ${endpoint}`);
@@ -66,15 +65,15 @@ function updateSearchResults(category, results) {
                     itemElement.classList.add('artist');
                     itemElement.innerHTML = `
                         <img src="${result.image}">
-                        <p>${result.name}</p>
+                        <button class="a name" onclick="navigate('./artist.html?id=${result.id}')">${result.name}</button>
                     `;
                     break;
                 case 'album':
                     itemElement.innerHTML = `
                         <img src="${result.image}">
                         <div class="info">
-                            <p class="name">${result.name}</p>
-                            <p class="author">${result.artists.map(artist => artist.name).join(", ")}</p>
+                            <button class="a name" onclick="navigate('./album.html?id=${result.id}')">${result.name}</button>
+                            <p class="author">${result.artists.map(artist => "<button class='a' onclick='navigate(\"./artist.html?id=\""+artist.id+")'>"+artist.name+"</button>").join(", ")}</p>
                         </div>
                     `;
                     break;
@@ -82,8 +81,8 @@ function updateSearchResults(category, results) {
                     itemElement.innerHTML = `
                         <img src="${result.album_image}">
                         <div class="info">
-                            <p class="name">${result.name}</p>
-                            <p class="author">${result.album_name}, ${result.artists.map(artist => artist.name).join(", ")}</p>
+                            <button class="a name" onclick="navigate('./album.html?id=${result.album_id}')">${result.name}</button>
+                            <p class="author"><button class="a" onclick="navigate('./album.html?id=${result.album_id}')">${result.album_name}</button> • ${result.artists.map(artist => "<button class='a' onclick='navigate(\"./artist.html?id=" + artist.id +"\")'>"+artist.name+"</button>").join(", ")}</p>
                         </div>
                     `;
                     break;

@@ -32,10 +32,11 @@ function fetchPlaylists(){
                 const info = document.createElement('div');
                 info.classList.add('info');
 
-                const name = document.createElement('a');
+                const name = document.createElement('button');
                 name.classList.add('name');
+                name.classList.add('a');
                 name.textContent = playlist.name;
-                name.href = "#content";
+                // name.href = playlist.uri;
                 name.onclick = function() {
                     navigate(playlist.uri);
                 };

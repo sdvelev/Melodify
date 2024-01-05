@@ -13,7 +13,7 @@
     min-width: 250px;
 }
 
-#search button {
+#search_criteria button {
     padding: 8px;
     border-radius: 15px;
     background-color: var(--button-color);

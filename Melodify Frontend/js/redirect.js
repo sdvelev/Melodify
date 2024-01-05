@@ -1,5 +1,16 @@
 const contentContainer = document.querySelector('main #content');
 
+
+function preventRedirect(){
+    const links = document.querySelectorAll("a");
+    links.forEach(link => {
+        link.addEventListener("click", event => {
+            event.preventDefault();
+            navigate(link.href);
+        })
+    })
+}
+
 function loadContent(url) {
     fetch(url, {
     })
@@ -14,6 +25,13 @@ function loadContent(url) {
                 console.error(`Html at ${url} is null`);
             }
             contentContainer.innerHTML = htmlDocument.querySelector('#content').innerHTML;
+            const links = contentContainer.querySelectorAll("a");
+            links.forEach(link => {
+                link.addEventListener("click", event => {
+                    event.preventDefault();
+                    navigate(link.href);
+                })
+            })
         })
         .catch(error => console.error(`Error fetching content from ${url}:`, error));
 }

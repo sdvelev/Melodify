@@ -5,9 +5,10 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album-view.css">
+    <link rel="stylesheet" href="../style/album.css">
     <link rel="stylesheet" href="../style/search.css">
     <link rel="stylesheet" href="../style/controls.css">
+    <link rel="stylesheet" href="../style/home.css">
 
     <script src="../js/theme.js"></script>
     <script src="../js/toggleSidebar.js"></script>
@@ -17,10 +18,12 @@
     <script src="../js/redirectToLogin.js" defer></script>
     <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
+    <script src="../js/home.js" defer></script>
+
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 
 </head>
-<body>
+<body onload="load()">
 <main>
     <div id="sidebar">
         <div id="logo">
@@ -43,14 +46,27 @@
     </div>
     <div id="content">
         <div id="home">
-            <h2>Welcome</h2>
+                <div>
+                    <h2>Welcome</h2>
+                    <div id="user_playlists">
+                        <h3>Your Playlists</h3>
+                        <div class="items"></div>
+                    </div>
+                    <div id="user_artists">
+                        <h3>Your Artists</h3>
+                        <div class="items"></div>
+                    </div>
+                    <div id="user_albums">
+                        <h3>Your Albums</h3>
+                        <div class="items"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
     <div id="queue">
         <h2><span class="fa fa-list"></span>Queue</h2>
         <div class="items">
         </div>
-
     </div>
 </main>
 <div id="player">

@@ -5,7 +5,7 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album-view.css">
+    <link rel="stylesheet" href="../style/album.css">
     <link rel="stylesheet" href="../style/search.css">
     <link rel="stylesheet" href="../style/controls.css">
 
@@ -19,6 +19,49 @@
     <script src="../js/redirect.js" defer></script>
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const playlistId = urlParams.get('id');
+
+        fetch(`/api/playlists/${playlistId}`)
+            .then(response => response.json())
+            .then(playlistData => {
+                document.querySelector('.additional_info > p').innerText = playlistData.creation_date;
+
+                const albumImage = document.querySelector('.media-banner img');
+                albumImage.src = playlistData.image;
+
+                const songList = document.querySelector('.song_list tbody');
+                songList.innerHTML = '';
+                let songOrder = 1;
+                playlistData.songs.forEach(song => {
+                    const newRow = document.createElement('tr');
+                    const artists = song.artists.map(artist => {
+                        return `<button class="a" onclick="navigate('./artist.html?id=${artist.id}')">${artist.name}</button>`;
+                    }).join(', ');
+                    newRow.innerHTML = `
+        <td>${songOrder}</td>
+        <td>
+          <p class="table-song">${song.name}</p>
+          <p class="table-artists">${artists}</p>
+        </td>
+        <td>${formatDuration(song.duration)}</td>
+      `;
+                    songList.appendChild(newRow);
+                    songOrder++;
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching album data:', error);
+            });
+
+        function formatDuration(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+    </script>
 </head>
 <body>
 <main>
@@ -28,7 +71,7 @@
         </div>
         <div id="quick_actions">
             <button onclick="navigate('./search.html')"><span class="fa fa-search"></span>Search</button>
-            <button onclick="navigate('./home.htmls')"><span class="fa fa-house"></span>Home</button>
+            <button onclick="navigate('./home.html')"><span class="fa fa-house"></span>Home</button>
         </div>
         <div id="library">
             <div id="library_actions">
@@ -46,14 +89,9 @@
             <div class="media-banner">
                 <img src="./../album.jpg">
                 <div class="media-metadata">
-                    <h1>AlbumName</h1>
+                    <h1>Playlist Name</h1>
                     <div class="additional_info">
-                        <div class="artist-info">
-                            <img src="../prince%20michael.jpg">
-                            <p>Artist Name</p>
-                        </div>
-                        <p></p>
-                        <p>01.01.1991</p>
+                        <p>Creation Date</p>
                     </div>
                 </div>
             </div>

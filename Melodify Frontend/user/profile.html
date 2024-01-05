@@ -5,8 +5,8 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album-view.css">
-    <link rel="stylesheet" href="../style/search.css">
+    <link rel="stylesheet" href="../style/album.css">
+    <link rel="stylesheet" href="../style/profile.css">
     <link rel="stylesheet" href="../style/controls.css">
 
     <script src="../js/theme.js"></script>
@@ -19,8 +19,75 @@
     <script src="../js/redirect.js" defer></script>
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 
+    <script>
+        function load(){
+            redirectToLoginIfInvalidCredentials();
+            const userId = getUserId();
+
+            fetch(`/api/users/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json'
+                }
+            }).then(user => {
+                console.log(user.name);
+                document.querySelectorAll("#profile-info input").item(0).value = user.name;
+                document.querySelectorAll("#profile-info input").item(1).value = user.surname;
+                document.querySelector("#profile img").src = user.image;
+            }).catch(error => {
+                document.querySelector("#profile-info").innerHTML = "We couldn't fetch your information";
+                console.log(error);
+            });
+
+            document.querySelector('#profile input[type="file"]').addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    uploadImage(file);
+                }
+            });
+        }
+    </script>
+
+
+    <script>
+        function openFileDialog() {
+            document.querySelector('#profile input[type="file"]').click();
+        }
+
+        function uploadImage(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/api/images/avatars', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const imageUrl = data.url;
+                    updateProfileImage(imageUrl);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function updateProfileImage(imageUrl) {
+            fetch('/api/users', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: imageUrl })
+            })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+
 </head>
-<body>
+<body onload="load()">
 <main>
     <div id="sidebar">
         <div id="logo">
@@ -43,7 +110,16 @@
     </div>
     <div id="content">
         <div id="profile">
+            <input type="file" accept="image/*">
             <h2>Profile</h2>
+            <div id="profile-info">
+                <img src="../prince%20michael.jpg" onclick="openFileDialog()">
+                <div id="profile-names">
+                    <input type="text">
+                    <input type="text">
+                    <button>Save</button>
+                </div>
+            </div>
         </div>
     </div>
     <div id="queue">
