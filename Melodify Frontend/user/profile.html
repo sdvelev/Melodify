@@ -5,31 +5,30 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album.css">
+    <link rel="stylesheet" href="../style/collection.css">
     <link rel="stylesheet" href="../style/profile.css">
     <link rel="stylesheet" href="../style/controls.css">
 
     <script src="../js/theme.js"></script>
-    <script src="../js/toggleSidebar.js"></script>
-    <script src="../js/toggleQueue.js"></script>
-    <script src="../js/player.js" defer></script>
     <script src="../js/jwt.js" defer></script>
     <script src="../js/redirectToLogin.js" defer></script>
-    <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
+
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 
     <script>
-        function load(){
+        function load() {
             redirectToLoginIfInvalidCredentials();
             const userId = getUserId();
+            const token = getToken();
 
-            fetch(`/api/users/${userId}`, {
+
+            fetch(`../../api/users/${userId}`, {
                 headers: {
-                    'Authorization': `Bearer ${getToken()}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
-            }).then(user => {
+            }).then(response => response.json()).then(user => {
                 console.log(user.name);
                 document.querySelectorAll("#profile-info input").item(0).value = user.name;
                 document.querySelectorAll("#profile-info input").item(1).value = user.surname;
@@ -39,7 +38,7 @@
                 console.log(error);
             });
 
-            document.querySelector('#profile input[type="file"]').addEventListener('change', function() {
+            document.querySelector('#profile input[type="file"]').addEventListener('change', function () {
                 const file = this.files[0];
                 if (file) {
                     uploadImage(file);
@@ -78,7 +77,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ image: imageUrl })
+                body: JSON.stringify({image: imageUrl})
             })
                 .catch(error => {
                     console.error('Error:', error);
@@ -88,80 +87,17 @@
 
 </head>
 <body onload="load()">
-<main>
-    <div id="sidebar">
-        <div id="logo">
-            <h1><span class="fa fa-compact-disc"></span>Melodify</h1>
+<main id="profile">
+    <input type="file" accept="image/*">
+    <h2>Profile</h2>
+    <div id="profile-info">
+        <img src="../prince%20michael.jpg" onclick="openFileDialog()">
+        <div id="profile-names">
+            <input type="text">
+            <input type="text">
+            <button>Save</button>
         </div>
-        <div id="quick_actions">
-            <button onclick="navigate('./search.html')"><span class="fa fa-search"></span>Search</button>
-            <button onclick="navigate('./home.html')"><span class="fa fa-house"></span>Home</button>
-        </div>
-        <div id="library">
-            <div id="library_actions">
-                <h2><span class="fa fa-bookmark"></span>Library</h2>
-                <div>
-                    <button><span class="fa fa-plus"></span></button>
-                </div>
-            </div>
-            <div class="items">
-            </div>
-        </div>
-    </div>
-    <div id="content">
-        <div id="profile">
-            <input type="file" accept="image/*">
-            <h2>Profile</h2>
-            <div id="profile-info">
-                <img src="../prince%20michael.jpg" onclick="openFileDialog()">
-                <div id="profile-names">
-                    <input type="text">
-                    <input type="text">
-                    <button>Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="queue">
-        <h2><span class="fa fa-list"></span>Queue</h2>
-        <div class="items">
-        </div>
-
     </div>
 </main>
-<div id="player">
-    <div id="track_info">
-        <div class="item">
-            <img src="./../album.jpg">
-            <div class="info">
-                <p class="name">Song name</p>
-                <p class="author">Album name</p>
-            </div>
-        </div>
-    </div>
-    <div id="player_controls">
-        <div class="controls">
-            <button><span class="fa fa-backward"></span></button>
-            <button><span class="fa fa-circle-play"></span></button>
-            <button><span class="fa fa-forward"></span></button>
-        </div>
-        <div class="track_slider">
-            <p id="current_time">0:00</p>
-            <input type="range"/>
-            <p id="duration">0:00</p>
-        </div>
-        <audio src="./../windows-xp-startup.mp3"></audio>
-    </div>
-    <div id="account">
-        <button onclick="toggleSidebar()"><span class="fa fa-bookmark active"></span></button>
-        <button onclick="toggleQueue()"><span class="fa fa-list active"></span></button>
-        <button onclick="toggleTheme()"><span class="fa fa-circle-half-stroke"></span></button>
-        <div>
-            <span class="fa fa-volume-low"></span>
-            <input type="range" min="0" max="1" step="0.1">
-        </div>
-        <img src="./../prince%20michael.jpg">
-    </div>
-</div>
 </body>
 </html>

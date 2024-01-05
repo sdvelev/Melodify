@@ -115,6 +115,7 @@ main>div {
     color: var(--on-surface);
     border-radius: 10px;
     padding: 10px;
+    border: none;
 }
 
 #content > div {
@@ -254,4 +255,8 @@ input[type="range"]::-webkit-progress-value, input[type="range"]::-moz-range-pro
 
 #account input[type="range"]{
     width: 80px;
+}
+
+iframe {
+    border-radius: 10px;
 }

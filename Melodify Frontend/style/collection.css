@@ -1,4 +1,4 @@
-#album {
+#album, #playlist {
     display: grid;
     grid-template-rows: minmax(150px, 10%) auto;
     padding: 10px;
@@ -47,6 +47,7 @@
     display: flex;
     flex-direction: row;
     justify-content: stretch;
+    align-items: flex-start;
     overflow-y: auto;
 }
 

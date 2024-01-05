@@ -5,20 +5,23 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album.css">
+    <link rel="stylesheet" href="../style/collection.css">
     <link rel="stylesheet" href="../style/search.css">
     <link rel="stylesheet" href="../style/controls.css">
 
-    <script src="../js/theme.js"></script>
-    <script src="../js/toggleSidebar.js"></script>
-    <script src="../js/toggleQueue.js"></script>
-    <script src="../js/player.js" defer></script>
+    <script src="../js/theme.js" defer></script>
     <script src="../js/jwt.js" defer></script>
     <script src="../js/redirectToLogin.js" defer></script>
-    <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
+
+    <script>
+        function playAlbum() {
+            window.parent.postMessage({action: 'navigateToArtist', artistId: "artist.id"}, '*');
+        }
+    </script>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const albumId = urlParams.get('id');
@@ -65,96 +68,33 @@
     </script>
 </head>
 <body>
-<main>
-    <div id="sidebar">
-        <div id="logo">
-            <h1><span class="fa fa-compact-disc"></span>Melodify</h1>
-        </div>
-        <div id="quick_actions">
-            <button onclick="navigate('./search.html')"><span class="fa fa-search"></span>Search</button>
-            <button onclick="navigate('./home.html')"><span class="fa fa-house"></span>Home</button>
-        </div>
-        <div id="library">
-            <div id="library_actions">
-                <h2><span class="fa fa-bookmark"></span>Library</h2>
-                <div>
-                    <button><span class="fa fa-plus"></span></button>
+<main id="album">
+    <div class="media-banner">
+        <img src="./../album.jpg" onclick="playAlbum()">
+        <div class="media-metadata">
+            <h1>AlbumName</h1>
+            <div class="additional_info">
+                <div class="artist-info">
+                    <img src="../prince%20michael.jpg">
+                    <p>Artist Name</p>
                 </div>
-            </div>
-            <div class="items">
+                <p>Date</p>
             </div>
         </div>
     </div>
-    <div id="content">
-        <div id="album">
-            <div class="media-banner">
-                <img src="./../album.jpg">
-                <div class="media-metadata">
-                    <h1>AlbumName</h1>
-                    <div class="additional_info">
-                        <div class="artist-info">
-                            <img src="../prince%20michael.jpg">
-                            <p>Artist Name</p>
-                        </div>
-                        <p>Date</p>
-                    </div>
-                </div>
-            </div>
-            <div class="song_list">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Duration</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div id="queue">
-        <h2><span class="fa fa-list"></span>Queue</h2>
-        <div class="items">
-        </div>
-
+    <div class="song_list">
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Duration</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </main>
-<div id="player">
-    <div id="track_info">
-        <div class="item">
-            <img src="./../album.jpg">
-            <div class="info">
-                <p class="name">Song name</p>
-                <p class="author">Album name</p>
-            </div>
-        </div>
-    </div>
-    <div id="player_controls">
-        <div class="controls">
-            <button><span class="fa fa-backward"></span></button>
-            <button><span class="fa fa-circle-play"></span></button>
-            <button><span class="fa fa-forward"></span></button>
-        </div>
-        <div class="track_slider">
-            <p id="current_time">0:00</p>
-            <input type="range"/>
-            <p id="duration">0:00</p>
-        </div>
-        <audio src="./../windows-xp-startup.mp3"></audio>
-    </div>
-    <div id="account">
-        <button onclick="toggleSidebar()"><span class="fa fa-bookmark active"></span></button>
-        <button onclick="toggleQueue()"><span class="fa fa-list active"></span></button>
-        <button onclick="toggleTheme()"><span class="fa fa-circle-half-stroke"></span></button>
-        <div>
-            <span class="fa fa-volume-low"></span>
-            <input type="range" min="0" max="1" step="0.1">
-        </div>
-        <img src="./../prince%20michael.jpg">
-    </div>
-</div>
 </body>
 </html>

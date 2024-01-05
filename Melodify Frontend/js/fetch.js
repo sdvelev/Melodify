@@ -4,7 +4,7 @@ function fetchPlaylists(){
     const token = getToken();
     const userId = getUserId();
 
-    fetch(`http://localhost:8080/api/users/${userId}`, {
+    fetch(`../../api/users/${userId}`, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ function fetchPlaylists(){
                 name.textContent = playlist.name;
                 // name.href = playlist.uri;
                 name.onclick = function() {
-                    navigate(playlist.uri);
+                    navigate(playlist.uri, false);
                 };
 
                 const author = document.createElement('p');
