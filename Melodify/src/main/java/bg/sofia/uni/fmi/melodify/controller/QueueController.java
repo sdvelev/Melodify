@@ -177,7 +177,7 @@ public class QueueController {
         }
     }
 
-    @DeleteMapping("/remove")
+    @PatchMapping("/remove")
     public boolean removeSongFromQueue(
         @RequestParam(name = "song_id", required = false)
         @Positive(message = "") Long songId,
