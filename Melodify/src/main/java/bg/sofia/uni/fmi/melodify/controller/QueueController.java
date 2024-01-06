@@ -177,6 +177,60 @@ public class QueueController {
         }
     }
 
+    @GetMapping("/previous")
+    public ResponseEntity<Resource> playPreviousSongFromQueue(HttpServletRequest request) {
+        try {
+            Long songToPlayId = queueService
+                .playPreviousSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
+
+            Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");
+
+            if (resource.exists() && resource.isReadable()) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentDispositionFormData("inline", songToPlayId + ".mp3");
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+                return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/next")
+    public ResponseEntity<Resource> playNextSongFromQueue(HttpServletRequest request) {
+        try {
+            Long songToPlayId = queueService
+                .playNextSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
+
+            Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");
+
+            if (resource.exists() && resource.isReadable()) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentDispositionFormData("inline", songToPlayId + ".mp3");
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+                return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PatchMapping("/remove")
     public boolean removeSongFromQueue(
         @RequestParam(name = "song_id", required = false)
