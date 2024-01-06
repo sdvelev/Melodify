@@ -20,9 +20,7 @@
         function playAlbum() {
             window.parent.postMessage({action: 'navigateToArtist', artistId: "artist.id"}, '*');
         }
-    </script>
 
-    <script>
         const urlParams = new URLSearchParams(window.location.search);
         const albumId = urlParams.get('id');
 
@@ -30,6 +28,13 @@
             .then(response => response.json())
             .then(albumData => {
                 document.querySelector('#album h1').innerText = albumData.name;
+                document.querySelector('#album h1').onclick = function (){
+                    playAlbum();
+                };
+                document.querySelector('.image-container div').onclick = function (){
+                    playAlbum();
+                }
+                document.querySelector('.artist-info img').src = albumData.artists[0].image;
                 document.querySelector('.artist-info p').innerText = albumData.artists[0].name;
                 document.querySelector('.additional_info > p').innerText = albumData.release_date;
 
@@ -70,7 +75,12 @@
 <body>
 <main id="album">
     <div class="media-banner">
-        <img src="./../album.jpg" onclick="playAlbum()">
+        <div class="image-container">
+            <img src="./../album.jpg">
+            <div>
+                <span class="fa fa-circle-play"></span>
+            </div>
+        </div>
         <div class="media-metadata">
             <h1>AlbumName</h1>
             <div class="additional_info">

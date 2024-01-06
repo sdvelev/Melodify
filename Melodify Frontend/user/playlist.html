@@ -23,11 +23,18 @@
         fetch(`/api/playlists/${playlistId}`)
             .then(response => response.json())
             .then(playlistData => {
-                document.querySelector('#playlist h1').innerText = playlistData.name;
+                const h1 = document.querySelector('#playlist h1');
+                h1.innerText = playlistData.name;
+                h1.onclick = function () {
+                    playPlaylist();
+                }
+                document.querySelector('.image-container div').onclick = function (){
+                    playPlaylist();
+                }
                 document.querySelector('.additional_info > p').innerText = playlistData.creation_date;
 
-                const albumImage = document.querySelector('.media-banner img');
-                albumImage.src = playlistData.image;
+                const playlistImage = document.querySelector('.media-banner img');
+                playlistImage.src = playlistData.image;
 
                 const songList = document.querySelector('.song_list tbody');
                 songList.innerHTML = '';
@@ -63,7 +70,12 @@
 <body>
 <main id="playlist">
     <div class="media-banner">
-        <img src="./../album.jpg">
+        <div class="image-container">
+            <img src="./../album.jpg">
+            <div>
+                <span class="fa fa-circle-play"></span>
+            </div>
+        </div>
         <div class="media-metadata">
             <h1>Playlist Name</h1>
             <div class="additional_info">
