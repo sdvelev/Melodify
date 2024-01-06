@@ -4,12 +4,14 @@ import bg.sofia.uni.fmi.melodify.model.Queue;
 import bg.sofia.uni.fmi.melodify.model.Song;
 import bg.sofia.uni.fmi.melodify.model.User;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,23 +26,26 @@ public class QueueModifySongsFacadeService {
         this.songService = songService;
     }
 
+    @Transactional
     public boolean addSongToQueue(@NotNull(message = "The provided queue id cannot be null")
                                   @Positive(message = "The provided queue id must be positive")
                                   Long queueId,
                                   @NotNull(message = "The provided song id cannot be null")
-                                  @Positive(message = "The provided song id must be positive")
-                                  Long songId) {
+                                  List<Long> songIds) {
         Optional<Queue> potentialQueueToAddTo = queueService.getQueueById(queueId);
         if (potentialQueueToAddTo.isEmpty()) {
             throw new ResourceNotFoundException("There is not a queue with such an id");
         }
 
-        Optional<Song> potentialSongToAdd = songService.getSongById(songId);
-        if (potentialSongToAdd.isEmpty()) {
-            throw new ResourceNotFoundException("There is not a sing with such an id");
+        for (Long songId : songIds) {
+            Optional<Song> potentialSongToAdd = songService.getSongById(songId);
+            if (potentialSongToAdd.isEmpty()) {
+                throw new ResourceNotFoundException("Some of the provided song ids are wrong. Operation failed");
+            }
+
+            potentialQueueToAddTo.get().getSongs().add(potentialSongToAdd.get());
         }
 
-        potentialQueueToAddTo.get().getSongs().add(potentialSongToAdd.get());
         queueService.createQueue(potentialQueueToAddTo.get());
         return true;
     }
@@ -116,8 +121,11 @@ public class QueueModifySongsFacadeService {
 
         int currentSongIndex = originalQueue.getSongs().indexOf(originalSong);
 
-        if (currentSongIndex >= 1 && originalQueue.getCurrentSongIndex() >= currentSongIndex) {
-            originalQueue.setCurrentSongIndex((long) currentSongIndex - 1);
+        if (originalQueue.getCurrentSongIndex().equals(0L) && currentSongIndex == 0) {
+            originalQueue.setCurrentSongIndex(0L);
+        }
+        else if (currentSongIndex >= 0 && originalQueue.getCurrentSongIndex() >= currentSongIndex) {
+            originalQueue.setCurrentSongIndex(originalQueue.getCurrentSongIndex() - 1);
         }
 
         originalQueue.getSongs().remove(originalSong);
