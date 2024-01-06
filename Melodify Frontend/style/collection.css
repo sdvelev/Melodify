@@ -1,4 +1,4 @@
-#album, #playlist {
+#album, #playlist, #artist{
     display: grid;
     grid-template-rows: minmax(150px, 10%) auto;
     padding: 10px;
@@ -141,4 +141,8 @@
 }
 .song_list .table-artist{
     font-size: small;
+}
+
+#artist .media-banner img {
+    border-radius: 50%;
 }

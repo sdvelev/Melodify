@@ -10,6 +10,56 @@ const volumeRange = document.querySelector('#account input[type="range"]');
 
 
 function nextSong() {
+    fetch('/api/queues/next', {
+        headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.status === 404) {
+                document.querySelector("#player audio").src = "";
+                forwardButton.disabled = true;
+                return;
+            }
+            else if (!response.ok){
+                throw new Error('No next song');
+            }
+            return response.blob();
+        })
+        .then(song => {
+            document.querySelector("#player audio").src = URL.createObjectURL(song);
+            play();
+        })
+        .catch(error => console.error(error.message));
+}
+
+function previousSong() {
+    fetch('/api/queues/previous', {
+        headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.status === 404) {
+                document.querySelector("#player audio").src = "";
+                backwardButton.disabled = true;
+                return;
+            }
+            else if (!response.ok){
+                throw new Error('No next song');
+            }
+            return response.blob();
+        })
+        .then(song => {
+            document.querySelector("#player audio").src = URL.createObjectURL(song);
+            play();
+        })
+        .catch(error => console.error(error.message));
+}
+
+function currentSong() {
     fetch('/api/queues/play', {
         headers: {
             'Authorization': `Bearer ${getToken()}`,
@@ -20,6 +70,8 @@ function nextSong() {
             if (response.status === 404) {
                 document.querySelector("#player audio").src = "";
                 forwardButton.disabled = true;
+                backwardButton.disabled = true;
+                playButton.parentNode.disabled = true;
                 return;
             }
             else if (!response.ok){

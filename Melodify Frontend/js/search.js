@@ -59,7 +59,6 @@ function updateSearchResults(category, results) {
             const itemElement = document.createElement('div');
             itemElement.classList.add('item');
 
-            // Customize based on category (artist, album, song)
             switch (category) {
                 case 'artist':
                     itemElement.classList.add('artist');
@@ -73,7 +72,7 @@ function updateSearchResults(category, results) {
                         <img src="${result.image}">
                         <div class="info">
                             <button class="a name" onclick="navigate('./album.html?id=${result.id}')">${result.name}</button>
-                            <p class="author">${result.artists.map(artist => "<button class='a' onclick='navigate(\"./artist.html?id=\""+artist.id+")'>"+artist.name+"</button>").join(", ")}</p>
+                            <p class="author">${result.artists.map(artist => "<button class='a' onclick='navigate(\"./artist.html?id="+artist.id+"\")'>"+artist.name+"</button>").join(", ")}</p>
                         </div>
                     `;
                     break;

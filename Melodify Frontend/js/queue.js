@@ -45,6 +45,7 @@ function playAlbum(albumId, songIndex = 0, shuffle = false) {
             .then(response => response.json())
             .then(() => {
                     fetchQueue();
+                    currentSong();
                 }
             )
             .catch(error => console.error(error.message));
@@ -84,8 +85,8 @@ function playPlaylist(playlistId, songIndex = 0, shuffle = false) {
         })
             .then(response => response.json())
             .then(() => {
-                    nextSong();
                     fetchQueue();
+                    currentSong();
                 }
             )
             .catch(error => console.error(error.message));
@@ -93,5 +94,19 @@ function playPlaylist(playlistId, songIndex = 0, shuffle = false) {
 }
 
 function playSong(songId) {
-
+    clearQueue();
+    fetch(`/api/queues/add?song_ids=${songId}`, {
+        headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        },
+        method: 'PATCH'
+    })
+        .then(response => response.json())
+        .then(() => {
+                fetchQueue();
+                currentSong();
+            }
+        )
+        .catch(error => console.error(error.message));
 }

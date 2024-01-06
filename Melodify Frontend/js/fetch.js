@@ -77,24 +77,31 @@ function fetchPlaylists(){
 }
 
 function fetchQueue(){
-    const token = getToken();
-    const userId = getUserId();
-    fetch(`http://localhost:8080/api/users/${userId}`, {
+    fetch(`http://localhost:8080/api/queues`, {
         headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${getToken()}`,
             'Content-Type': 'application/json'
         }
     })
         .then(response => response.json())
-        .then (user => user.queue)
+        .then(queues => queues[0])
         .then(queue => {
+
             const queueItems = document.querySelector('#queue .items');
 
             queueItems.innerHTML = "";
 
             if (queue.songs.length === queue.currentSongIndex){
+                document.querySelector("#track_info .name").textContent = "";
+                document.querySelector("#track_info .author").textContent = "";
+                document.querySelector("#track_info img").src = "";
                 return;
             }
+
+            document.querySelector("#track_info .name").textContent = queue.songs[queue.currentSongIndex].name;
+            document.querySelector("#track_info .author").textContent = queue.songs[queue.currentSongIndex].album_name;
+            document.querySelector("#track_info img").src = queue.songs[queue.currentSongIndex].album_image;
+
 
             queue.songs.slice(queue.currentSongIndex).forEach(song => {
                 const item = document.createElement('div');
