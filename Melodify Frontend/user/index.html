@@ -5,8 +5,6 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/style.css">
     <link rel="stylesheet" href="../style/index.css">
-    <link rel="stylesheet" href="../style/collection.css">
-    <link rel="stylesheet" href="../style/search.css">
     <link rel="stylesheet" href="../style/controls.css">
 
     <script src="../js/theme.js"></script>
@@ -17,7 +15,8 @@
     <script src="../js/redirectToLogin.js" defer></script>
     <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
-    <script src="../js/search.js"></script>
+    <script src="../js/queue.js" defer></script>
+
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
     <script>
         document.addEventListener(`click`, handle);
@@ -34,15 +33,20 @@
 
     <script>
         window.addEventListener('message', event => {
-            if (event.origin !== 'http://localhost:8080') {
-                console.log("Event origin was "+ event.origin);
+            if (event.origin !== window.origin) {
+                console.log("Event origin was "+ event.origin + ". Dismissed message. ");
                 return;
             }
 
             const data = event.data;
-            if (data.action === 'navigateToArtist') {
-                // const artistId = data.artistId;
-                document.querySelector("#player_controls .fa-circle-play").click();
+            if (data.action === 'playAlbum') {
+                playAlbum(data.albumId, data.songIndex);
+            }
+            if (data.action === 'playPlaylist') {
+                playPlaylist(data.playlistId, data.songIndex);
+            }
+            if (data.action === 'playSong') {
+                playSong(data.songId);
             }
         });
     </script>
@@ -98,7 +102,7 @@
             <input type="range"/>
             <p id="duration">0:00</p>
         </div>
-        <audio src="./../windows-xp-startup.mp3"></audio>
+        <audio src=""></audio>
     </div>
     <div id="account">
         <button onclick="toggleSidebar()"><span class="fa fa-bookmark active"></span></button>
@@ -108,7 +112,7 @@
             <span class="fa fa-volume-low"></span>
             <input type="range" min="0" max="1" step="0.1">
         </div>
-        <img src="./../prince%20michael.jpg" onclick="navigate('./profile.html', false)">
+        <img src="" onclick="navigate('./profile.html', false)">
     </div>
 </div>
 </body>

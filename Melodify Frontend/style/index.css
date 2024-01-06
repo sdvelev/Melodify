@@ -162,6 +162,10 @@ main>div {
     font-size: x-large;
 }
 
+#player_controls .controls button[disabled]{
+    opacity: 50%;
+}
+
 #player_controls .track_slider {
     display: flex;
     flex-direction: row;

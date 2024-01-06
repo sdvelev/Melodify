@@ -1,34 +1,62 @@
 const audio = document.querySelector('#player_controls audio');
 const playButton = document.querySelector('#player_controls .fa-circle-play');
-const forwardButton = document.querySelector('#player_controls .fa-forward');
-const backwardButton = document.querySelector('#player_controls .fa-backward');
+const forwardButton = document.querySelector('#player_controls .fa-forward').parentNode;
+const backwardButton = document.querySelector('#player_controls .fa-backward').parentNode;
 const trackRange = document.querySelector('#player .track_slider input');
 const currentTimeDisplay = document.querySelector('#current_time');
 const durationDisplay = document.querySelector('#duration');
 const volumeRange = document.querySelector('#account input[type="range"]');
 
 
-playButton.addEventListener('click', () => {
+
+function nextSong() {
+    fetch('/api/queues/play', {
+        headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.status === 404) {
+                document.querySelector("#player audio").src = "";
+                forwardButton.disabled = true;
+                return;
+            }
+            else if (!response.ok){
+                throw new Error('No next song');
+            }
+            return response.blob();
+        })
+        .then(song => {
+            document.querySelector("#player audio").src = URL.createObjectURL(song);
+            play();
+        })
+        .catch(error => console.error(error.message));
+}
+
+function play() {
     if (audio.paused) {
         audio.play();
-        togglePlayButton();
     } else {
         audio.pause();
-        playButton.classList.replace("fa-circle-pause", "fa-circle-play")
     }
+    togglePlayButton();
+}
+
+playButton.addEventListener('click', () => {
+    play();
 });
 
 forwardButton.addEventListener('click', () => {
-// TODO
+    fetchQueue();
+    nextSong();
 });
 
-// Backward button (skip back by 10 seconds)
 backwardButton.addEventListener('click', () => {
     // audio.currentTime -= 10;
     // TODO
 });
 
-// Track range
 trackRange.addEventListener('input', () => {
     audio.currentTime = trackRange.value;
 });
@@ -51,6 +79,8 @@ audio.addEventListener('loadedmetadata', () => {
 audio.addEventListener('ended', () => {
     trackRange.value = trackRange.max;
     togglePlayButton();
+    fetchQueue();
+    nextSong();
 });
 
 function formatTime(time) {

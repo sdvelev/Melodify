@@ -4,7 +4,7 @@ function fetchPlaylists(){
     const token = getToken();
     const userId = getUserId();
 
-    fetch(`../../api/users/${userId}`, {
+    fetch(`/api/users/${userId}`, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -13,6 +13,8 @@ function fetchPlaylists(){
         .then(response => response.json())
         .then(user => {
             console.log(user);
+            document.querySelector("#account img").src = user.image;
+
             const playlists = user.playlists;
             const libraryItems = document.querySelector('#library .items');
 
@@ -25,6 +27,18 @@ function fetchPlaylists(){
             playlists.forEach(playlist => {
                 const item = document.createElement('div');
                 item.classList.add('item');
+
+                const itemImageContainer = document.createElement('div');
+                itemImageContainer.classList.add("image-container");
+
+                const overflowDiv = document.createElement('div');
+                overflowDiv.onclick = function (){
+                    playPlaylist(playlist.id);
+                }
+
+                const span =document.createElement('span');
+                span.classList.add('fa');
+                span.classList.add('fa-circle-play');
 
                 const img = document.createElement('img');
                 img.src = playlist.image;
@@ -47,7 +61,10 @@ function fetchPlaylists(){
 
                 info.appendChild(name);
                 info.appendChild(author);
-                item.appendChild(img);
+                overflowDiv.appendChild(span);
+                itemImageContainer.appendChild(img)
+                itemImageContainer.appendChild(overflowDiv)
+                item.appendChild(itemImageContainer);
                 item.appendChild(info);
                 libraryItems.appendChild(item);
             });
@@ -75,12 +92,16 @@ function fetchQueue(){
 
             queueItems.innerHTML = "";
 
-            queue.forEach(song => {
+            if (queue.songs.length === queue.currentSongIndex){
+                return;
+            }
+
+            queue.songs.slice(queue.currentSongIndex).forEach(song => {
                 const item = document.createElement('div');
                 item.classList.add('item');
 
                 const img = document.createElement('img');
-                img.src = song.image;
+                img.src = song.album_image;
 
                 const info = document.createElement('div');
                 info.classList.add('info');
@@ -104,8 +125,9 @@ function fetchQueue(){
         .catch(error => {
             console.log(error.message);
             const libraryItems = document.querySelector('#queue .items');
-            libraryItems.innerHTML = "We couldn't fetch your playlists. "
+            libraryItems.innerHTML = "We couldn't fetch your queue. "
         });
 }
 
 fetchPlaylists();
+fetchQueue();
