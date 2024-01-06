@@ -179,15 +179,10 @@ public class UserService {
         UserDto userFieldsToChange,
         @NotNull(message = "The provided user id cannot be null")
         @Positive(message = "The provided user id must be positive")
-        Long userId,
-        boolean isAdmin) {
+        Long userId) {
 
         Optional<User> optionalUserToUpdate = userRepository.findById(userId);
         if (optionalUserToUpdate.isPresent()) {
-
-            if (optionalUserToUpdate.get().getId().equals(userId) && !isAdmin) {
-                throw new MethodNotAllowed("There is a problem in authorization");
-            }
 
             User userToUpdate = setUserNonNullFields(userFieldsToChange, optionalUserToUpdate.get());
             userRepository.save(userToUpdate);
