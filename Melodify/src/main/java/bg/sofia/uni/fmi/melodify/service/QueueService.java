@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -105,7 +106,7 @@ public class QueueService {
 
         Long currentSongIndex = queue.getCurrentSongIndex();
         if (currentSongIndex.equals((long) queue.getSongs().size())) {
-            throw new ResourceNotFoundException("There are not songs in queue");
+            throw new ResourceNotFoundException("There are not more songs in queue");
         }
         queue.setCurrentSongIndex(++currentSongIndex);
 
@@ -115,21 +116,34 @@ public class QueueService {
 
     public boolean removeSongFromQueue(
         @NotNull(message = "The provided queue id cannot be null")
-        @Positive(message = "The provided queue id must be positive")
-        Long queueId) {
-        Optional<Queue> potentialQueue = queueRepository.findById(queueId);
-        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
+        User potentialUser) {
+        Queue queue = potentialUser.getQueue();
+        if (queue == null || queue.getSongs().isEmpty()) {
             throw new ResourceNotFoundException("There are not songs in queue");
         }
-
-        Queue queue = potentialQueue.get();
 
         Long currentSongIndex = queue.getCurrentSongIndex();
         if (currentSongIndex.equals((long) queue.getSongs().size())) {
             throw new ResourceNotFoundException("There are not songs in queue");
         }
-        queue.setCurrentSongIndex(--currentSongIndex);
+        if (!currentSongIndex.equals(0L)) {
+            queue.setCurrentSongIndex(--currentSongIndex);
+        }
         queue.getSongs().remove(0);
+
+        queueRepository.save(queue);
+        return true;
+    }
+
+    public boolean clearSongsFromQueue(@NotNull(message = "The provided queue id cannot be null")
+                                       User potentialUser) {
+        Queue queue = potentialUser.getQueue();
+        if (queue == null) {
+            throw new ResourceNotFoundException("There are not songs in queue");
+        }
+
+        queue.setCurrentSongIndex(0L);
+        queue.setSongs(new ArrayList<>());
 
         queueRepository.save(queue);
         return true;
