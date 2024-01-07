@@ -19,9 +19,9 @@
     <script src="../js/profile.js" defer></script>
     <script defer>
         document.addEventListener('DOMContentLoaded', event => {
-            document.querySelector('iframe').addEventListener('load', function() {
-                history.pushState({ iframeUrl: this.src }, '', '?iframe=' + encodeURIComponent(this.src));
-            });
+            // document.querySelector('iframe').addEventListener('load', function() {
+            //     history.pushState({ iframeUrl: this.src }, '', '?iframe=' + encodeURIComponent(this.src));
+            // });
 
             window.addEventListener('popstate', function(event) {
                 if (event.state && event.state.iframeUrl) {
