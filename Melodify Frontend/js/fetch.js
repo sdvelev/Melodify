@@ -1,5 +1,4 @@
-
-function fetchPlaylists(){
+function fetchPlaylists() {
     redirectToLoginIfInvalidCredentials();
     const token = getToken();
     const userId = getUserId();
@@ -20,7 +19,7 @@ function fetchPlaylists(){
 
             libraryItems.innerHTML = "";
 
-            if(playlists.length === 0){
+            if (playlists.length === 0) {
                 libraryItems.innerHTML = "You have no playlists"
             }
 
@@ -32,11 +31,11 @@ function fetchPlaylists(){
                 itemImageContainer.classList.add("image-container");
 
                 const overflowDiv = document.createElement('div');
-                overflowDiv.onclick = function (){
+                overflowDiv.onclick = function () {
                     playPlaylist(playlist.id);
                 }
 
-                const span =document.createElement('span');
+                const span = document.createElement('span');
                 span.classList.add('fa');
                 span.classList.add('fa-circle-play');
 
@@ -51,7 +50,7 @@ function fetchPlaylists(){
                 name.classList.add('a');
                 name.textContent = playlist.name;
                 // name.href = playlist.uri;
-                name.onclick = function() {
+                name.onclick = function () {
                     navigate(playlist.uri, false);
                 };
 
@@ -76,7 +75,7 @@ function fetchPlaylists(){
         });
 }
 
-function fetchQueue(){
+function fetchQueue() {
     fetch(`http://localhost:8080/api/queues`, {
         headers: {
             'Authorization': `Bearer ${getToken()}`,
@@ -86,24 +85,48 @@ function fetchQueue(){
         .then(response => response.json())
         .then(queues => queues[0])
         .then(queue => {
+            backwardButton.disabled = false;
+            playButton.disabled = false;
+            forwardButton.disabled = false;
 
             const queueItems = document.querySelector('#queue .items');
 
             queueItems.innerHTML = "";
 
-            if (queue.songs.length === queue.currentSongIndex){
-                document.querySelector("#track_info .name").textContent = "";
+            if (queue.currentSongIndex === 0) {
+                backwardButton.disabled = true;
+            }
+
+            if (queue.songs.length === queue.currentSongIndex + 1) {
+                forwardButton.disabled = true;
+            }
+
+
+            if (queue.songs.length === 0) {
+                document.querySelector("#track_info .name").textContent = "No Song Playing";
                 document.querySelector("#track_info .author").textContent = "";
                 document.querySelector("#track_info img").src = "";
+                backwardButton.disabled = true
+                forwardButton.disabled = true;
+                playButton.disabled = true;
                 return;
             }
+
+            if (queue.songs.length === queue.currentSongIndex) {
+                document.querySelector("#track_info .name").textContent = "No Song Playing";
+                document.querySelector("#track_info .author").textContent = "";
+                document.querySelector("#track_info img").src = "";
+                forwardButton.disabled = true;
+                return;
+            }
+
 
             document.querySelector("#track_info .name").textContent = queue.songs[queue.currentSongIndex].name;
             document.querySelector("#track_info .author").textContent = queue.songs[queue.currentSongIndex].album_name;
             document.querySelector("#track_info img").src = queue.songs[queue.currentSongIndex].album_image;
 
 
-            queue.songs.slice(queue.currentSongIndex).forEach(song => {
+            queue.songs.slice(queue.currentSongIndex + 1).forEach(song => {
                 const item = document.createElement('div');
                 item.classList.add('item');
 
@@ -121,12 +144,13 @@ function fetchQueue(){
                 author.classList.add('author');
                 author.textContent = song.album;
 
-                // Appending elements to create the structure
                 info.appendChild(name);
                 info.appendChild(author);
                 item.appendChild(img);
                 item.appendChild(info);
                 queueItems.appendChild(item);
+
+                console.log(`Queue fetched: ${queue.currentSongIndex}`);
             });
         })
         .catch(error => {
@@ -137,4 +161,5 @@ function fetchQueue(){
 }
 
 fetchPlaylists();
+currentSong(false);
 fetchQueue();

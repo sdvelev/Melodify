@@ -1,16 +1,16 @@
-const audio = document.querySelector('#player_controls audio');
-const playButton = document.querySelector('#player_controls .fa-circle-play');
-const forwardButton = document.querySelector('#player_controls .fa-forward').parentNode;
-const backwardButton = document.querySelector('#player_controls .fa-backward').parentNode;
-const trackRange = document.querySelector('#player .track_slider input');
-const currentTimeDisplay = document.querySelector('#current_time');
-const durationDisplay = document.querySelector('#duration');
-const volumeRange = document.querySelector('#account input[type="range"]');
+let audio = document.querySelector('#player_controls audio');
+let playButton = document.querySelector('#player_controls .fa-circle-play').parentNode;
+let forwardButton = document.querySelector('#player_controls .fa-forward').parentNode;
+let backwardButton = document.querySelector('#player_controls .fa-backward').parentNode;
+let trackRange = document.querySelector('#player .track_slider input');
+let currentTimeDisplay = document.querySelector('#current_time');
+let durationDisplay = document.querySelector('#duration');
+let volumeRange = document.querySelector('#account input[type="range"]');
 
 
 
 function nextSong() {
-    fetch('/api/queues/next', {
+    return fetch('/api/queues/next', {
         headers: {
             'Authorization': `Bearer ${getToken()}`,
             'Content-Type': 'application/json'
@@ -18,9 +18,9 @@ function nextSong() {
     })
         .then(response => {
             if (response.status === 404) {
-                document.querySelector("#player audio").src = "";
+                audio.removeAttribute('src');
                 forwardButton.disabled = true;
-                return;
+                return Promise.resolve();
             }
             else if (!response.ok){
                 throw new Error('No next song');
@@ -28,14 +28,16 @@ function nextSong() {
             return response.blob();
         })
         .then(song => {
-            document.querySelector("#player audio").src = URL.createObjectURL(song);
-            play();
+            if(song){
+                audio.setAttribute('src', URL.createObjectURL(song));
+                play();
+            }
         })
         .catch(error => console.error(error.message));
 }
 
 function previousSong() {
-    fetch('/api/queues/previous', {
+    return fetch('/api/queues/previous', {
         headers: {
             'Authorization': `Bearer ${getToken()}`,
             'Content-Type': 'application/json'
@@ -43,24 +45,26 @@ function previousSong() {
     })
         .then(response => {
             if (response.status === 404) {
-                document.querySelector("#player audio").src = "";
+                audio.removeAttribute('src');
                 backwardButton.disabled = true;
-                return;
+                return Promise.resolve();
             }
             else if (!response.ok){
-                throw new Error('No next song');
+                throw new Error('No previous song');
             }
             return response.blob();
         })
         .then(song => {
-            document.querySelector("#player audio").src = URL.createObjectURL(song);
-            play();
+            if(song){
+                audio.setAttribute('src', URL.createObjectURL(song));
+                play();
+            }
         })
         .catch(error => console.error(error.message));
 }
 
-function currentSong() {
-    fetch('/api/queues/play', {
+function currentSong(startPlaying = true) {
+    return fetch('/api/queues/play', {
         headers: {
             'Authorization': `Bearer ${getToken()}`,
             'Content-Type': 'application/json'
@@ -68,11 +72,11 @@ function currentSong() {
     })
         .then(response => {
             if (response.status === 404) {
-                document.querySelector("#player audio").src = "";
-                forwardButton.disabled = true;
-                backwardButton.disabled = true;
-                playButton.parentNode.disabled = true;
-                return;
+                audio.removeAttribute('src');
+                // forwardButton.disabled = true;
+                // backwardButton.disabled = true;
+                playButton.disabled = true;
+                return Promise.resolve();
             }
             else if (!response.ok){
                 throw new Error('No next song');
@@ -80,8 +84,12 @@ function currentSong() {
             return response.blob();
         })
         .then(song => {
-            document.querySelector("#player audio").src = URL.createObjectURL(song);
-            play();
+            if(song){
+                audio.setAttribute('src', URL.createObjectURL(song));
+                if(startPlaying){
+                    play();
+                }
+            }
         })
         .catch(error => console.error(error.message));
 }
@@ -100,13 +108,19 @@ playButton.addEventListener('click', () => {
 });
 
 forwardButton.addEventListener('click', () => {
-    fetchQueue();
-    nextSong();
+    nextSong()
+        .finally(() => {
+        fetchQueue();
+    })
+        .catch(error => console.error(error.message));
 });
 
 backwardButton.addEventListener('click', () => {
-    // audio.currentTime -= 10;
-    // TODO
+    previousSong()
+        .finally(() => {
+            fetchQueue();
+        })
+        .catch(error => console.error(error.message));
 });
 
 trackRange.addEventListener('input', () => {
@@ -131,8 +145,11 @@ audio.addEventListener('loadedmetadata', () => {
 audio.addEventListener('ended', () => {
     trackRange.value = trackRange.max;
     togglePlayButton();
-    fetchQueue();
-    nextSong();
+    nextSong()
+        .finally(() => {
+            fetchQueue();
+        })
+        .catch(error => console.error(error.message));
 });
 
 function formatTime(time) {
@@ -143,10 +160,9 @@ function formatTime(time) {
 
 function togglePlayButton() {
     if (audio.paused) {
-        playButton.classList.replace("fa-circle-pause", "fa-circle-play")
+        playButton.querySelector("span").classList.replace("fa-circle-pause", "fa-circle-play")
 
     } else {
-        playButton.classList.replace("fa-circle-play", "fa-circle-pause")
-
+        playButton.querySelector("span").classList.replace("fa-circle-play", "fa-circle-pause")
     }
 }

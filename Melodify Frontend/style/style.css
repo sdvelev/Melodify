@@ -153,3 +153,7 @@ main {
     background-color: var(--surface-color);
     color: var(--on-surface);
 }
+
+img {
+    object-fit: cover;
+}

@@ -1,6 +1,6 @@
 
 function clearQueue(){
-    fetch("/api/queues/clear", {
+    return fetch("/api/queues/clear", {
         method: 'PATCH',
         headers: {
             'Authorization': `Bearer ${getToken()}`,
@@ -34,20 +34,24 @@ function playAlbum(albumId, songIndex = 0, shuffle = false) {
             ids = temp;
         }
 
-        clearQueue();
-        fetch(`/api/queues/add?song_ids=${ids.join(",")}`, {
-            headers: {
-                'Authorization': `Bearer ${getToken()}`,
-                'Content-Type': 'application/json'
-            },
-            method: 'PATCH'
-        })
-            .then(response => response.json())
+        clearQueue()
             .then(() => {
-                    fetchQueue();
-                    currentSong();
-                }
-            )
+                fetch(`/api/queues/add?song_ids=${ids.join(",")}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'PATCH'
+                })
+                    .then(response => response.json())
+                    .then(() => {
+                        currentSong()
+                            .finally(() => {
+                                fetchQueue();
+                            })
+                    })
+                    .catch(error => console.error(error.message));
+            })
             .catch(error => console.error(error.message));
     });
 }
@@ -75,8 +79,31 @@ function playPlaylist(playlistId, songIndex = 0, shuffle = false) {
             ids = temp;
         }
 
-        clearQueue();
-        fetch(`/api/queues/add?song_ids=${ids.join(",")}`, {
+        clearQueue()
+            .then(() => {
+                fetch(`/api/queues/add?song_ids=${ids.join(",")}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'PATCH'
+                })
+                    .then(response => response.json())
+                    .then(() => {
+                            currentSong().then(() => {
+                                fetchQueue();
+                            })
+                        }
+                    )
+                    .catch(error => console.error(error.message));
+            })
+            .catch(error => console.error(error.message));
+    });
+}
+
+function playSong(songId) {
+    clearQueue().then(() => {
+        fetch(`/api/queues/add?song_ids=${songId}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`,
                 'Content-Type': 'application/json'
@@ -85,28 +112,14 @@ function playPlaylist(playlistId, songIndex = 0, shuffle = false) {
         })
             .then(response => response.json())
             .then(() => {
-                    fetchQueue();
-                    currentSong();
+                    currentSong()
+                        .finally(() => {
+                        fetchQueue();
+                    })
+                        .catch(error => console.error(error.message));
                 }
             )
             .catch(error => console.error(error.message));
-    });
-}
-
-function playSong(songId) {
-    clearQueue();
-    fetch(`/api/queues/add?song_ids=${songId}`, {
-        headers: {
-            'Authorization': `Bearer ${getToken()}`,
-            'Content-Type': 'application/json'
-        },
-        method: 'PATCH'
     })
-        .then(response => response.json())
-        .then(() => {
-                fetchQueue();
-                currentSong();
-            }
-        )
-        .catch(error => console.error(error.message));
+        .catch(error => console.log(error.message));
 }
