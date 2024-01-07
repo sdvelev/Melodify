@@ -16,6 +16,34 @@
     <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
     <script src="../js/queue.js" defer></script>
+    <script src="../js/profile.js" defer></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', event => {
+            document.querySelector("#library_actions button").onclick = function () {
+                document.querySelector("#create-playlist").style.display = "flex";
+                document.querySelector("#create-playlist input").value = "";
+            }
+        });
+    </script>
+
+    <script defer>
+        function createPlaylist(){
+            let playlistName = document.querySelector("#create-playlist input").value;
+            fetch(`/api/playlists`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({'name': playlistName, 'image': 'https://i1.sndcdn.com/artworks-y6qitUuZoS6y8LQo-5s2pPA-t500x500.jpg'})
+            })
+                .then(()=>{
+                    document.querySelector("#create-playlist").style.display = "none";
+                    fetchPlaylists();
+                })
+                .catch(error => console.error(error.message));
+        }
+    </script>
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
     <script>
@@ -46,7 +74,7 @@
                 playPlaylist(data.playlistId, data.songIndex);
             }
             if (data.action === 'playSong') {
-                playSong(data.songId);
+                playSong(data.songId, data.dropQueue);
             }
         });
     </script>
@@ -68,6 +96,10 @@
                 <div>
                     <button><span class="fa fa-plus"></span></button>
                 </div>
+            </div>
+            <div id="create-playlist">
+                <input type="text">
+                <button onclick="createPlaylist()"><span class="fa fa-plus"></span></button>
             </div>
             <div class="items">
             </div>
@@ -112,7 +144,8 @@
             <span class="fa fa-volume-low"></span>
             <input type="range" min="0" max="1" step="0.1">
         </div>
-        <img alt="./images/users/guest-user.png" src="" onclick="navigate('./profile.html', false)">
+        <input type="file" onchange="doUpload(event)">
+        <img src="/images/users/guest-user.png" onclick="openFileDialog()">
     </div>
 </div>
 </body>

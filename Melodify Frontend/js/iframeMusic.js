@@ -6,6 +6,6 @@ function playPlaylist(playlistId, songIndex = 0) {
     window.parent.postMessage({action: 'playPlaylist', playlistId: playlistId, songIndex: songIndex}, '*');
 }
 
-function playSong(songId) {
-    window.parent.postMessage({action: 'playSong', songId: songId}, '*');
+function playSong(songId, dropQueue = true) {
+    window.parent.postMessage({action: 'playSong', songId: songId, dropQueue: dropQueue}, '*');
 }

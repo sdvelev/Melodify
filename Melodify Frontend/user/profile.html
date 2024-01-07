@@ -13,6 +13,7 @@
     <script src="../js/jwt.js" defer></script>
     <script src="../js/redirectToLogin.js" defer></script>
     <script src="../js/redirect.js" defer></script>
+    <script src="../js/profile.js" defer></script>
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 
@@ -46,48 +47,9 @@
             });
         }
     </script>
-
-
-    <script>
-        function openFileDialog() {
-            document.querySelector('#profile input[type="file"]').click();
-        }
-
-        function uploadImage(file) {
-            const formData = new FormData();
-            formData.append('image', file);
-
-            fetch('/api/images/avatars', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const imageUrl = data.url;
-                    updateProfileImage(imageUrl);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-        function updateProfileImage(imageUrl) {
-            fetch('/api/users', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({image: imageUrl})
-            })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-    </script>
-
 </head>
 <body onload="load()">
-<main id="profile">
+<main id="account">
     <input type="file" accept="image/*">
     <h2>Profile</h2>
     <div id="profile-info">

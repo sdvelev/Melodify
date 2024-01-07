@@ -84,14 +84,41 @@ main>div {
 }
 
 #library {
-    display: grid;
-    grid-template-rows: auto 1fr;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     background-color: var(--surface-color);
     color: var(--on-surface);
     padding: 10px;
     border-radius: 10px;
     gap: 10px;
     overflow-y: hidden;
+}
+
+#library .items {
+    height: 100%;
+}
+
+#create-playlist {
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    padding: 5px;
+    display: none;
+}
+
+#create-playlist input{
+    width: 100%;
+}
+
+#create-playlist button {
+    background-color: var(--button-color);
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 4px;
 }
 
 #library_actions {
@@ -249,6 +276,14 @@ input[type="range"]::-webkit-progress-value, input[type="range"]::-moz-range-pro
     height: 40px;
     width: 40px;
     border-radius: 50%;
+}
+
+#account img:hover {
+    cursor: pointer;
+}
+
+#account input[type="file"]{
+    display: none;
 }
 
 #account > div {

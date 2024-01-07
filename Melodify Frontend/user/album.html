@@ -14,6 +14,7 @@
     <script src="../js/redirectToLogin.js" defer></script>
     <script src="../js/redirect.js" defer></script>
     <script src="../js/iframeMusic.js" defer></script>
+    <script src="../js/addToPlaylist.js" defer></script>
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 
@@ -47,12 +48,17 @@
                         return `<button class="a" onclick="navigate('./artist.html?id=${artist.id}')">${artist.name}</button>`;
                     }).join(', ');
                     newRow.innerHTML = `
-        <td>${songOrder}</td>
+        <td>
+            <span class="num">${songOrder}</span>
+            <button class="a num-button" onclick="playAlbum(${albumId}, ${songOrder - 1})"><span class="fa fa-circle-play"></span></button>
+        </td>
         <td>
           <p class="table-song">${song.name}</p>
           <p class="table-artists">${artists}</p>
         </td>
         <td>${formatDuration(song.duration)}</td>
+        <td><button class="a" onclick="createAddToPlaylistDialog(${song.id})"><span class="fa fa-plus"></span></button></td>
+        <td><button class="a" onclick="playSong(${song.id}, false)"><span class="fa fa-list"></span></button></td>
       `;
                     songList.appendChild(newRow);
                     songOrder++;
@@ -95,7 +101,9 @@
             <tr>
                 <th>#</th>
                 <th>Title</th>
-                <th>Duration</th>
+                <th>Time</th>
+                <th><span class="fa fa-plus"></span></th>
+                <th><span class="fa fa-list"></span></th>
             </tr>
             </thead>
             <tbody>

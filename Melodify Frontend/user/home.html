@@ -19,18 +19,27 @@
 </head>
 <body onload="load()">
 <main id="home">
-    <h2>Welcome</h2>
-    <div id="user_playlists">
-        <h3>Your Playlists</h3>
-        <div class="items"></div>
+    <div id="search_criteria">
+        <h1>Welcome</h1>
+            <div id="search_filters">
+                <button onclick="clickPlaylistButton()" class="song-filter active"><span class="fa fa-check"></span>Playlists</button>
+                <button onclick="clickArtistButton()" class="artist-filter active"><span class="fa fa-check"></span>Artists</button>
+                <button onclick="clickAlbumButton()" class="album-filter active"><span class="fa fa-check"></span>Albums</button>
+            </div>
     </div>
-    <div id="user_artists">
-        <h3>Your Artists</h3>
-        <div class="items"></div>
-    </div>
-    <div id="user_albums">
-        <h3>Your Albums</h3>
-        <div class="items"></div>
+    <div id="user_items">
+        <div id="user_playlists" class="active">
+            <h3>Your Playlists</h3>
+            <div class="items"></div>
+        </div>
+        <div id="user_artists" class="active">
+            <h3>Your Artists</h3>
+            <div class="items"></div>
+        </div>
+        <div id="user_albums" class="active">
+            <h3>Your Albums</h3>
+            <div class="items"></div>
+        </div>
     </div>
 </main>
 </body>

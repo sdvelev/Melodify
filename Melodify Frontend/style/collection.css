@@ -1,4 +1,4 @@
-#album, #playlist, #artist{
+#album, #playlist, #artist {
     display: grid;
     grid-template-rows: minmax(150px, 10%) auto;
     padding: 10px;
@@ -100,12 +100,22 @@
     border-collapse: collapse;
 }
 
+.song_list th:nth-child(2),
+.song_list td:nth-child(2) {
+    text-align: left;
+}
+
+.song_list th:not(:nth-child(2)),
+.song_list td:not(:nth-child(2)) {
+    text-align: center;
+}
+
 .song_list thead tr {
     border-collapse: collapse;
     border-bottom: 5px solid var(--strong-border);
 }
 
-.song_list table thead{
+.song_list table thead {
     background-color: var(--surface-color);
     height: 40px;
 }
@@ -116,7 +126,7 @@
     background-color: var(--surface-color);
 }
 
-.song_list table tbody{
+.song_list table tbody {
     max-height: calc(500px);
 }
 
@@ -124,7 +134,7 @@
     text-align: left;
 }
 
-.song_list table thead td{
+.song_list table thead td {
     border-bottom: 1px solid var(--strong-border);
 }
 
@@ -139,10 +149,55 @@
 .song_list .table-song {
     font-size: large;
 }
-.song_list .table-artist{
+
+.song_list .table-artist {
     font-size: small;
+}
+
+.song_list tr:hover .num {
+    display: none;
+}
+
+.song_list tr:hover td .num-button {
+    display: block;
+}
+
+.song_list tr .num-button {
+    display: none;
+}
+
+.song_list td:first-child {
+    width: 30px;
+    text-align: center;
 }
 
 #artist .media-banner img {
     border-radius: 50%;
+}
+
+.add-to-playlist-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--surface-color);
+    color: var(--on-surface);
+    border: 1px solid var(--strong-border);
+    padding: 20px;
+    z-index: 1000;
+    border-radius: 10px;
+}
+
+.add-to-playlist-dialog .dialog-content {
+    text-align: center;
+}
+
+.add-to-playlist-dialog .dialog-buttons {
+    margin-top: 20px;
+}
+
+.add-to-playlist-dialog button {
+    padding: 8px;
+    color: var(--button-color);
+    border-radius: 5px;
 }

@@ -1,5 +1,4 @@
-
-function clearQueue(){
+function clearQueue() {
     return fetch("/api/queues/clear", {
         method: 'PATCH',
         headers: {
@@ -11,6 +10,7 @@ function clearQueue(){
         })
         .catch(error => console.error(error.message));
 }
+
 function playAlbum(albumId, songIndex = 0, shuffle = false) {
     fetch(`/api/albums/${albumId}`, {
         headers: {
@@ -101,8 +101,29 @@ function playPlaylist(playlistId, songIndex = 0, shuffle = false) {
     });
 }
 
-function playSong(songId) {
-    clearQueue().then(() => {
+function playSong(songId, dropQueue = true) {
+    if (dropQueue) {
+        clearQueue().then(() => {
+            fetch(`/api/queues/add?song_ids=${songId}`, {
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                method: 'PATCH'
+            })
+                .then(response => response.json())
+                .then(() => {
+                        currentSong()
+                            .finally(() => {
+                                fetchQueue();
+                            })
+                            .catch(error => console.error(error.message));
+                    }
+                )
+                .catch(error => console.error(error.message));
+        })
+            .catch(error => console.log(error.message));
+    } else {
         fetch(`/api/queues/add?song_ids=${songId}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`,
@@ -112,14 +133,8 @@ function playSong(songId) {
         })
             .then(response => response.json())
             .then(() => {
-                    currentSong()
-                        .finally(() => {
-                        fetchQueue();
-                    })
-                        .catch(error => console.error(error.message));
-                }
-            )
+                fetchQueue();
+            })
             .catch(error => console.error(error.message));
-    })
-        .catch(error => console.log(error.message));
+    }
 }
