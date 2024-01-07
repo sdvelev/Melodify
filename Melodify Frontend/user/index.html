@@ -19,26 +19,67 @@
     <script src="../js/profile.js" defer></script>
     <script defer>
         document.addEventListener('DOMContentLoaded', event => {
-            document.querySelector("#library_actions button").onclick = function () {
-                document.querySelector("#create-playlist").style.display = "flex";
-                document.querySelector("#create-playlist input").value = "";
-            }
-        });
-    </script>
+            document.querySelector('iframe').addEventListener('load', function() {
+                history.pushState({ iframeUrl: this.src }, '', '?iframe=' + encodeURIComponent(this.src));
+            });
 
-    <script defer>
-        function createPlaylist(){
-            let playlistName = document.querySelector("#create-playlist input").value;
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.iframeUrl) {
+                    document.querySelector('iframe').src = event.state.iframeUrl;
+                }
+            });
+
+            const createPlaylistButton = document.querySelector("#library_actions button");
+
+            createPlaylistButton.onclick = function () {
+                createPlaylistDialog();
+            };
+        });
+
+        function createPlaylistDialog() {
+            const dialog = document.createElement('dialog');
+            dialog.innerHTML = `
+            <form method="dialog">
+                <input type="text" id="playlist-name" placeholder="Enter playlist name" required>
+                <button id="cancel-btn" type="button">Cancel</button>
+                <button id="create-btn" type="submit">Create</button>
+            </form>
+        `;
+            document.body.appendChild(dialog);
+            const cancelButton = dialog.querySelector("#cancel-btn");
+            const createButton = dialog.querySelector("#create-btn");
+            const playlistNameInput = dialog.querySelector("#playlist-name");
+            cancelButton.onclick = function () {
+                dialog.remove();
+            };
+
+            createButton.onclick = function (event) {
+                event.preventDefault();
+                const playlistName = playlistNameInput.value;
+                if (playlistName.trim() !== '') {
+                    createPlaylist(playlistName);
+                    dialog.remove();
+                } else {
+                    // Handle empty playlist name error or prompt the user
+                    console.log("Please enter a valid playlist name");
+                }
+            };
+            dialog.showModal();
+        }
+
+        function createPlaylist(name) {
             fetch(`/api/playlists`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${getToken()}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({'name': playlistName, 'image': 'https://i1.sndcdn.com/artworks-y6qitUuZoS6y8LQo-5s2pPA-t500x500.jpg'})
+                body: JSON.stringify({
+                    'name': name,
+                    'image': 'https://i1.sndcdn.com/artworks-y6qitUuZoS6y8LQo-5s2pPA-t500x500.jpg'
+                })
             })
-                .then(()=>{
-                    document.querySelector("#create-playlist").style.display = "none";
+                .then(() => {
                     fetchPlaylists();
                 })
                 .catch(error => console.error(error.message));
@@ -47,22 +88,9 @@
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
     <script>
-        document.addEventListener(`click`, handle);
-        function handle(evt) {
-            if (evt.target.closest(`a`) /* && possible other conditions */) {
-                console.clear();
-                console.log(`will not follow ${evt.target.href}`);
-                evt.preventDefault();
-                navigate(event.target.href);
-                return false
-            }
-        }
-    </script>
-
-    <script>
         window.addEventListener('message', event => {
             if (event.origin !== window.origin) {
-                console.log("Event origin was "+ event.origin + ". Dismissed message. ");
+                console.log("Event origin was " + event.origin + ". Dismissed message. ");
                 return;
             }
 
@@ -80,7 +108,7 @@
     </script>
 
 </head>
-<body onload="preventRedirect()">
+<body>
 <main>
     <div id="sidebar">
         <div id="logo">
@@ -97,15 +125,11 @@
                     <button><span class="fa fa-plus"></span></button>
                 </div>
             </div>
-            <div id="create-playlist">
-                <input type="text">
-                <button onclick="createPlaylist()"><span class="fa fa-plus"></span></button>
-            </div>
             <div class="items">
             </div>
         </div>
     </div>
-        <iframe id="content" src="./home.html"></iframe>
+    <iframe id="content" src="./home.html"></iframe>
     <div id="queue">
         <h2><span class="fa fa-list"></span>Queue</h2>
         <div class="items">

@@ -40,9 +40,8 @@ function navigate(url, redirect=true) {
     if(redirect){
         window.location.href=url;
     } else {
-        history.pushState(null, null, url);
         document.querySelector("iframe").src = url;
-        // loadContent(url);
+        history.pushState({iframeUrl: url}, '?iframe=' + encodeURIComponent(url));
     }
 }
 

@@ -174,30 +174,3 @@
 #artist .media-banner img {
     border-radius: 50%;
 }
-
-.add-to-playlist-dialog {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: var(--surface-color);
-    color: var(--on-surface);
-    border: 1px solid var(--strong-border);
-    padding: 20px;
-    z-index: 1000;
-    border-radius: 10px;
-}
-
-.add-to-playlist-dialog .dialog-content {
-    text-align: center;
-}
-
-.add-to-playlist-dialog .dialog-buttons {
-    margin-top: 20px;
-}
-
-.add-to-playlist-dialog button {
-    padding: 8px;
-    color: var(--button-color);
-    border-radius: 5px;
-}

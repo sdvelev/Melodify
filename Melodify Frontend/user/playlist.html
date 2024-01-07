@@ -14,7 +14,7 @@
     <script src="../js/redirectToLogin.js" defer></script>
     <script src="../js/redirect.js" defer></script>
     <script src="../js/iframeMusic.js" defer></script>
-    <script src="../js/addToPlaylist.js" defer></script>
+    <script src="../js/playlistOperations.js" defer></script>
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 
@@ -33,7 +33,10 @@
                 document.querySelector('.image-container div').onclick = function () {
                     playPlaylist(playlistId);
                 }
-                document.querySelector('.additional_info > p').innerText = playlistData.creation_date;
+                document.querySelector('.additional_info').innerHTML =
+                    `<button onclick="createEditPlaylistDialog(${playlistData.id})"><span class="fa fa-gear"></span></button>
+                    <button onclick="createDeletePlaylistDialog(${playlistData.id})"><span class="fa fa-trash"></span></button>
+                    <p>${playlistData.creation_date}</p>`;
 
                 const playlistImage = document.querySelector('.media-banner img');
                 playlistImage.src = playlistData.image;
@@ -87,7 +90,6 @@
         <div class="media-metadata">
             <h1>Playlist Name</h1>
             <div class="additional_info">
-                <p>Creation Date</p>
             </div>
         </div>
     </div>
