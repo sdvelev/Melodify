@@ -1,4 +1,4 @@
-#profile {
+#account {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -35,6 +35,6 @@
     border-radius: 5px;
 }
 
-#profile input[type="file"] {
+#account input[type="file"] {
     display: none;
 }

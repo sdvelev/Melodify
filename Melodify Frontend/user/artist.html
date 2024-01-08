@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Melodify</title>
+    <link rel="stylesheet" href="../style/index.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/collection.css">
+    <link rel="stylesheet" href="../style/search.css">
+    <link rel="stylesheet" href="../style/controls.css">
+
+    <script src="../js/theme.js" defer></script>
+    <script src="../js/jwt.js" defer></script>
+    <script src="../js/redirectToLogin.js" defer></script>
+    <script src="../js/redirect.js" defer></script>
+    <script src="../js/iframeMusic.js" defer></script>
+
+    <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const artistId = urlParams.get('id');
+
+        fetch(`/api/artists/${artistId}`)
+            .then(response => response.json())
+            .then(artistData => {
+                document.querySelector('#artist h1').innerText = artistData.name;
+                document.querySelector('#artist h2').innerText = `${artistData.name}'s Albums`;
+
+
+                const artistImage = document.querySelector('.media-banner img');
+                artistImage.src = artistData.image;
+
+                const itemsElement = document.querySelector('.items');
+                itemsElement.innerHTML = '';
+
+                fetch(`/api/artists/${artistId}/albums`)
+                    .then(response => response.json())
+                    .then(albums => {
+                        albums.forEach(album => {
+                            const itemElement = document.createElement('div');
+                            itemElement.classList.add('item');
+                            itemElement.innerHTML =
+                                `<img alt="album image" src="${album.image}">
+                        <div class="info">
+                            <button class="a name" onclick="navigate('./album.html?id=${album.id}')">${album.name}</button>
+                            <p class="author">${album.artists.map(artist => "<button class='a' onclick='navigate(\"./artist.html?id=" + artist.id + "\")'>" + artist.name + "</button>").join(", ")}</p>
+                        </div>`;
+                            itemsElement.appendChild(itemElement);
+                        });
+                    })
+                    .catch(error => console.error(error.message));
+            })
+            .catch(error => {
+                console.error('Error fetching album data:', error);
+            });
+    </script>
+</head>
+<body>
+<main id="artist">
+    <div class="media-banner">
+        <div class="image-container">
+            <img alt="artist image" src="">
+        </div>
+        <div class="media-metadata">
+            <h1>Artist Name</h1>
+        </div>
+    </div>
+    <div class="album_list">
+        <h2></h2>
+        <div class="items"></div>
+    </div>
+</main>
+</body>
+</html>

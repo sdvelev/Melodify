@@ -36,8 +36,12 @@ function loadContent(url) {
         .catch(error => console.error(`Error fetching content from ${url}:`, error));
 }
 
-function navigate(url) {
-    history.pushState(null, null, url);
-    loadContent(url);
+function navigate(url, redirect=true) {
+    if(redirect){
+        window.location.href=url;
+    } else {
+        document.querySelector("iframe").src = url;
+        history.pushState({iframeUrl: url}, '?iframe=' + encodeURIComponent(url));
+    }
 }
 

@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.melodify.service;
 
 import bg.sofia.uni.fmi.melodify.dto.ArtistDto;
+import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Artist;
 import bg.sofia.uni.fmi.melodify.repository.ArtistRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
@@ -60,6 +61,20 @@ public class ArtistService {
 
         throw new ResourceNotFoundException("There is no artist with such id");
     }
+
+    public List<Album> getArtistAlbumsById(
+        @NotNull(message = "The provided id cannot be null")
+        @Positive(message = "The provided id must be valid")
+        Long id){
+        Optional<Artist> potentialArtist = artistRepository.findById(id);
+
+        if (potentialArtist.isPresent()){
+            return potentialArtist.get().getAlbums();
+        }
+
+        throw new ResourceNotFoundException("There is no artist with such id");
+    }
+
     public Artist createArtist(@NotNull(message = "The provided artist cannot be null") Artist artistToSave){
         return artistRepository.save(artistToSave);
     }

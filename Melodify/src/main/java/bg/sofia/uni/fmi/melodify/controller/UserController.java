@@ -133,8 +133,7 @@ public class UserController {
                                    UserDto userToUpdate,
                                    HttpServletRequest request) {
         return userService.setUserById(userToUpdate,
-            getUserByRequest(request, tokenManagerService, userService).getId(),
-            isAdminByRequest(request, tokenManagerService));
+            getUserByRequest(request, tokenManagerService, userService).getId());
     }
 
     @PatchMapping(value = "/password")

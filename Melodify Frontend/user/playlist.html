@@ -5,18 +5,16 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album.css">
+    <link rel="stylesheet" href="../style/collection.css">
     <link rel="stylesheet" href="../style/search.css">
     <link rel="stylesheet" href="../style/controls.css">
 
     <script src="../js/theme.js"></script>
-    <script src="../js/toggleSidebar.js"></script>
-    <script src="../js/toggleQueue.js"></script>
-    <script src="../js/player.js" defer></script>
     <script src="../js/jwt.js" defer></script>
     <script src="../js/redirectToLogin.js" defer></script>
-    <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
+    <script src="../js/iframeMusic.js" defer></script>
+    <script src="../js/playlistOperations.js" defer></script>
 
     <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
 
@@ -27,10 +25,21 @@
         fetch(`/api/playlists/${playlistId}`)
             .then(response => response.json())
             .then(playlistData => {
-                document.querySelector('.additional_info > p').innerText = playlistData.creation_date;
+                const h1 = document.querySelector('#playlist h1');
+                h1.innerText = playlistData.name;
+                h1.onclick = function () {
+                    playPlaylist(playlistId);
+                }
+                document.querySelector('.image-container div').onclick = function () {
+                    playPlaylist(playlistId);
+                }
+                document.querySelector('.additional_info').innerHTML =
+                    `<button onclick="createEditPlaylistDialog(${playlistData.id})"><span class="fa fa-gear"></span></button>
+                    <button onclick="createDeletePlaylistDialog(${playlistData.id})"><span class="fa fa-trash"></span></button>
+                    <p>${playlistData.creation_date}</p>`;
 
-                const albumImage = document.querySelector('.media-banner img');
-                albumImage.src = playlistData.image;
+                const playlistImage = document.querySelector('.media-banner img');
+                playlistImage.src = playlistData.image;
 
                 const songList = document.querySelector('.song_list tbody');
                 songList.innerHTML = '';
@@ -41,13 +50,19 @@
                         return `<button class="a" onclick="navigate('./artist.html?id=${artist.id}')">${artist.name}</button>`;
                     }).join(', ');
                     newRow.innerHTML = `
-        <td>${songOrder}</td>
+        <td>
+            <span class="num">${songOrder}</span>
+            <button class="a num-button" onclick="playPlaylist(${playlistId}, ${songOrder - 1})"><span class="fa fa-circle-play"></span></button>
+        </td>
         <td>
           <p class="table-song">${song.name}</p>
           <p class="table-artists">${artists}</p>
         </td>
         <td>${formatDuration(song.duration)}</td>
-      `;
+        <td><button class="a" onclick="createAddToPlaylistDialog(${song.id})"><span class="fa fa-plus"></span></button></td>
+        <td><button class="a" onclick="playSong(${song.id}, false)"><span class="fa fa-list"></span></button></td>
+        <td><button class="a" onclick="removeFromPlaylist(${playlistId}, ${song.id})"><span class="fa fa-trash"></span></button></td>
+`;
                     songList.appendChild(newRow);
                     songOrder++;
                 });
@@ -64,230 +79,36 @@
     </script>
 </head>
 <body>
-<main>
-    <div id="sidebar">
-        <div id="logo">
-            <h1><span class="fa fa-compact-disc"></span>Melodify</h1>
-        </div>
-        <div id="quick_actions">
-            <button onclick="navigate('./search.html')"><span class="fa fa-search"></span>Search</button>
-            <button onclick="navigate('./home.html')"><span class="fa fa-house"></span>Home</button>
-        </div>
-        <div id="library">
-            <div id="library_actions">
-                <h2><span class="fa fa-bookmark"></span>Library</h2>
-                <div>
-                    <button><span class="fa fa-plus"></span></button>
-                </div>
+<main id="playlist">
+    <div class="media-banner">
+        <div class="image-container">
+            <img alt="playlist image" src="">
+            <div>
+                <span class="fa fa-circle-play"></span>
             </div>
-            <div class="items">
+        </div>
+        <div class="media-metadata">
+            <h1>Playlist Name</h1>
+            <div class="additional_info">
             </div>
         </div>
     </div>
-    <div id="content">
-        <div id="playlist">
-            <div class="media-banner">
-                <img src="./../album.jpg">
-                <div class="media-metadata">
-                    <h1>Playlist Name</h1>
-                    <div class="additional_info">
-                        <p>Creation Date</p>
-                    </div>
-                </div>
-            </div>
-            <div class="song_list">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Duration</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div id="queue">
-        <h2><span class="fa fa-list"></span>Queue</h2>
-        <div class="items"></div>
+    <div class="song_list">
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Time</th>
+                <th><span class="fa fa-plus"></span></th>
+                <th><span class="fa fa-list"></span></th>
+                <th><span class="fa fa-trash"></span></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </main>
-<div id="player">
-    <div id="track_info">
-        <div class="item">
-            <img src="./../album.jpg">
-            <div class="info">
-                <p class="name">Song name</p>
-                <p class="author">Album name</p>
-            </div>
-        </div>
-    </div>
-    <div id="player_controls">
-        <div class="controls">
-            <button><span class="fa fa-backward"></span></button>
-            <button><span class="fa fa-circle-play"></span></button>
-            <button><span class="fa fa-forward"></span></button>
-        </div>
-        <div class="track_slider">
-            <p id="current_time">0:00</p>
-            <input type="range"/>
-            <p id="duration">0:00</p>
-        </div>
-        <audio src="./../windows-xp-startup.mp3"></audio>
-    </div>
-    <div id="account">
-        <button onclick="toggleSidebar()"><span class="fa fa-bookmark active"></span></button>
-        <button onclick="toggleQueue()"><span class="fa fa-list active"></span></button>
-        <button onclick="toggleTheme()"><span class="fa fa-circle-half-stroke"></span></button>
-        <div>
-            <span class="fa fa-volume-low"></span>
-            <input type="range" min="0" max="1" step="0.1">
-        </div>
-        <img src="./../prince%20michael.jpg">
-    </div>
-</div>
 </body>
 </html>

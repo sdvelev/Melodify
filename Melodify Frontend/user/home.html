@@ -5,18 +5,12 @@
     <title>Melodify</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album.css">
-    <link rel="stylesheet" href="../style/search.css">
     <link rel="stylesheet" href="../style/controls.css">
     <link rel="stylesheet" href="../style/home.css">
 
-    <script src="../js/theme.js"></script>
-    <script src="../js/toggleSidebar.js"></script>
-    <script src="../js/toggleQueue.js"></script>
-    <script src="../js/player.js" defer></script>
+    <script src="../js/theme.js" defer></script>
     <script src="../js/jwt.js" defer></script>
     <script src="../js/redirectToLogin.js" defer></script>
-    <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
     <script src="../js/home.js" defer></script>
 
@@ -24,84 +18,29 @@
 
 </head>
 <body onload="load()">
-<main>
-    <div id="sidebar">
-        <div id="logo">
-            <h1><span class="fa fa-compact-disc"></span>Melodify</h1>
-        </div>
-        <div id="quick_actions">
-            <button onclick="navigate('../user/search.html')"><span class="fa fa-search"></span>Search</button>
-            <button onclick="navigate('../user/home.html')"><span class="fa fa-house"></span>Home</button>
-        </div>
-        <div id="library">
-            <div id="library_actions">
-                <h2><span class="fa fa-bookmark"></span>Library</h2>
-                <div>
-                    <button><span class="fa fa-plus"></span></button>
-                </div>
+<main id="home">
+    <div id="search_criteria">
+        <h1>Welcome</h1>
+            <div id="search_filters">
+                <button onclick="clickPlaylistButton()" class="song-filter active"><span class="fa fa-check"></span>Playlists</button>
+                <button onclick="clickArtistButton()" class="artist-filter active"><span class="fa fa-check"></span>Artists</button>
+                <button onclick="clickAlbumButton()" class="album-filter active"><span class="fa fa-check"></span>Albums</button>
             </div>
-            <div class="items">
-            </div>
-        </div>
     </div>
-    <div id="content">
-        <div id="home">
-                <div>
-                    <h2>Welcome</h2>
-                    <div id="user_playlists">
-                        <h3>Your Playlists</h3>
-                        <div class="items"></div>
-                    </div>
-                    <div id="user_artists">
-                        <h3>Your Artists</h3>
-                        <div class="items"></div>
-                    </div>
-                    <div id="user_albums">
-                        <h3>Your Albums</h3>
-                        <div class="items"></div>
-                    </div>
-                </div>
-            </div>
+    <div id="user_items">
+        <div id="user_playlists" class="active">
+            <h3>Your Playlists</h3>
+            <div class="items"></div>
         </div>
-    <div id="queue">
-        <h2><span class="fa fa-list"></span>Queue</h2>
-        <div class="items">
+        <div id="user_artists" class="active">
+            <h3>Your Artists</h3>
+            <div class="items"></div>
+        </div>
+        <div id="user_albums" class="active">
+            <h3>Your Albums</h3>
+            <div class="items"></div>
         </div>
     </div>
 </main>
-<div id="player">
-    <div id="track_info">
-        <div class="item">
-            <img src="./../album.jpg">
-            <div class="info">
-                <p class="name">Song name</p>
-                <p class="author">Album name</p>
-            </div>
-        </div>
-    </div>
-    <div id="player_controls">
-        <div class="controls">
-            <button><span class="fa fa-backward"></span></button>
-            <button><span class="fa fa-circle-play"></span></button>
-            <button><span class="fa fa-forward"></span></button>
-        </div>
-        <div class="track_slider">
-            <p id="current_time">0:00</p>
-            <input type="range"/>
-            <p id="duration">0:00</p>
-        </div>
-        <audio src="./../windows-xp-startup.mp3"></audio>
-    </div>
-    <div id="account">
-        <button onclick="toggleSidebar()"><span class="fa fa-bookmark active"></span></button>
-        <button onclick="toggleQueue()"><span class="fa fa-list active"></span></button>
-        <button onclick="toggleTheme()"><span class="fa fa-circle-half-stroke"></span></button>
-        <div>
-            <span class="fa fa-volume-low"></span>
-            <input type="range" min="0" max="1" step="0.1">
-        </div>
-        <img src="./../prince%20michael.jpg">
-    </div>
-</div>
 </body>
 </html>

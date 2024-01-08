@@ -1,6 +1,27 @@
 redirectToLoginIfInvalidCredentials();
 const userId = getUserId();
 
+function clickArtistButton(){
+    const artistButton = document.querySelector("#search_filters button.artist-filter");
+    const artistSearchResults = document.querySelector("#user_artists");
+    artistButton.classList.toggle("active");
+    artistSearchResults.classList.toggle("active");
+}
+
+function clickAlbumButton(){
+    const albumButton = document.querySelector("#search_filters button.album-filter");
+    const albumSearchResults = document.querySelector("#user_albums");
+
+    albumButton.classList.toggle("active");
+    albumSearchResults.classList.toggle("active");
+}
+
+function clickPlaylistButton(){
+    const songButton = document.querySelector("#search_filters button.song-filter");
+    const songSearchResults = document.querySelector("#user_playlists");
+    songButton.classList.toggle("active");
+    songSearchResults.classList.toggle("active");
+}
 function load() {
     fetch(`/api/users/${userId}`)
         .then(response => response.json())
@@ -36,6 +57,7 @@ function load() {
 
 function populateUserPlaylists(playlists) {
     const userPlaylistsElement = document.querySelector('#user_playlists');
+    const userPlaylistsItemsElement = document.querySelector('#user_playlists .items');
     playlists.forEach(playlist => {
         const playlistItem = document.createElement('div');
         playlistItem.classList.add('item', 'album');
@@ -45,15 +67,15 @@ function populateUserPlaylists(playlists) {
                 <button class="a name" onclick="navigate('./playlist.html?id=${playlist.id}')">${playlist.name}</button>
             </div>
         `;
-
-        userPlaylistsElement.appendChild(playlistItem);
+        userPlaylistsItemsElement.appendChild(playlistItem);
     });
+    userPlaylistsElement.appendChild(userPlaylistsItemsElement);
 }
 
 
 async function fetchAlbumData(albumId) {
     try {
-        const albumResponse = await fetch(`/api/albums?id=${albumId}`);
+        const albumResponse = await fetch(`/api/albums/${albumId}`);
         if (!albumResponse.ok) {
             throw new Error(`Failed to fetch album with ID ${albumId}`);
         }
@@ -65,6 +87,7 @@ async function fetchAlbumData(albumId) {
 }
 async function populateUserAlbums(sortedAlbumIds) {
     const userAlbumsElement = document.querySelector('#user_albums');
+    const userAlbumsItemsElement = document.querySelector('#user_albums .items');
 
     for (const albumId of sortedAlbumIds) {
         const albumData = await fetchAlbumData(albumId);
@@ -82,12 +105,14 @@ async function populateUserAlbums(sortedAlbumIds) {
                 </div>
             `;
 
-            userAlbumsElement.appendChild(albumItem);
+            userAlbumsItemsElement.appendChild(albumItem);
         }
     }
+    userAlbumsElement.appendChild(userAlbumsItemsElement);
 }
 async function populateUserArtists(playlists) {
     const userArtistsElement = document.querySelector('#user_artists');
+    const userArtistsItemsElement = document.querySelector('#user_artists .items');
 
     const allArtists = playlists.reduce((acc, playlist) => {
         playlist.songs.forEach(song => {
@@ -116,6 +141,7 @@ async function populateUserArtists(playlists) {
             </div>
         `;
 
-        userArtistsElement.appendChild(artistItem);
+        userArtistsItemsElement.appendChild(artistItem);
     });
+    userArtistsElement.appendChild(userArtistsItemsElement);
 }
