@@ -26,7 +26,7 @@ function handleRegister(event) {
             if (!response.ok) {
                 throw new Error('Invalid credentials. Please try again.');
             }
-            window.location.href = '/login.html';
+            window.location.href = '/frontend/user/login.html';
         })
         .catch(error => {
             const errorBox = document.getElementById('error-box');
