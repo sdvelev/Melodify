@@ -2,9 +2,62 @@
     display: flex;
     flex-direction: column;
     gap: 25px;
+    overflow-y: hidden;
+}
+
+#user_items {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
     overflow-y: auto;
 }
 
 #home .item.artist img{
     border-radius: 50%;
+}
+
+#user_albums, #user_playlists, #user_artists {
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+#search_filters{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#search_criteria button {
+    padding: 8px;
+    border-radius: 15px;
+    background-color: var(--button-color);
+}
+
+#search_criteria {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#search_criteria button.album-filter span,
+#search_criteria button.artist-filter span,
+#search_criteria button.song-filter span{
+    display: none;
+}
+
+#search_criteria button.album-filter.active span,
+#search_criteria button.artist-filter.active span,
+#search_criteria button.song-filter.active span{
+    display: initial;
+}
+
+#user_playlists.active, #user_albums.active, #user_artists.active {
+    display: flex;
 }

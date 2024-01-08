@@ -1,7 +1,10 @@
 package bg.sofia.uni.fmi.melodify.controller;
 
+import bg.sofia.uni.fmi.melodify.dto.AlbumDto;
 import bg.sofia.uni.fmi.melodify.dto.ArtistDto;
+import bg.sofia.uni.fmi.melodify.mapper.AlbumMapper;
 import bg.sofia.uni.fmi.melodify.mapper.ArtistMapper;
+import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Artist;
 import bg.sofia.uni.fmi.melodify.service.ArtistService;
 import bg.sofia.uni.fmi.melodify.service.TokenManagerService;
@@ -28,13 +31,16 @@ public class ArtistController {
     private final ArtistService artistService;
     private final TokenManagerService tokenManagerService;
     private final ArtistMapper artistMapper;
+    private final AlbumMapper albumMapper;
 
     @Autowired
     public ArtistController(ArtistService artistService, TokenManagerService tokenManagerService,
-                            ArtistMapper artistMapper) {
+                            ArtistMapper artistMapper,
+                            AlbumMapper albumMapper) {
         this.artistService = artistService;
         this.tokenManagerService = tokenManagerService;
         this.artistMapper = artistMapper;
+        this.albumMapper = albumMapper;
     }
 
     @GetMapping
@@ -55,6 +61,14 @@ public class ArtistController {
         }
 
         throw new ResourceNotFoundException("There is no artist with such an id");
+    }
+
+    @GetMapping(value = "/{id}/albums")
+    public List<AlbumDto> getArtistAlbumsById(@PathVariable
+                                   @NotNull(message = "The provided artist id cannot be null")
+                                   @Positive(message = "The provided artist id must be positive")
+                                   Long id) {
+        return this.albumMapper.toDtoCollection(this.artistService.getArtistAlbumsById(id));
     }
 
     @PostMapping

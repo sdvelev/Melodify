@@ -33,7 +33,9 @@ public class PlaylistService {
 
     public Playlist createPlaylist(@NotNull(message = "The provided playlist cannot be null") Playlist playlistToSave){
         playlistToSave.setCreationDate(LocalDateTime.now());
-        return this.playlistRepository.save(playlistToSave);
+        Playlist savedPlaylist = this.playlistRepository.save(playlistToSave);
+        savedPlaylist.setUri("/frontend/user/playlist.html?id=" + savedPlaylist.getId());
+        return this.playlistRepository.save(savedPlaylist);
     }
     public List<Playlist> getPlaylists(Map<String, String> filters){
         String name = filters.get("name");

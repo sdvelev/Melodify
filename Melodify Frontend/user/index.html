@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Melodify</title>
-    <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="../style/album.css">
-    <link rel="stylesheet" href="../style/search.css">
+    <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/controls.css">
 
     <script src="../js/theme.js"></script>
@@ -17,31 +15,108 @@
     <script src="../js/redirectToLogin.js" defer></script>
     <script src="../js/fetch.js" defer></script>
     <script src="../js/redirect.js" defer></script>
-    <script src="../js/search.js"></script>
-    <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
-    <script>
-        document.addEventListener(`click`, handle);
-        function handle(evt) {
-            if (evt.target.closest(`a`) /* && possible other conditions */) {
-                console.clear();
-                console.log(`will not follow ${evt.target.href}`);
-                evt.preventDefault();
-                navigate(event.target.href);
-                return false
-            }
+    <script src="../js/queue.js" defer></script>
+    <script src="../js/profile.js" defer></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', event => {
+            // document.querySelector('iframe').addEventListener('load', function() {
+            //     history.pushState({ iframeUrl: this.src }, '', '?iframe=' + encodeURIComponent(this.src));
+            // });
+
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.iframeUrl) {
+                    document.querySelector('iframe').src = event.state.iframeUrl;
+                }
+            });
+
+            const createPlaylistButton = document.querySelector("#library_actions button");
+
+            createPlaylistButton.onclick = function () {
+                createPlaylistDialog();
+            };
+        });
+
+        function createPlaylistDialog() {
+            const dialog = document.createElement('dialog');
+            dialog.innerHTML = `
+            <form method="dialog">
+                <input type="text" id="playlist-name" placeholder="Enter playlist name" required>
+                <button id="cancel-btn" type="button">Cancel</button>
+                <button id="create-btn" type="submit">Create</button>
+            </form>
+        `;
+            document.body.appendChild(dialog);
+            const cancelButton = dialog.querySelector("#cancel-btn");
+            const createButton = dialog.querySelector("#create-btn");
+            const playlistNameInput = dialog.querySelector("#playlist-name");
+            cancelButton.onclick = function () {
+                dialog.remove();
+            };
+
+            createButton.onclick = function (event) {
+                event.preventDefault();
+                const playlistName = playlistNameInput.value;
+                if (playlistName.trim() !== '') {
+                    createPlaylist(playlistName);
+                    dialog.remove();
+                } else {
+                    // Handle empty playlist name error or prompt the user
+                    console.log("Please enter a valid playlist name");
+                }
+            };
+            dialog.showModal();
+        }
+
+        function createPlaylist(name) {
+            fetch(`/api/playlists`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'name': name,
+                    'image': 'https://i1.sndcdn.com/artworks-y6qitUuZoS6y8LQo-5s2pPA-t500x500.jpg'
+                })
+            })
+                .then(() => {
+                    fetchPlaylists();
+                })
+                .catch(error => console.error(error.message));
         }
     </script>
 
+    <script src="https://kit.fontawesome.com/5c9473fc67.js" crossorigin="anonymous"></script>
+    <script>
+        window.addEventListener('message', event => {
+            if (event.origin !== window.origin) {
+                console.log("Event origin was " + event.origin + ". Dismissed message. ");
+                return;
+            }
+
+            const data = event.data;
+            if (data.action === 'playAlbum') {
+                playAlbum(data.albumId, data.songIndex);
+            }
+            if (data.action === 'playPlaylist') {
+                playPlaylist(data.playlistId, data.songIndex);
+            }
+            if (data.action === 'playSong') {
+                playSong(data.songId, data.dropQueue);
+            }
+        });
+    </script>
+
 </head>
-<body onload="preventRedirect()">
+<body>
 <main>
     <div id="sidebar">
         <div id="logo">
             <h1><span class="fa fa-compact-disc"></span>Melodify</h1>
         </div>
         <div id="quick_actions">
-            <button onclick="navigate('./search.html')"><span class="fa fa-search"></span>Search</button>
-            <button onclick="navigate('./home.html')"><span class="fa fa-house"></span>Home</button>
+            <button onclick="navigate('./search.html', false)"><span class="fa fa-search"></span>Search</button>
+            <button onclick="navigate('./home.html', false)"><span class="fa fa-house"></span>Home</button>
         </div>
         <div id="library">
             <div id="library_actions">
@@ -54,247 +129,7 @@
             </div>
         </div>
     </div>
-    <div id="content">
-        <div id="search">
-            <div id="search_criteria">
-                <h1>Search</h1>
-                <div>
-                    <input type="search" placeholder="Search here">
-                    <button type="submit"><span class="fa fa-search"></span></button>
-                    <div id="search_filters">
-                        <button>Artists</button>
-                        <button>Albums</button>
-                        <button>Songs</button>
-                    </div>
-                </div>
-            </div>
-            <div id="search_results">
-                <div id="artist_search_results">
-                    <h2>Artists</h2>
-                    <div class="items">
-                        <div class="item artist">
-                            <img src="./../prince%20michael.jpg">
-                            <p>Elton John</p>
-                        </div>
-                        <div class="item artist">
-                            <img src="./../prince%20michael.jpg">
-                            <p>Elton John</p>
-                        </div>
-                    </div>
-                </div>
-                <div id="album_search_results">
-                    <h2>Albums</h2>
-                    <div class="items">
-                        <div class="item">
-                            <img src="./../album.jpg">
-                            <div class="info">
-                                <p class="name">Album</p>
-                                <p class="author">Artists</p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <img src="./../album.jpg">
-                            <div class="info">
-                                <p class="name">Album</p>
-                                <p class="author">Artists</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="song_search_results">
-                    <h2>Songs</h2>
-                    <div class="items">
-                        <div class="item">
-                            <img src="./../album.jpg">
-                            <div class="info">
-                                <p class="name">Song name</p>
-                                <p class="author">Album name, Artist name</p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <img src="./../album.jpg">
-                            <div class="info">
-                                <p class="name">Song name</p>
-                                <p class="author">Album name, Artist name</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="home" style="display: none">
-            <h2>Welcome</h2>
-        </div>
-        <div id="album" style="display: none">
-            <div class="media-banner">
-                <img src="./../album.jpg">
-                <div class="media-metadata">
-                    <h1>AlbumName</h1>
-                    <div class="additional_info">
-                        <div class="artist-info">
-                            <img src="../prince%20michael.jpg">
-                            <p>Artist Name</p>
-                        </div>
-                        <p></p>
-                        <p>01.01.1991</p>
-                    </div>
-                </div>
-            </div>
-            <div class="song_list">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Duration</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button>1</button>
-                        </td>
-                        <td>
-                            <p class="table-song">Song one</p>
-                            <p class="table-artist">Artist name</p>
-                        </td>
-                        <td>3:14</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <iframe id="content" src="./home.html"></iframe>
     <div id="queue">
         <h2><span class="fa fa-list"></span>Queue</h2>
         <div class="items">
@@ -305,7 +140,7 @@
 <div id="player">
     <div id="track_info">
         <div class="item">
-            <img src="./../album.jpg">
+            <img src="">
             <div class="info">
                 <p class="name">Song name</p>
                 <p class="author">Album name</p>
@@ -323,7 +158,7 @@
             <input type="range"/>
             <p id="duration">0:00</p>
         </div>
-        <audio src="./../windows-xp-startup.mp3"></audio>
+        <audio></audio>
     </div>
     <div id="account">
         <button onclick="toggleSidebar()"><span class="fa fa-bookmark active"></span></button>
@@ -333,7 +168,8 @@
             <span class="fa fa-volume-low"></span>
             <input type="range" min="0" max="1" step="0.1">
         </div>
-        <img src="./../prince%20michael.jpg" onclick="navigate('./profile.html')">
+        <input type="file" onchange="doUpload(event)">
+        <img src="/images/users/guest-user.png" onclick="openFileDialog()">
     </div>
 </div>
 </body>

@@ -1,34 +1,128 @@
-const audio = document.querySelector('#player_controls audio');
-const playButton = document.querySelector('#player_controls .fa-circle-play');
-const forwardButton = document.querySelector('#player_controls .fa-forward');
-const backwardButton = document.querySelector('#player_controls .fa-backward');
-const trackRange = document.querySelector('#player .track_slider input');
-const currentTimeDisplay = document.querySelector('#current_time');
-const durationDisplay = document.querySelector('#duration');
-const volumeRange = document.querySelector('#account input[type="range"]');
+let audio = document.querySelector('#player_controls audio');
+let playButton = document.querySelector('#player_controls .fa-circle-play').parentNode;
+let forwardButton = document.querySelector('#player_controls .fa-forward').parentNode;
+let backwardButton = document.querySelector('#player_controls .fa-backward').parentNode;
+let trackRange = document.querySelector('#player .track_slider input');
+let currentTimeDisplay = document.querySelector('#current_time');
+let durationDisplay = document.querySelector('#duration');
+let volumeRange = document.querySelector('#account input[type="range"]');
 
 
-playButton.addEventListener('click', () => {
+
+function nextSong() {
+    return fetch('/api/queues/next', {
+        headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.status === 404) {
+                audio.removeAttribute('src');
+                forwardButton.disabled = true;
+                return Promise.resolve();
+            }
+            else if (!response.ok){
+                throw new Error('No next song');
+            }
+            return response.blob();
+        })
+        .then(song => {
+            if(song){
+                audio.setAttribute('src', URL.createObjectURL(song));
+                play();
+            }
+        })
+        .catch(error => console.error(error.message));
+}
+
+function previousSong() {
+    return fetch('/api/queues/previous', {
+        headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.status === 404) {
+                audio.removeAttribute('src');
+                backwardButton.disabled = true;
+                return Promise.resolve();
+            }
+            else if (!response.ok){
+                throw new Error('No previous song');
+            }
+            return response.blob();
+        })
+        .then(song => {
+            if(song){
+                audio.setAttribute('src', URL.createObjectURL(song));
+                play();
+            }
+        })
+        .catch(error => console.error(error.message));
+}
+
+function currentSong(startPlaying = true) {
+    return fetch('/api/queues/play', {
+        headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {
+            if (response.status === 404) {
+                audio.removeAttribute('src');
+                // forwardButton.disabled = true;
+                // backwardButton.disabled = true;
+                playButton.disabled = true;
+                return Promise.resolve();
+            }
+            else if (!response.ok){
+                throw new Error('No next song');
+            }
+            return response.blob();
+        })
+        .then(song => {
+            if(song){
+                audio.setAttribute('src', URL.createObjectURL(song));
+                if(startPlaying){
+                    play();
+                }
+            }
+        })
+        .catch(error => console.error(error.message));
+}
+
+function play() {
     if (audio.paused) {
         audio.play();
-        togglePlayButton();
     } else {
         audio.pause();
-        playButton.classList.replace("fa-circle-pause", "fa-circle-play")
     }
+    togglePlayButton();
+}
+
+playButton.addEventListener('click', () => {
+    play();
 });
 
 forwardButton.addEventListener('click', () => {
-// TODO
+    nextSong()
+        .finally(() => {
+        fetchQueue();
+    })
+        .catch(error => console.error(error.message));
 });
 
-// Backward button (skip back by 10 seconds)
 backwardButton.addEventListener('click', () => {
-    // audio.currentTime -= 10;
-    // TODO
+    previousSong()
+        .finally(() => {
+            fetchQueue();
+        })
+        .catch(error => console.error(error.message));
 });
 
-// Track range
 trackRange.addEventListener('input', () => {
     audio.currentTime = trackRange.value;
 });
@@ -51,6 +145,11 @@ audio.addEventListener('loadedmetadata', () => {
 audio.addEventListener('ended', () => {
     trackRange.value = trackRange.max;
     togglePlayButton();
+    nextSong()
+        .finally(() => {
+            fetchQueue();
+        })
+        .catch(error => console.error(error.message));
 });
 
 function formatTime(time) {
@@ -61,10 +160,9 @@ function formatTime(time) {
 
 function togglePlayButton() {
     if (audio.paused) {
-        playButton.classList.replace("fa-circle-pause", "fa-circle-play")
+        playButton.querySelector("span").classList.replace("fa-circle-pause", "fa-circle-play")
 
     } else {
-        playButton.classList.replace("fa-circle-play", "fa-circle-pause")
-
+        playButton.querySelector("span").classList.replace("fa-circle-play", "fa-circle-pause")
     }
 }

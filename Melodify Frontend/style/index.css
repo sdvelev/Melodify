@@ -84,14 +84,41 @@ main>div {
 }
 
 #library {
-    display: grid;
-    grid-template-rows: auto 1fr;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     background-color: var(--surface-color);
     color: var(--on-surface);
     padding: 10px;
     border-radius: 10px;
     gap: 10px;
     overflow-y: hidden;
+}
+
+#library .items {
+    height: 100%;
+}
+
+#create-playlist {
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    padding: 5px;
+    display: none;
+}
+
+#create-playlist input{
+    width: 100%;
+}
+
+#create-playlist button {
+    background-color: var(--button-color);
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 4px;
 }
 
 #library_actions {
@@ -115,6 +142,7 @@ main>div {
     color: var(--on-surface);
     border-radius: 10px;
     padding: 10px;
+    border: none;
 }
 
 #content > div {
@@ -159,6 +187,10 @@ main>div {
 
 #player_controls .controls button{
     font-size: x-large;
+}
+
+#player_controls .controls button[disabled]{
+    opacity: 50%;
 }
 
 #player_controls .track_slider {
@@ -246,6 +278,14 @@ input[type="range"]::-webkit-progress-value, input[type="range"]::-moz-range-pro
     border-radius: 50%;
 }
 
+#account img:hover {
+    cursor: pointer;
+}
+
+#account input[type="file"]{
+    display: none;
+}
+
 #account > div {
     display: flex;
     flex-direction: row;
@@ -254,4 +294,8 @@ input[type="range"]::-webkit-progress-value, input[type="range"]::-moz-range-pro
 
 #account input[type="range"]{
     width: 80px;
+}
+
+iframe {
+    border-radius: 10px;
 }

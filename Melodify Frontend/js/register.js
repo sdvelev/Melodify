@@ -5,12 +5,14 @@ function handleRegister(event) {
     const surname = document.querySelector('input[placeholder="Enter surname"]').value;
     const email = document.querySelector('input[type="email"]').value;
     const password = document.querySelector('input[type="password"]').value;
+    const image = "/images/users/default-user.png"
 
     const userData = {
         name: name,
         surname: surname,
         email: email,
-        password: password
+        password: password,
+        image: image
     };
 
     fetch('http://localhost:8080/api/users', {
