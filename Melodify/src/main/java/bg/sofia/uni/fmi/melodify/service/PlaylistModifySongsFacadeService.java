@@ -87,9 +87,7 @@ public class PlaylistModifySongsFacadeService {
         }
 
         potentialPlaylist.get().getSongs().remove(potentialSongToAdd.get());
-
         playlistService.createPlaylist(potentialPlaylist.get());
-
         return true;
     }
 }

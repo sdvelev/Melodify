@@ -49,9 +49,11 @@ public class GenreService {
 
         throw new ResourceNotFoundException("There is not a genre with such id");
     }
+
     public Genre createGenre(@NotNull(message = "The provided genre cannot be null") Genre genreToSave) {
         return genreRepository.save(genreToSave);
     }
+
     public boolean setGenreById(
         @NotNull(message = "The provided genre description cannot be null")
         GenreDto genreDto,

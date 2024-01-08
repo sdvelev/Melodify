@@ -24,10 +24,4 @@ public class ArtistDto {
 
     @JsonProperty("uri")
     private String uri;
-
-//    @JsonProperty("songs")
-//    private List<SongDto> songDtos;
-
-//    @JsonProperty("albums")
-//    private List<AlbumDto> albumDtos;
 }

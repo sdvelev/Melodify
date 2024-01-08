@@ -33,12 +33,6 @@ public class UserService {
 
     public User createUser(@NotNull(message = "The provided user cannot be null")
                            User userToSave) {
-
-//        Optional<User> usersWithThatEmailList = userRepository.findByEmail(userToSave.getEmail());
-//        if (usersWithThatEmailList.isPresent()) {
-//            throw new ApiBadRequest("There is already a user associated with that credentials");
-//        }
-
         return userRepository.save(userToSave);
     }
 
@@ -59,10 +53,7 @@ public class UserService {
         String name = filters.get("name");
         String surname = filters.get("surname");
         String email = filters.get("email");
-        // no password for you :-D
         String image = filters.get("image");
-        // playlists
-        // queue
         String uri = filters.get("uri");
 
         Specification<User> spec = Specification.where(null);
@@ -118,7 +109,8 @@ public class UserService {
 
         if (email != null && password != null) {
             Optional<User> potentialUserToReturn = userRepository.findByEmail(email);
-            if (potentialUserToReturn.isPresent() && passwordEncoder.matches(password, potentialUserToReturn.get().getPassword())) {
+            if (potentialUserToReturn.isPresent() &&
+                passwordEncoder.matches(password, potentialUserToReturn.get().getPassword())) {
                 return potentialUserToReturn.get();
             }
         }
@@ -147,7 +139,6 @@ public class UserService {
 
         throw new ResourceNotFoundException("User with such an email and password cannot be found");
     }
-
 
     private User setUserNonNullFields(
         @NotNull(message = "The provided user dto cannot be null")

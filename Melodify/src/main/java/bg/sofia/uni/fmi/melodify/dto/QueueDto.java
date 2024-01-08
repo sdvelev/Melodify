@@ -16,9 +16,6 @@ public class QueueDto {
     @JsonProperty("id")
     private Long id;
 
-//    @JsonProperty("owner")
-//    private UserDto ownerDto;
-
     @JsonProperty("currentSongIndex")
     private Long currentSongIndex;
 

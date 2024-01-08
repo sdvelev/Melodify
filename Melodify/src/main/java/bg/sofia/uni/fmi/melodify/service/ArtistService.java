@@ -20,10 +20,12 @@ import java.util.Optional;
 @Validated
 public class ArtistService {
     private final ArtistRepository artistRepository;
+
     @Autowired
     public ArtistService(ArtistRepository artistRepository){
         this.artistRepository = artistRepository;
     }
+
     public List<Artist> getArtists(Map<String, String> filters) {
         String name = filters.get("name");
         String image = filters.get("image");
@@ -78,36 +80,6 @@ public class ArtistService {
     public Artist createArtist(@NotNull(message = "The provided artist cannot be null") Artist artistToSave){
         return artistRepository.save(artistToSave);
     }
-
-  /*  public boolean setArtistById(
-            @NotNull(message = "The provided artist description cannot be null")
-            ArtistDto artistDto,
-            @NotNull(message = "The provided artist id cannot be null")
-            @Positive(message = "The provided artist id must be positive")
-            Long artistId){
-        Optional<Artist> optionalArtistToUpdate = artistRepository.findById(artistId);
-
-        if (optionalArtistToUpdate.isPresent()){
-            Artist artistToUpdate = optionalArtistToUpdate.get();
-            artistToUpdate.setName(artistDto.getName());
-            artistToUpdate.setImage(artistDto.getImage());
-            artistToUpdate.setUri(artistDto.getUri());
-//            if (artistDto.getAlbumDtos() != null && !artistDto.getAlbumDtos().isEmpty()) {
-//                artistToUpdate.getAlbums().clear(); // Remove existing albums
-//                AlbumMapper albumMapper = AlbumMapper.INSTANCE;
-//                List<Album> albums =  albumMapper.toEntityCollection(artistDto.getAlbumDtos());
-//                artistToUpdate.getAlbums().addAll(albums);
-//            }
-//            if (artistDto.getSongDtos() != null && !artistDto.getSongDtos().isEmpty()) {
-//                artistToUpdate.getSongs().clear();
-//                SongMapper songMapper = SongMapper.INSTANCE;
-//                List<Song> songs = songMapper.toEntityCollection(artistDto.getSongDtos());
-//                artistToUpdate.getSongs().addAll(songs);
-//            }
-        }
-
-        throw new ResourceNotFoundException("There is no artist with such id");
-    }*/
 
     public boolean setArtistById(
         @NotNull(message = "The provided artist dto cannot be null")

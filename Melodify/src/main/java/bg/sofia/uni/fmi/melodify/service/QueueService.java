@@ -7,7 +7,6 @@ import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -54,29 +53,6 @@ public class QueueService {
         return this.queueRepository.save(queueToCreate);
     }
 
-//    public boolean setQueueById(
-//            @NotNull(message = "The provided album description cannot be null")
-//            QueueDto queueDto,
-//            @NotNull(message = "The provided album id cannot be null")
-//            @Positive(message = "The provided album id must be positive")
-//            Long id) {
-//
-//        Optional<Queue> optionalAlbumToUpdate = queueRepository.findById(id);
-//
-//        if (optionalAlbumToUpdate.isPresent()){
-//            Queue queueToUpdate = optionalAlbumToUpdate.get();
-//            UserMapper userMapper = UserMapper.INSTANCE;
-////            queueToUpdate.setOwner(userMapper.toEntity(queueDto.getOwnerDto()));
-////            SongMapper songMapper = SongMapper.INSTANCE;
-////            queueToUpdate.setSongs(songMapper.toEntityCollection(queueDto.getSongDtos()));
-//            queueToUpdate.setCurrentSongIndex(queueDto.getCurrentSongIndex());
-//
-//            queueRepository.save(queueToUpdate);
-//            return true;
-//        }
-//        throw new ResourceNotFoundException("There is no album with such id");
-//    }
-
     public Queue deleteQueue(
             @NotNull(message = "The provided queue id cannot be null")
             @Positive(message = "The provided queue id must be positive")
@@ -91,69 +67,6 @@ public class QueueService {
         }
 
         throw new ResourceNotFoundException("There is not a queue with such an id");
-    }
-
-    public Long playPreviousSongFromQueue(
-        @NotNull(message = "The provided queue id cannot be null")
-        @Positive(message = "The provided queue id must be positive")
-        Long queueId) {
-        Optional<Queue> potentialQueue = queueRepository.findById(queueId);
-        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
-            throw new ResourceNotFoundException("There are not songs in queue");
-        }
-
-        Queue queue = potentialQueue.get();
-
-        Long currentSongIndex = queue.getCurrentSongIndex();
-        if (currentSongIndex > 0) {
-            queue.setCurrentSongIndex(queue.getCurrentSongIndex() - 1);
-            queueRepository.save(queue);
-            return queue.getSongs().get(queue.getCurrentSongIndex().intValue()).getId();
-        }
-
-        throw new ResourceNotFoundException("There are not previous songs in queue");
-    }
-
-    public Long playNextSongFromQueue(
-        @NotNull(message = "The provided queue id cannot be null")
-        @Positive(message = "The provided queue id must be positive")
-        Long queueId) {
-        Optional<Queue> potentialQueue = queueRepository.findById(queueId);
-        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
-            throw new ResourceNotFoundException("There are not songs in queue");
-        }
-
-        Queue queue = potentialQueue.get();
-
-        Long currentSongIndex = queue.getCurrentSongIndex();
-        if (currentSongIndex < queue.getSongs().size() - 1) {
-            queue.setCurrentSongIndex(queue.getCurrentSongIndex() + 1);
-            queueRepository.save(queue);
-            return queue.getSongs().get(queue.getCurrentSongIndex().intValue()).getId();
-        }
-
-        throw new ResourceNotFoundException("There are not next songs in queue");
-    }
-
-    public Long playSongFromQueue(
-        @NotNull(message = "The provided queue id cannot be null")
-        @Positive(message = "The provided queue id must be positive")
-        Long queueId) {
-        Optional<Queue> potentialQueue = queueRepository.findById(queueId);
-        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
-            throw new ResourceNotFoundException("There are not songs in queue");
-        }
-
-        Queue queue = potentialQueue.get();
-
-//        Long currentSongIndex = queue.getCurrentSongIndex();
-//        if (currentSongIndex.equals((long) queue.getSongs().size())) {
-//            throw new ResourceNotFoundException("There are not more songs in queue");
-//        }
-//        queue.setCurrentSongIndex(++currentSongIndex);
-//
-//        queueRepository.save(queue);
-        return queue.getSongs().get(queue.getCurrentSongIndex().intValue() /*- 1*/).getId();
     }
 
     public boolean removeSongFromQueue(

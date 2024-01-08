@@ -29,9 +29,6 @@ public class SongDto {
     @JsonProperty("genre")
     private GenreDto genreDto;
 
-//    @JsonProperty("album")
-//    private AlbumDto albumDto;
-
     @JsonProperty("album_id")
     private String albumId;
 

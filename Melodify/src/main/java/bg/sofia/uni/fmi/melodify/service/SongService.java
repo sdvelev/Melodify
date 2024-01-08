@@ -29,9 +29,6 @@ public class SongService {
         String duration = filters.get("duration");
         String numberOfPlays = filters.get("numberOfPlays");
         String uri = filters.get("uri");
-        // genre
-        // album
-        // artists
 
         Specification<Song> spec = Specification.where(null);
 
@@ -73,32 +70,6 @@ public class SongService {
     public Song createSong(@NotNull(message = "The provided song cannot be null") Song songToSave){
         return songRepository.save(songToSave);
     }
-
-//    public boolean setSongById(
-//            @NotNull(message = "The provided song description cannot be null")
-//            SongDto songDto,
-//            @NotNull(message = "The provided song id cannot be null")
-//            @Positive(message = "The provided song id must be positive")
-//            Long songId){
-//        Optional<Song> optionalSongToUpdate = songRepository.findById(songId);
-//
-//        if(optionalSongToUpdate.isPresent()){
-//            Song songToUpdate = optionalSongToUpdate.get();
-//            songToUpdate.setName(songDto.getName());
-//            songToUpdate.setDuration(songDto.getDuration());
-//            songToUpdate.setNumberOfPlays(songDto.getNumberOfPlays());
-////            songToUpdate.setGenre(genreMapper.toEntity(songDto.getGenreDto()));
-////            songToUpdate.setAlbum(albumMapper.toEntity(songDto.getAlbumDto()));
-////            if (songDto.getArtistDtos() != null && !songDto.getArtistDtos().isEmpty()) {
-////            songToUpdate.getArtists().clear();
-////                List<Artist> artists =  artistMapper.toEntityCollection(songDto.getArtistDtos());
-////                songToUpdate.getArtists().addAll(artists);
-////            }
-//            songToUpdate.setUri(songDto.getUri());
-//        }
-//
-//        throw new ResourceNotFoundException("There is no song with such id");
-//    }
 
     public boolean setSongById(
         @NotNull(message = "The provided song dto cannot be null")

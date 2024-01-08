@@ -50,25 +50,70 @@ public class QueueModifySongsFacadeService {
         return true;
     }
 
-    public boolean removeSongFromQueue(@NotNull(message = "The provided queue id cannot be null")
-                                  @Positive(message = "The provided queue id must be positive")
-                                  Long queueId,
-                                  @NotNull(message = "The provided song id cannot be null")
-                                  @Positive(message = "The provided song id must be positive")
-                                  Long songId) {
-        Optional<Queue> potentialQueueToAddTo = queueService.getQueueById(queueId);
-        if (potentialQueueToAddTo.isEmpty()) {
-            throw new ResourceNotFoundException("There is not a queue with such an id");
+    public Long playSongFromQueue(
+        @NotNull(message = "The provided queue id cannot be null")
+        @Positive(message = "The provided queue id must be positive")
+        Long queueId) {
+        Optional<Queue> potentialQueue = queueService.getQueueById(queueId);
+        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
+            throw new ResourceNotFoundException("There are not songs in queue");
         }
 
-        Optional<Song> potentialSongToAdd = songService.getSongById(songId);
-        if (potentialSongToAdd.isEmpty()) {
-            throw new ResourceNotFoundException("There is not a sing with such an id");
+        Queue queue = potentialQueue.get();
+        Song currentSong = queue.getSongs().get(queue.getCurrentSongIndex().intValue());
+        currentSong.setNumberOfPlays(currentSong.getNumberOfPlays() + 1);
+
+        this.songService.createSong(currentSong);
+
+        return queue.getSongs().get(queue.getCurrentSongIndex().intValue() /*- 1*/).getId();
+    }
+
+    public Long playPreviousSongFromQueue(
+        @NotNull(message = "The provided queue id cannot be null")
+        @Positive(message = "The provided queue id must be positive")
+        Long queueId) {
+        Optional<Queue> potentialQueue = queueService.getQueueById(queueId);
+        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
+            throw new ResourceNotFoundException("There are not songs in queue");
         }
 
-        potentialQueueToAddTo.get().getSongs().remove(potentialSongToAdd.get());
-        queueService.createQueue(potentialQueueToAddTo.get());
-        return true;
+        Queue queue = potentialQueue.get();
+
+        Long currentSongIndex = queue.getCurrentSongIndex();
+        if (currentSongIndex > 0) {
+            queue.setCurrentSongIndex(queue.getCurrentSongIndex() - 1);
+            queueService.createQueue(queue);
+            Song songToPlay = queue.getSongs().get(queue.getCurrentSongIndex().intValue());
+            songToPlay.setNumberOfPlays(queue.getSongs().get(queue.getCurrentSongIndex().intValue()).getNumberOfPlays() + 1);
+            this.songService.createSong(songToPlay);
+            return queue.getSongs().get(queue.getCurrentSongIndex().intValue()).getId();
+        }
+
+        throw new ResourceNotFoundException("There are not previous songs in queue");
+    }
+
+    public Long playNextSongFromQueue(
+        @NotNull(message = "The provided queue id cannot be null")
+        @Positive(message = "The provided queue id must be positive")
+        Long queueId) {
+        Optional<Queue> potentialQueue = queueService.getQueueById(queueId);
+        if (potentialQueue.isEmpty() || potentialQueue.get().getSongs().isEmpty()) {
+            throw new ResourceNotFoundException("There are not songs in queue");
+        }
+
+        Queue queue = potentialQueue.get();
+
+        Long currentSongIndex = queue.getCurrentSongIndex();
+        if (currentSongIndex < queue.getSongs().size() - 1) {
+            queue.setCurrentSongIndex(queue.getCurrentSongIndex() + 1);
+            queueService.createQueue(queue);
+            Song currentSong = queue.getSongs().get(queue.getCurrentSongIndex().intValue());
+            currentSong.setNumberOfPlays(currentSong.getNumberOfPlays() + 1);
+            this.songService.createSong(currentSong);
+            return queue.getSongs().get(queue.getCurrentSongIndex().intValue()).getId();
+        }
+
+        throw new ResourceNotFoundException("There are not next songs in queue");
     }
 
     public boolean playFromSpecificSongInQueue(Long songId, User userToPlay) {
@@ -93,10 +138,7 @@ public class QueueModifySongsFacadeService {
         if (currentSongIndex <= originalQueue.getSongs().size() - 1) {
             originalQueue.setCurrentSongIndex((long) currentSongIndex/* + 1*/);
             queueService.createQueue(originalQueue);
-        } /*else if (currentSongIndex == originalQueue.getSongs().size() - 1) {
-            originalQueue.setCurrentSongIndex((long) currentSongIndex);
-            queueService.createQueue(originalQueue);
-        }*/
+        }
 
         return true;
     }

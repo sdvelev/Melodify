@@ -59,7 +59,7 @@ public class PlaylistController {
                                     @Positive(message = "The provided playlist id must be positive")
                                     Long id){
         Optional<Playlist> potentialPlaylistToReturn = this.playlistService.getPlaylistById(id);
-        if(potentialPlaylistToReturn.isPresent()){
+        if (potentialPlaylistToReturn.isPresent()){
             return this.playlistMapper.toDto(potentialPlaylistToReturn.get());
         }
 

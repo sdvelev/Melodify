@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.melodify.service;
 
-import bg.sofia.uni.fmi.melodify.controller.GenreController;
 import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Genre;
 import bg.sofia.uni.fmi.melodify.model.Song;

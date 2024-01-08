@@ -103,17 +103,6 @@ public class QueueController {
         return queueMapper.toDto(queueService.deleteQueue(queueId));
     }
 
-//    @PutMapping(value = "/{id}")
-//    public boolean setQueueById(@PathVariable
-//                                @NotNull(message = "The provided queue id cannot be null")
-//                                @Positive(message = "The provided queue id must be positive")
-//                                Long id,
-//                                @RequestBody
-//                                @NotNull(message = "The provided album dto in the body cannot be null")
-//                                QueueDto albumToUpdate) {
-//        return queueService.setQueueById(albumToUpdate, id);
-//    }
-
     @PatchMapping("/add")
     public boolean addSongToQueue(@RequestParam("song_ids")
                                   @NotNull(message = "The provided song ids cannot be null")
@@ -128,16 +117,6 @@ public class QueueController {
         return queueService.clearSongsFromQueue(getUserByRequest(request, tokenManagerService, userService));
     }
 
-//    @PatchMapping("/remove")
-//    public boolean removeSongFromQueue(@RequestParam("song_id")
-//                                  @NotNull(message = "The provided song id cannot be null")
-//                                  @Positive(message = "The provided song id must be positive")
-//                                  Long songId,
-//                                  HttpServletRequest request) {
-//        return queueModifySongsFacadeService
-//            .removeSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId(), songId);
-//    }
-
     @GetMapping("/play")
     public ResponseEntity<Resource> playSongFromQueue(
         @RequestParam(name = "song_id", required = false)
@@ -145,7 +124,8 @@ public class QueueController {
         HttpServletRequest request) {
         try {
             Long songToPlayId = (songId != null) ? songId :
-                queueService.playSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
+                queueModifySongsFacadeService
+                    .playSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
 
             boolean toPlay;
             if (songId != null) {
@@ -180,7 +160,7 @@ public class QueueController {
     @GetMapping("/previous")
     public ResponseEntity<Resource> playPreviousSongFromQueue(HttpServletRequest request) {
         try {
-            Long songToPlayId = queueService
+            Long songToPlayId = queueModifySongsFacadeService
                 .playPreviousSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
 
             Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");
@@ -207,7 +187,7 @@ public class QueueController {
     @GetMapping("/next")
     public ResponseEntity<Resource> playNextSongFromQueue(HttpServletRequest request) {
         try {
-            Long songToPlayId = queueService
+            Long songToPlayId = queueModifySongsFacadeService
                 .playNextSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
 
             Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");

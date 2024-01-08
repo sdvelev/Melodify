@@ -22,4 +22,3 @@ public class Genre {
     @Column(name = "genre")
     private String genre;
 }
-

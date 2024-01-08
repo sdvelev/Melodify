@@ -4,7 +4,6 @@ import bg.sofia.uni.fmi.melodify.dto.AlbumDto;
 import bg.sofia.uni.fmi.melodify.dto.ArtistDto;
 import bg.sofia.uni.fmi.melodify.mapper.AlbumMapper;
 import bg.sofia.uni.fmi.melodify.mapper.ArtistMapper;
-import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Artist;
 import bg.sofia.uni.fmi.melodify.service.ArtistService;
 import bg.sofia.uni.fmi.melodify.service.TokenManagerService;

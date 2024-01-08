@@ -1,9 +1,5 @@
 package bg.sofia.uni.fmi.melodify.service;
 
-import bg.sofia.uni.fmi.melodify.dto.PlaylistDto;
-import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
-import bg.sofia.uni.fmi.melodify.mapper.UserMapper;
-import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.model.Playlist;
 import bg.sofia.uni.fmi.melodify.model.User;
 import bg.sofia.uni.fmi.melodify.repository.PlaylistRepository;
@@ -37,6 +33,7 @@ public class PlaylistService {
         savedPlaylist.setUri("/frontend/user/playlist.html?id=" + savedPlaylist.getId());
         return this.playlistRepository.save(savedPlaylist);
     }
+
     public List<Playlist> getPlaylists(Map<String, String> filters){
         String name = filters.get("name");
         // owner
@@ -82,29 +79,6 @@ public class PlaylistService {
 
         throw new ResourceNotFoundException("There is no playlist with such id");
     }
-
-//    public boolean setPlaylistById(
-//            @NotNull(message = "The provided playlist description cannot be null")
-//            PlaylistDto playlistDtoToChange,
-//            @NotNull(message = "The provided playlist id cannot be null")
-//            @Positive(message = "The provided playlist id must be positive")
-//            Long id){
-//        Optional<Playlist> optionalPlaylistToUpdate = this.playlistRepository.findById(id);
-//
-//        if(optionalPlaylistToUpdate.isPresent()){
-//            Playlist playlistToUpdate = optionalPlaylistToUpdate.get();
-//            playlistToUpdate.setName(playlistDtoToChange.getName());
-////            playlistToUpdate.setOwner(userMapper.toEntity(playlistDtoToChange.getOwnerDto()));
-//            playlistToUpdate.setCreationDate(playlistDtoToChange.getCreationDate());
-//            playlistToUpdate.setImage(playlistDtoToChange.getImage());
-////            playlistToUpdate.setSongs(songMapper.toEntityCollection(playlistDtoToChange.getSongDtos()));
-//            playlistToUpdate.setUri(playlistDtoToChange.getUri());
-//
-//            this.playlistRepository.save(playlistToUpdate);
-//            return true;
-//        }
-//        throw new ResourceNotFoundException("There is no a playlist with such id");
-//    }
 
     public boolean setPlaylistById(
         @NotNull(message = "The provided playlist dto cannot be null")

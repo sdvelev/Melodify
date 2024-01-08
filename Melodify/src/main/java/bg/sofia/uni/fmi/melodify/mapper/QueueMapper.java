@@ -13,11 +13,9 @@ import java.util.List;
 public interface QueueMapper {
     QueueMapper INSTANCE = Mappers.getMapper(QueueMapper.class);
 
-//    @Mapping(source = "owner", target = "ownerDto")
     @Mapping(source = "songs", target = "songDtos")
     QueueDto toDto(Queue queueEntity);
 
-//    @Mapping(source = "ownerDto", target = "owner")
     @Mapping(source = "songDtos", target = "songs")
     Queue toEntity(QueueDto queueDto);
 

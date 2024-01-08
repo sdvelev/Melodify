@@ -1,8 +1,5 @@
 package bg.sofia.uni.fmi.melodify.service;
 
-import bg.sofia.uni.fmi.melodify.mapper.ArtistMapper;
-import bg.sofia.uni.fmi.melodify.mapper.GenreMapper;
-import bg.sofia.uni.fmi.melodify.mapper.SongMapper;
 import bg.sofia.uni.fmi.melodify.model.Album;
 import bg.sofia.uni.fmi.melodify.repository.AlbumRepository;
 import bg.sofia.uni.fmi.melodify.validation.ResourceNotFoundException;
@@ -68,36 +65,12 @@ public class AlbumService {
             Long id) {
         Optional<Album> potentialAlbum = albumRepository.findById(id);
 
-        if(potentialAlbum.isPresent()) {
+        if (potentialAlbum.isPresent()) {
             return potentialAlbum;
         }
 
         throw new ResourceNotFoundException("There is no album with such id");
     }
-
-//    public boolean setAlbumById(
-//            @NotNull(message = "The provided album description cannot be null")
-//            AlbumDto albumDtoToChange,
-//            @NotNull(message = "The provided album id cannot be null")
-//            @Positive(message = "The provided album id must be positive")
-//            Long albumId) {
-//        Optional<Album> optionalAlbumToUpdate = albumRepository.findById(albumId);
-//
-//        if(optionalAlbumToUpdate.isPresent()){
-//            Album albumToUpdate = optionalAlbumToUpdate.get();
-//            albumToUpdate.setName(albumDtoToChange.getName());
-//            albumToUpdate.setReleaseDate(albumDtoToChange.getReleaseDate());
-////            albumToUpdate.setGenre(genreMapper.toEntity(albumDtoToChange.getGenreDto()));
-//            albumToUpdate.setImage(albumDtoToChange.getImage());
-////            albumToUpdate.setSongs(songMapper.toEntityCollection(albumDtoToChange.getSongDtos()));
-////            albumToUpdate.setArtists(artistMapper.toEntityCollection(albumDtoToChange.getArtistDtos()));
-//            albumToUpdate.setUri(albumDtoToChange.getUri());
-//
-//            albumRepository.save(albumToUpdate);
-//            return true;
-//        }
-//        throw new ResourceNotFoundException("There is no album with such id");
-//    }
 
     public boolean setAlbumById(
         @NotNull(message = "The provided album dto cannot be null")

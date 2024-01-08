@@ -14,16 +14,14 @@ public interface SongMapper {
     SongMapper INSTANCE = Mappers.getMapper(SongMapper.class);
 
    @Mapping(source = "genre", target = "genreDto")
-//    @Mapping(source = "album", target = "albumDto")
    @Mapping(source = "artists", target = "artistDtos")
    @Mapping(target = "albumImage", source = "album.image")
    @Mapping(target = "albumName", source = "album.name")
    @Mapping(target = "albumId", source = "album.id")
    SongDto toDto(Song songEntity);
 
-     @Mapping(source = "genreDto", target = "genre")
-//    @Mapping(source = "albumDto", target = "album")
-       @Mapping(source = "artistDtos", target = "artists")
+    @Mapping(source = "genreDto", target = "genre")
+    @Mapping(source = "artistDtos", target = "artists")
     Song toEntity(SongDto songDto);
 
     List<SongDto> toDtoCollection(Collection<Song> songEntities);
