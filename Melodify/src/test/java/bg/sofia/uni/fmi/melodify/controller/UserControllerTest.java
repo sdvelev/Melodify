@@ -30,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 
-import static bg.sofia.uni.fmi.melodify.security.RequestManager.getUserByRequest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
