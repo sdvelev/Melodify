@@ -5,6 +5,7 @@ import bg.sofia.uni.fmi.melodify.mapper.PlaylistMapper;
 import bg.sofia.uni.fmi.melodify.model.Playlist;
 import bg.sofia.uni.fmi.melodify.model.Queue;
 import bg.sofia.uni.fmi.melodify.model.User;
+import bg.sofia.uni.fmi.melodify.security.RequestManager;
 import bg.sofia.uni.fmi.melodify.service.*;
 import bg.sofia.uni.fmi.melodify.validation.ApiBadRequest;
 import bg.sofia.uni.fmi.melodify.validation.MethodNotAllowed;
@@ -14,6 +15,8 @@ import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -60,11 +63,13 @@ public class PlaylistControllerTest {
 
     @MockBean
     private Queue queue;
-    private User user = new User(1L, "Name", "surname", "email", "password", "user.png", Collections.emptyList(), this.queue,"user.com");
+    private User user1 = new User(1L, "Name", "surname", "email", "password", "user.png", Collections.emptyList(), this.queue,"user.com");
+    private User user2 = new User(2L, "Name", "surname", "email", "password", "user.png", Collections.emptyList(), this.queue,"user.com");
+
     @BeforeEach
     public void setup(){
-        this.playlist1= new Playlist(1L, "Playlist1", user, LocalDateTime.of(2001, 9, 22, 12, 0), "playlist1.png", Collections.emptyList(), "playlist1.com");
-        this.playlist2= new Playlist(2L, "Playlist2", user, LocalDateTime.of(2001, 9, 22, 12, 0), "playlist2.png", Collections.emptyList(), "playlist2.com");
+        this.playlist1= new Playlist(1L, "Playlist1", user1, LocalDateTime.of(2001, 9, 22, 12, 0), "playlist1.png", Collections.emptyList(), "playlist1.com");
+        this.playlist2= new Playlist(2L, "Playlist2", user2, LocalDateTime.of(2001, 9, 22, 12, 0), "playlist2.png", Collections.emptyList(), "playlist2.com");
         this.playlists = List.of(playlist1, playlist2);
         this.playlistDto1 = new PlaylistDto(1L, "Playlist1", LocalDateTime.of(2001, 9, 22, 12, 0), "playlist1.png", "playlist1.com", Collections.emptyList());
         this.playlistDto2 = new PlaylistDto(2L, "Playlist2", LocalDateTime.of(2001, 9, 22, 12, 0), "playlist2.png", "playlist2.com", Collections.emptyList());
@@ -87,7 +92,7 @@ public class PlaylistControllerTest {
     }
 
     @Test
-    public void testGetAllPlaylists() {
+    public void testGetPlaylists() {
         when(playlistService.getPlaylists(any())).thenReturn(this.playlists);
 
         List<PlaylistDto> providedPlaylistDtos = this.playlistController.getPlaylists(new HashMap<>());
@@ -138,24 +143,25 @@ public class PlaylistControllerTest {
 
     @Test
     public void testAddPlaylist() {
-        when(this.tokenManagerService.getUserIdFromToken(anyString())).thenReturn("1");
-        when(this.userService.getUserById(1L)).thenReturn(Optional.of(this.user));
-        when(this.playlistCreateFacadeService.createPlaylistWithOwner(this.playlist1, this.user.getId())).thenReturn(this.playlist1);
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(()->RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user1);
+            when(this.tokenManagerService.getUserIdFromToken(anyString())).thenReturn("1");
+            when(this.userService.getUserById(1L)).thenReturn(Optional.of(this.user1));
+            when(this.playlistCreateFacadeService.createPlaylistWithOwner(this.playlist1, this.user1.getId())).thenReturn(this.playlist1);
 
-        Long providedPlaylistId = this.playlistController.addPlaylist(this.playlistDto1, this.request);
+            Long providedPlaylistId = this.playlistController.addPlaylist(this.playlistDto1, this.request);
 
-        assertEquals(this.playlist1.getId(), providedPlaylistId,
-                "When addPlaylist() is called successfully, it should return the correct id of the object");
-        verify(this.tokenManagerService, times(1)).getIsAdminFromToken(anyString());
-        verify(this.userService, times(1)).getUserById(1L);
-        verify(this.playlistCreateFacadeService, times(1)).createPlaylistWithOwner(this.playlist1, this.user.getId());
+            assertEquals(this.playlist1.getId(), providedPlaylistId,
+                    "When addPlaylist() is called successfully, it should return the correct id of the object");
+            verify(this.playlistCreateFacadeService, times(1)).createPlaylistWithOwner(this.playlist1, this.user1.getId());
+        }
     }
 
     @Test
     public void testAddPlaylistFail() {
         when(this.tokenManagerService.getUserIdFromToken(anyString())).thenReturn("1");
-        when(this.userService.getUserById(1L)).thenReturn(Optional.of(this.user));
-        when(this.playlistCreateFacadeService.createPlaylistWithOwner(this.playlist1, this.user.getId())).thenReturn(null);
+        when(this.userService.getUserById(1L)).thenReturn(Optional.of(this.user1));
+        when(this.playlistCreateFacadeService.createPlaylistWithOwner(this.playlist1, this.user1.getId())).thenReturn(null);
 
         assertThrows(ApiBadRequest.class, ()->this.playlistController.addPlaylist(this.playlistDto1, this.request),
                 "When addPlaylist() is called but object fails to create, it should throw a Method Not allowed exception");
@@ -168,34 +174,41 @@ public class PlaylistControllerTest {
     }
 
     @Test
-    public void testSetPlaylistById() {
-        when(this.tokenManagerService.getUserIdFromToken(anyString())).thenReturn("1");
-        when(this.userService.getUserById(1L)).thenReturn(Optional.of(this.user));
+    public void testSetPlaylistByIdUser() {
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user1);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(false);
 
-        boolean providedResult = this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request);
+            when(this.playlistService.setPlaylistById(this.playlist1, this.playlist1.getId(), this.user1, false)).thenReturn(true);
+            boolean providedResult = this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request);
 
-        assertTrue(providedResult);
-        verify(this.tokenManagerService, times(1)).getUserIdFromToken(anyString());
-        verify(this.userService, times(1)).getUserById(1L);
+            assertTrue(providedResult);
+            verify(this.playlistService, times(1)).setPlaylistById(this.playlist1, this.playlist1.getId(), this.user1, false);
+        }
     }
 
     @Test
     public void testSetPlaylistByIdAdmin() {
-        when(this.tokenManagerService.getIsAdminFromToken(anyString())).thenReturn("true");
-        when(this.userService.getUserById(anyLong())).thenReturn(Optional.empty());
-        boolean providedResult = this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request);
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user2);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(true);
 
-        assertTrue(providedResult);
-        verify(this.tokenManagerService, times(1)).getIsAdminFromToken(anyString());
+            when(this.playlistService.setPlaylistById(this.playlist1, this.playlist1.getId(), this.user2, true)).thenReturn(true);
+
+            boolean providedResult = this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request);
+
+            assertTrue(providedResult);
+        }
     }
 
     @Test
     public void testSetPlaylistByIdNotAdminNorOwner() {
-        when(this.tokenManagerService.getIsAdminFromToken(anyString())).thenReturn("false");
-        when(this.tokenManagerService.getUserIdFromToken(anyString())).thenReturn("2");
-        when(this.userService.getUserById(2L)).thenReturn(Optional.empty());
-
-        assertThrows(MethodNotAllowed.class, ()-> this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request));
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user2);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(false);
+            when(this.playlistService.setPlaylistById(this.playlist1, this.playlist1.getId(), this.user2, false)).thenThrow(MethodNotAllowed.class);
+            assertThrows(MethodNotAllowed.class, () -> this.playlistController.setPlaylistById(this.playlist1.getId(), this.playlistDto1, this.request));
+        }
     }
 
     @Test
@@ -206,37 +219,40 @@ public class PlaylistControllerTest {
 
     @Test
     public void testDeletePlaylistByIdAdmin() {
-        when(this.tokenManagerService.getIsAdminFromToken(anyString())).thenReturn("true");
-        when(this.userService.getUserById(1L)).thenReturn(Optional.empty());
-        when(this.playlistService.deletePlaylist(1L, this.user, true)).thenReturn(this.playlist1);
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user1);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(true);
 
-        PlaylistDto deletedPlaylist = playlistController.deletePlaylistById(1L, this.request);
+            when(this.playlistService.deletePlaylist(1L, this.user1, true)).thenReturn(this.playlist1);
 
-        assertEquals(this.playlistDto1, deletedPlaylist);
-        verify(this.tokenManagerService, times(1)).getIsAdminFromToken(anyString());
-        verify(this.playlistService, times(1)).deletePlaylist(1L, this.user, false);
+            PlaylistDto deletedPlaylist = playlistController.deletePlaylistById(1L, this.request);
+
+            assertEquals(this.playlistDto1, deletedPlaylist);
+        }
     }
     @Test
     public void testDeletePlaylistByIdUser() {
         when(this.tokenManagerService.getUserIdFromToken(anyString())).thenReturn("1");
-        when(this.userService.getUserById(1L)).thenReturn(Optional.ofNullable(this.user));
-        when(this.playlistService.deletePlaylist(1L, this.user, false)).thenReturn(this.playlist1);
+        when(this.userService.getUserById(1L)).thenReturn(Optional.ofNullable(this.user1));
+        when(this.playlistService.deletePlaylist(1L, this.user1, false)).thenReturn(this.playlist1);
 
         PlaylistDto deletedPlaylist = playlistController.deletePlaylistById(1L, this.request);
 
         assertEquals(this.playlistDto1, deletedPlaylist);
         verify(this.tokenManagerService, times(1)).getIsAdminFromToken(anyString());
         verify(this.tokenManagerService, times(1)).getUserIdFromToken(anyString());
-        verify(this.playlistService, times(1)).deletePlaylist(1L, this.user, false);
+        verify(this.playlistService, times(1)).deletePlaylist(1L, this.user1, false);
     }
 
     @Test
     public void testDeletePlaylistByIdNotAdminNorUser() {
-        when(this.tokenManagerService.getIsAdminFromToken(anyString())).thenReturn("false");
-        when(this.tokenManagerService.getUserIdFromToken(anyString())).thenReturn("1");
-        when(this.userService.getUserById(1L)).thenReturn(Optional.empty());
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user2);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(false);
+            when(this.playlistService.deletePlaylist(this.playlist1.getId(), this.user2, false)).thenThrow(MethodNotAllowed.class);
 
-        assertThrows(MethodNotAllowed.class, ()-> this.playlistController.deletePlaylistById(1L, this.request));
+            assertThrows(MethodNotAllowed.class, () -> this.playlistController.deletePlaylistById(1L, this.request));
+        }
     }
 
     @Test
@@ -245,7 +261,66 @@ public class PlaylistControllerTest {
     }
 
     @Test
-    public void testAddSongToPlaylist(){
+    public void testAddSongToPlaylistUser(){
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user1);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(false);
 
+            when(this.playlistModifySongsFacadeService.addSongToPlaylist(anyLong(), anyLong(),any(User.class), anyBoolean())).thenReturn(true);
+            boolean providedResult = this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request);
+
+            assertFalse(providedResult);
+        }
+    }
+
+    @Test
+    public void testAddSongToPlaylistNotUserNorAdmin(){
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user2);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(false);
+
+            when(this.playlistModifySongsFacadeService.addSongToPlaylist(this.playlist1.getId(), 1L,this.user1, false)).thenReturn(false);
+            boolean providedResult = this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request);
+
+            assertFalse(providedResult);
+        }
+    }
+
+    @Test
+    public void testAddSongToPlaylistNullParams(){
+        assertThrows(ConstraintViolationException.class, ()->this.playlistController.addSongToPlaylist(null, 1L, this.request));
+        assertThrows(ConstraintViolationException.class, ()->this.playlistController.addSongToPlaylist(this.playlist1.getId(), null, this.request));
+    }
+
+    @Test
+    public void testRemoveSongFromPlaylistUser(){
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user1);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(false);
+
+            when(this.playlistModifySongsFacadeService.removeSongFromPlaylist(anyLong(), anyLong(), any(), anyBoolean())).thenReturn(true);
+            boolean providedResult = this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request);
+
+            assertFalse(providedResult);
+        }
+    }
+
+    @Test
+    public void testRemoveSongFromPlaylistNotUserNorAdmin(){
+        try (MockedStatic<RequestManager> mockedRequestManager = Mockito.mockStatic(RequestManager.class)) {
+            mockedRequestManager.when(() -> RequestManager.getUserByRequest(this.request, this.tokenManagerService, this.userService)).thenReturn(this.user2);
+            mockedRequestManager.when(() -> RequestManager.isAdminByRequest(this.request, this.tokenManagerService)).thenReturn(false);
+
+            when(this.playlistModifySongsFacadeService.removeSongFromPlaylist(this.playlist1.getId(), 1L,this.user1, false)).thenReturn(false);
+            boolean providedResult = this.playlistController.setPlaylistById(1L, this.playlistDto1, this.request);
+
+            assertFalse(providedResult);
+        }
+    }
+
+    @Test
+    public void testRemoveSongFromPlaylistNullParams(){
+        assertThrows(ConstraintViolationException.class, ()->this.playlistController.removeSongFromPlaylist(null, 1L, this.request));
+        assertThrows(ConstraintViolationException.class, ()->this.playlistController.removeSongFromPlaylist(this.playlist1.getId(), null, this.request));
     }
 }
