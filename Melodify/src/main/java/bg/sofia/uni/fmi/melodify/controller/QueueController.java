@@ -16,12 +16,15 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -136,7 +139,12 @@ public class QueueController {
                 toPlay = true;
             }
 
-            Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");
+            String projectRoot = System.getProperty("user.dir");
+
+            String tracksDirectory = projectRoot + "/../tracks";
+
+            Path trackPath = Paths.get(tracksDirectory).resolve(songToPlayId + ".mp3");
+            Resource resource = new UrlResource(trackPath.toUri());
 
             if (toPlay && resource.exists() && resource.isReadable()) {
                 HttpHeaders headers = new HttpHeaders();
@@ -163,7 +171,12 @@ public class QueueController {
             Long songToPlayId = queueModifySongsFacadeService
                 .playPreviousSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
 
-            Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");
+            String projectRoot = System.getProperty("user.dir");
+
+            String tracksDirectory = projectRoot + "/../tracks";
+
+            Path trackPath = Paths.get(tracksDirectory).resolve(songToPlayId + ".mp3");
+            Resource resource = new UrlResource(trackPath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
                 HttpHeaders headers = new HttpHeaders();
@@ -190,7 +203,12 @@ public class QueueController {
             Long songToPlayId = queueModifySongsFacadeService
                 .playNextSongFromQueue(getUserByRequest(request, tokenManagerService, userService).getId());
 
-            Resource resource = resourceLoader.getResource("classpath:/tracks/" + songToPlayId + ".mp3");
+            String projectRoot = System.getProperty("user.dir");
+
+            String tracksDirectory = projectRoot + "/../tracks";
+
+            Path trackPath = Paths.get(tracksDirectory).resolve(songToPlayId + ".mp3");
+            Resource resource = new UrlResource(trackPath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
                 HttpHeaders headers = new HttpHeaders();
