@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import static bg.sofia.uni.fmi.melodify.security.RequestManager.getUserByRequest;
@@ -48,8 +50,13 @@ public class ImageController {
         @PathVariable String imageName) throws IOException {
 
         try {
-            String filePath = "file:./src/main/resources/images/" + directory + "/" + imageName;
-            Resource resource = resourceLoader.getResource(filePath);
+
+            String projectRoot = System.getProperty("user.dir");
+
+            String tracksDirectory = projectRoot + "/../images/" + directory;
+
+            Path trackPath = Paths.get(tracksDirectory).resolve(imageName);
+            Resource resource = new UrlResource(trackPath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
                 HttpHeaders headers = new HttpHeaders();
@@ -76,7 +83,7 @@ public class ImageController {
             String directory = "images/users/";
             String fileName = potentialUser.getId() + ".png";
 
-            Path resourcePath = Path.of("src/main/resources/" + directory);
+            Path resourcePath = Path.of("./../" + directory);
 
             if (!Files.exists(resourcePath)) {
                 Files.createDirectories(resourcePath);
