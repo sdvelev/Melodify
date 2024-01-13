@@ -32,5 +32,6 @@ public class Queue {
             joinColumns = @JoinColumn(name = "queue_id"),
             inverseJoinColumns = @JoinColumn(name = "song_id")
     )
+    @OrderColumn(name = "song_order")
     private List<Song> songs;
 }
