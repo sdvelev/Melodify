@@ -24,7 +24,7 @@ The client exchanges information with the server through requests and the **HTTP
 ## Diagrams, representing architecture and functionalities of the system 📊
 
 <p align="center">
-<img width="620px" src="https://github.com/sdvelev/Melodify/blob/main/resources/2.png" alt="rest-architecture-diagram">
+<img width="400px" src="https://github.com/sdvelev/Melodify/blob/main/resources/2.png" alt="rest-architecture-diagram">
 </p>
 
 <p align="center">
