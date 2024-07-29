@@ -5,7 +5,7 @@
 Do you know someone who doesn't like listening to music? We do not. Whether we listen to music in our free time or use it for concentration, we turn to music listening platforms like **Spotify** or **YouTube Music** every day. Although very convenient, their free usage licenses always come with a generous amount of ads that ruin our user experience. For these reasons, our team chose the **Melodify** theme: a client-server application for listening to music as a challenge that would allow us to create the platform of our dreams and give us experience in building client-server applications in **Java**.
 
 <p align="center">
-<img width="620px" src="https://github.com/sdvelev/Melodify/blob/main/resources/1.png" alt="home-page">
+<img width="660px" src="https://github.com/sdvelev/Melodify/blob/main/resources/1.png" alt="home-page">
 </p>
 
 ## Design ⚙️
@@ -28,7 +28,7 @@ The client exchanges information with the server through requests and the **HTTP
 </p>
 
 <p align="center">
-<img width="800px" src="https://github.com/sdvelev/Melodify/blob/main/resources/3.png" alt="uml-class-diagram">
+<img width="700px" src="https://github.com/sdvelev/Melodify/blob/main/resources/3.png" alt="uml-class-diagram">
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@ The client exchanges information with the server through requests and the **HTTP
 </p>
 
 <p align="center">
-<img width="800px" src="https://github.com/sdvelev/Melodify/blob/main/resources/5.png" alt="uml-sequence-diagram">
+<img width="700px" src="https://github.com/sdvelev/Melodify/blob/main/resources/5.png" alt="uml-sequence-diagram">
 </p>
 
 ## Implementation 👨‍💻
